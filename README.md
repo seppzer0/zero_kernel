@@ -8,7 +8,6 @@
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
-<br>
 
 ## **If you're seeing this on GitHub**
 
@@ -17,8 +16,6 @@ If you are seeing this project on **GitHub** -- please take a note that you are 
 Project development is mainly done on **GitLab**.
 
 
-<br>
-
 ## **Kernel Features**
 
 The kernel has the following features:
@@ -26,7 +23,6 @@ The kernel has the following features:
 - Kali NetHunter support;
 - RTL8812AU Wi-Fi drivers.
 
-<br>
 
 ## **Usage**
 
@@ -52,7 +48,6 @@ optional arguments:
   -h, --help            show this help message and exit
 ```
 
-<br>
 
 ### **Kernel**
 
@@ -78,7 +73,6 @@ optional arguments:
                         select log level
 ```
 
-<br>
 
 ### **Assets**
 
@@ -107,7 +101,6 @@ optional arguments:
                         select log level
 ```
 
-<br>
 
 ### **Bundle / Conan packaging**
 
@@ -136,7 +129,6 @@ optional arguments:
                         select log level
 ```
 
-<br>
 
 ## **See also**
 
