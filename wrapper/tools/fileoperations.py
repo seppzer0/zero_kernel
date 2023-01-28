@@ -1,7 +1,8 @@
 import os
+import sys
 import shutil
 import requests
-from . import messagedecorator as msg
+import messagedecorator as msg
 
 
 def ucopy(src, dst, exceptions=[]):
@@ -24,17 +25,6 @@ def ucopy(src, dst, exceptions=[]):
     elif os.path.isfile(src):
         shutil.copy(src, dst)
 
-
-#def download(url):
-#    """A simple downloader."""
-#    file = url.split("/")[-1]
-#    msg.note(f"Downloading {file} ..")
-#    print(f"      URL: {url}")
-#    try:
-#        open(file, "wb").write(requests.get(url).content)
-#    except Exception:
-#        msg.error("Download failed.")
-#    msg.done("Done!")
 
 def download(url):
     """A simple file downloader."""

@@ -76,7 +76,7 @@ optional arguments:
 
 ### **Assets**
 
-As mentioned, there is also an asset downloader, which can download latest versions of LineageS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
+As mentioned, there is also an asset downloader, which can download latest versions of LineageOS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
 $ python3 wrapper assets --help

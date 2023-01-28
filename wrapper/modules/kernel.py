@@ -11,9 +11,11 @@ import requests
 import platform
 import fileinput
 import subprocess
-import tools.customcmd as ccmd
-import tools.fileoperations as fo
-import tools.messagedecorator as msg
+# append to PYTHONPATH
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import customcmd as ccmd
+import fileoperations as fo
+import messagedecorator as msg
 
 
 def parse_args():
@@ -67,7 +69,6 @@ def clean_full():
     msg.note("Cleaning the build environment..")
     clean_dir(paths["android_kernel_oneplus_msm8998"]["path"])
     clean_dir(paths["AnyKernel3"]["path"])
-    #shutil.rmtree("release", ignore_errors=True)
     for file in os.listdir():
         if file == "localversion" or file.endswith(".zip"):
             os.remove(file)
@@ -338,7 +339,7 @@ def form_release(name):
     msg.done("Done!")
 
 
-# validation + variable declarations
+# launch the script
 parse_args()
 msg.banner("OP5/T LineageOS Kernel builder w/ Kali NetHunter")
 validate_settings()

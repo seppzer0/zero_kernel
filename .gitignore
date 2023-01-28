@@ -1,0 +1,10 @@
+.vscode
+android_*
+*.log
+clang-*
+**/__pycache__
+assets
+localversion
+release
+rtl8812au
+source

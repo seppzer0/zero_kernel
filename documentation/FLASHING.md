@@ -29,8 +29,8 @@ Listed below files are required:
 - Magisk + some modules;
 - TWRP, blu_spark variant;
 - DM-Verity and Force Encrypt disabler;
-- Kali Nethunter + Kali NetHunter Terminal apps;
-- Kali Nethunter Chroot (you can do this later, but it would be easier to download this beforehand);
+- Kali NetHunter + Kali NetHunter Terminal apps;
+- Kali NetHunter Chroot (you can do this later, but it would be easier to download this beforehand);
 - `nhpatch.sh` script from this repo (fixes NetHunter permissions for Android 12+).
 
 There is a `assets.py` script, which should assemble all *(or most)* of the assets mentioned above.
@@ -72,4 +72,4 @@ Before doing anything, please ensure that you have:
 - open the NetHunter Terminal app, select `AndroidSu` option, navigate through your storage and launch the `nhpatch.sh`;
 - open the NetHunter app (permissions should be fixed now);
 - navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
-- open Nethunter Terminal app with the `kali` option (if it opens properly, then congratulations, you have a working Kali Nethunter on your device).
+- open Nethunter Terminal app with the `kali` option (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).

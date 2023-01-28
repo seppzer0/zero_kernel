@@ -3,8 +3,8 @@ import os
 import sys
 import shutil
 import argparse
-import modules.tools.customcmd as ccmd
-import modules.tools.fileoperations as fo
+import tools.customcmd as ccmd
+import tools.fileoperations as fo
 
 
 def parse_args() -> argparse.Namespace:
