@@ -5,9 +5,11 @@ import json
 import shutil
 import argparse
 import requests
-import tools.customcmd as ccmd
-import tools.messagedecorator as msg
-import tools.fileoperations as fo
+# append to PYTHONPATH
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import customcmd as ccmd
+import fileoperations as fo
+import messagedecorator as msg
 
 
 def parse_args(description="An asset downloader for kernel flashing."):

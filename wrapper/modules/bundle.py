@@ -5,9 +5,11 @@ import shutil
 import argparse
 import itertools
 import subprocess
-import tools.customcmd as ccmd
-import tools.fileoperations as fo
-import tools.messagedecorator as msg
+# append to PYTHONPATH
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import customcmd as ccmd
+import fileoperations as fo
+import messagedecorator as msg
 
 
 def parse_args():
@@ -80,7 +82,7 @@ def conan_upload(reference):
     cmd = f"conan upload -f {reference} -r {alias}"
 
 
-# parse arguments
+# launch script
 parse_args()
 # form Conan reference
 workdir = os.getenv("ROOTPATH")

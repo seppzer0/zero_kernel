@@ -11,6 +11,7 @@
 - [ ] add CI/CD pipelines;
 - [ ] add option to save logs to a file;
 - [x] add option to build in Docker container;
-- [ ] add multidevice support;
+- [ ] add multidevice support, with appropriate manifest;
 - [x] improve log level setting throughout all stages of the build;
-- [ ] improve file/directory mechanism in the form of a dedicated module.
+- [ ] improve file/directory cleaning mechanism in the form of a dedicated module;
+- [ ] update Clang download mechanism.
