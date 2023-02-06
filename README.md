@@ -34,7 +34,7 @@ The custom build wrapper consists of 3 main components:
 
 ```help
 $ python3 wrapper --help
-usage: [-h] {kernel,assets,bundle} ...
+usage: wrapper [-h] [--clean] {kernel,assets,bundle} ...
 
 A custom wrapper for the s0nh kernel.
 
@@ -46,8 +46,22 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --clean               clean the root directory
 ```
 
+
+### **Prerequisites**
+
+To launch the tool you need to make sure you have the following:
+
+- Python 3.6+;
+- a Debian-based operating system AND/OR Docker installation.
+
+You will also need a few Python packages. To install them, use:
+
+```sh
+python3 -m pip install -r requirements.txt
+```
 
 ### **Kernel**
 
@@ -57,13 +71,12 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-docker] [--log-level {normal,verbose,quiet}] {local,docker} losversion {dumpling,cheeseburger}
+usage: wrapper kernel [-h] [-c] [--clean-docker] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename
 
 positional arguments:
   {local,docker}        select whether this is a 'local' or 'docker' build
   losversion            select LineageOS version
-  {dumpling,cheeseburger}
-                        select device codename
+  codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -73,22 +86,18 @@ optional arguments:
                         select log level
 ```
 
-
 ### **Assets**
 
 As mentioned, there is also an asset downloader, which can download latest versions of LineageOS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--clean-docker] [--clean]
-                      [--log-level {normal,verbose,quiet}]
-                      {local,docker} losversion {dumpling,cheeseburger} {full,minimal}
+usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--clean-docker] [--clean] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename {full,minimal}
 
 positional arguments:
   {local,docker}        select whether this is a 'local' or 'docker' build
   losversion            select LineageOS version
-  {dumpling,cheeseburger}
-                        select device codename
+  codename              select device codename
   {full,minimal}        select Kali chroot type
 
 optional arguments:
@@ -101,7 +110,6 @@ optional arguments:
                         select log level
 ```
 
-
 ### **Bundle / Conan packaging**
 
 There is an option named `bundle` which combines the build artifacts of both `kernel` and `assets` modules into a single Conan component.
@@ -110,15 +118,12 @@ This is especially useful for linking the kernel version with the appropriate Li
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-cache] [--conan-upload] [--clean-docker]
-                      [--log-level {normal,verbose,quiet}]
-                      {local,docker} losversion {dumpling,cheeseburger}
+usage: wrapper bundle [-h] [--conan-cache] [--conan-upload] [--clean-docker] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename
 
 positional arguments:
   {local,docker}        select whether this is a 'local' or 'docker' build
   losversion            select LineageOS version
-  {dumpling,cheeseburger}
-                        select device codename
+  codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -128,7 +133,6 @@ optional arguments:
   --log-level {normal,verbose,quiet}
                         select log level
 ```
-
 
 ## **See also**
 

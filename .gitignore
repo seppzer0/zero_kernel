@@ -1,7 +1,7 @@
 .vscode
 android_*
 *.log
-clang-*
+clang
 **/__pycache__
 assets
 localversion

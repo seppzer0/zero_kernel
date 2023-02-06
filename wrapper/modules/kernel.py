@@ -13,6 +13,7 @@ import fileinput
 import subprocess
 # append to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import cleanmaster as cm
 import customcmd as ccmd
 import fileoperations as fo
 import messagedecorator as msg
@@ -33,13 +34,6 @@ def parse_args():
     args = parser.parse_args()
 
 
-def validate_settings():
-    """Run checks on the build environment."""
-    # type of OS that is being used
-    if platform.system() == "Windows":
-        msg.error("Can't build Linux kernel on a non-Unix machine.")
-
-
 def export_path(path):
     """Add to PATH."""
     pathenv = f"{path}/bin/"
@@ -51,63 +45,76 @@ def export_path(path):
         os.environ["PATH"] += os.pathsep + pathenv
 
 
-def clean_dir(directory):
-    """Clean up submodule directories."""
-    # form the command
-    cmd = "git clean -fdx && git reset --hard HEAD"
-    if directory == "kernel":
-        cmd = f"make clean && {cmd}"
-    # launch the cleaning process
-    os.chdir(directory)
-    ccmd.launch(cmd)
-    os.chdir(workdir)
-
-
-def clean_full():
+def clean_build():
     """Clean environment from potential artifacts."""
     print("\n", end="")
     msg.note("Cleaning the build environment..")
-    clean_dir(paths["android_kernel_oneplus_msm8998"]["path"])
-    clean_dir(paths["AnyKernel3"]["path"])
+    cm.git(paths[codename]["path"])
+    cm.git(paths["AnyKernel3"]["path"])
     for file in os.listdir():
         if file == "localversion" or file.endswith(".zip"):
-            os.remove(file)
+            cm.remove(file)
     msg.done("Done!")
 
 
 def create_vars():
     """Create links to local file paths."""
-    global workdir, paths, clang_url
-    clang_url = "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/529a8adc22e54aecc2278960d1a6d84967fb7318/clang-r433403b.tar.gz"
+    global workdir, paths, codename
     workdir = os.getenv("ROOTPATH")
     os.chdir(workdir)
-    # define paths to git directories ("submodules")
+    # define paths
+    tools = ""
+    device = ""
     paths = ""
-    with open(os.path.join(workdir, "gitmodules.json")) as f:
-        paths = json.load(f)
+    codename = "dumplinger" if args.codename in ["dumpling", "cheeseburger"] else args.codename
+    with open(os.path.join(workdir, "manifests", "tools.json")) as f:
+        tools = json.load(f)
+    with open(os.path.join(workdir, "manifests", "devices.json")) as f:
+        data = json.load(f)
+        device = {codename: data[codename]}
+    # join tools and devices manifests
+    paths = {**tools, **device}
     for e in paths:
         # convert path into the full form to use later
         paths[e]["path"] = os.path.join(workdir, paths[e]["path"])
-        # break data into individual vars
+        # break data into individual required vars
         path = paths[e]["path"]
         url = paths[e]["url"]
-        branch = paths[e]["branch"]
-        commit = paths[e]["commit"]
-        cmd = f"git clone -b {branch} --depth 1 {url} {path}"
-        if not os.path.isdir(paths[e]["path"]):
-            # it is best to always show the "git clone" command
-            ccmd.launch(cmd, "verbose")
+        # break further processing into "generic" and "git" groups
+        ftype = paths[e]["type"]
+        if ftype == "generic":
+            # download and unpack
+            # NOTE: this is specific, for .tar.gz files
+            if path not in os.listdir():
+                fn = url.split("/")[-1]
+                dn = fn.split(".")[0]
+                if fn not in os.listdir() and dn not in os.listdir():
+                    fo.download(url)
+                msg.note(f"Unpacking {fn}..")
+                with tarfile.open(fn) as f:
+                    f.extractall(path)
+                cm.remove(fn)
+        elif ftype == "git":
+            # break data into individual vars
+            branch = paths[e]["branch"]
+            commit = paths[e]["commit"]
+            cmd = f"git clone -b {branch} --depth 1 {url} {path}"
+            if not os.path.isdir(path):
+                # it is best to always show the "git clone" command
+                ccmd.launch(cmd, "verbose")
+                # checkout a specific commit if it is specified
+                if commit:
+                    cmd = f"git checkout {commit}"
+                    os.chdir(path)
+                    ccmd.launch(cmd)
+                    os.chdir(workdir)
+            else:
+                msg.note(f"Found an existing path: {path}")
         else:
-            msg.note(f"Found an existing path: {paths[e]['path']}")
-        # checkout a specific commit if it is specified
-        if commit:
-            cmd = f"git checkout {commit}"
-            os.chdir(paths[e])
-            ccmd.launch(cmd)
-            os.chdir(workdir)
+            msg.error("Invalid resource type detected. Use only: custom, git.")
 
 
-def init(clang_link):
+def init():
     """Run initial preparations for the build."""
     # install required packages
     print("\n", end="")
@@ -121,45 +128,32 @@ def init(clang_link):
           "gcc "\
           "zip"
     ccmd.launch(cmd)
-    # download and unpack clang
-    if clang_link.split("/")[-1] not in os.listdir():
-        if clang_link.split("/")[-1].split(".")[0] not in os.listdir():
-            msg.note("Downloading Clang..")
-            fo.download(clang_link)
-            msg.note("Unpacking Clang..")
-            with tarfile.open(clang_link.split("/")[-1]) as f:
-                f.extractall(clang_link.split("/")[-1].split(".")[0])
-    # include Clang into PATH
-    paths["clang"] = {
-        "path": os.path.join(workdir, clang_link.split("/")[-1].split(".")[0])
-    }
     for e in paths:
         export_path(paths[e]["path"])
     msg.done("Done!")
 
 
-def apply_mods():
+def modify():
     """Apply modifications to the source code."""
     # two devices can have same kernel source
-    codename = "dumplinger" if args.codename in ["dumpling", "cheeseburger"] else args.codename
     print("\n", end="")
     msg.note("Applying modifications to the source code..")
     # mac80211
     #fo.ucopy(os.path.join("mods", "kernel", "mac80211"),
-    #         os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    #         os.path.join(paths[codename]["path"],
     #                      "net",
     #                      "mac80211"))
     # ath9k
     #fo.ucopy(os.path.join("mods", "kernel", "ath9k"),
-    #         os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    #         os.path.join(paths[codename]["path"],
     #                      "drivers",
     #                      "net",
     #                      "wireless",
     #                      "ath",
     #                      "ath9k"))
     # AnyKernel3 (remove placeholders and inject modified files)
-    shutil.rmtree(os.path.join(paths["AnyKernel3"]["path"], "ramdisk"))
-    shutil.rmtree(os.path.join(paths["AnyKernel3"]["path"], "modules"))
+    cm.remove(os.path.join(paths["AnyKernel3"]["path"], "ramdisk"))
+    cm.remove(os.path.join(paths["AnyKernel3"]["path"], "modules"))
     fo.ucopy(os.path.join(workdir, "modifications", codename, "anykernel3", "ramdisk"),
              os.path.join(paths["AnyKernel3"]["path"], "ramdisk"))
     fo.ucopy(os.path.join(workdir, "modifications", codename, "anykernel3", "anykernel.sh"),
@@ -167,13 +161,13 @@ def apply_mods():
     # rtl8812au (apply code patches and remove .git* files)
     msg.note("Adding RTL8812AU drivers into the kernel..")
     fo.ucopy(os.path.join(paths["rtl8812au"]["path"]),
-             os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+             os.path.join(paths[codename]["path"],
                           "drivers",
                           "net",
                           "wireless",
                           "realtek",
                           "rtl8812au"))
-    os.chdir(os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    os.chdir(os.path.join(paths[codename]["path"],
                           "drivers",
                           "net",
                           "wireless",
@@ -222,21 +216,21 @@ def apply_mods():
     # clean .git* files
     for elem in os.listdir():
         if elem.startswith(".git"):
-            shutil.rmtree(elem) if os.path.isdir(elem) else os.remove(elem)
+            cm.remove(elem)
     os.chdir(workdir)
     # include the rtl8812au into build process
-    makefile = os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    makefile = os.path.join(paths[codename]["path"],
                             "drivers",
                             "net",
                             "wireless",
                             "realtek",
                             "Makefile")
-    kconfig = os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    kconfig = os.path.join(paths[codename]["path"],
                            "drivers",
                            "net",
                            "wireless",
                            "Kconfig")
-    defconfig = os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    defconfig = os.path.join(paths[codename]["path"],
                              "arch",
                              "arm64",
                              "configs",
@@ -268,7 +262,7 @@ def build():
     """Build the kernel."""
     print("\n", end="")
     msg.note("Launching the build..")
-    os.chdir(paths["android_kernel_oneplus_msm8998"]["path"])
+    os.chdir(paths[codename]["path"])
     cmd1 = "make -j\"$(nproc --all)\" O=out lineage_oneplus5_defconfig "\
            "ARCH=arm64 "\
            "SUBARCH=arm64 "\
@@ -309,7 +303,7 @@ def form_release(name):
     """Pack build artifacts."""
     print("\n", end="")
     msg.note("Forming final ZIP file..")
-    fo.ucopy(os.path.join(paths["android_kernel_oneplus_msm8998"]["path"],
+    fo.ucopy(os.path.join(paths[codename]["path"],
                           "out",
                           "arch",
                           "arm64",
@@ -321,8 +315,7 @@ def form_release(name):
     md5sum = hashlib.md5(os.path.join(paths["AnyKernel3"]["path"],
                                       "Image.gz-dtb")
                          .encode('utf-8')).hexdigest()
-    m5tab = md5sum[0:5]
-    with open(os.path.join(paths["android_kernel_oneplus_msm8998"]["path"], "Makefile")) as f:
+    with open(os.path.join(paths[codename]["path"], "Makefile")) as f:
         head = [next(f) for x in range(3)]
     kernelversion = ".".join([i.split("= ")[1].split("\n")[0] for i in head])
     buildtime = time.strftime("%Y%m%d")
@@ -341,18 +334,17 @@ def form_release(name):
 
 # launch the script
 parse_args()
-msg.banner("OP5/T LineageOS Kernel builder w/ Kali NetHunter")
-validate_settings()
+msg.banner("s0nh Kernel Builder w/ Kali NetHunter")
 create_vars()
 # prepare build
-clean_full()
+clean_build()
 if args.clean:
     sys.exit(0)
-init(clang_url)
+init()
 with open("localversion", "w") as f:
     f.write("~NetHunter-seppzer0")
-apply_mods()
+modify()
 # build and pack
 build()
-form_release("s0nh")
+form_release(f"{os.getenv('KNAME')}-{args.codename}")
 os.chdir(workdir)

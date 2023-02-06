@@ -25,7 +25,7 @@ RUN \
     apt autoremove -y
 # place sources from host to container
 COPY . /s0nhbuild
-# setup Conan
-RUN python3 -m pip install conan
+# install pip packages
+RUN python3 -m pip install -r /s0nhbuild/requirements.txt
 # set entrypoint
 CMD [ "/bin/bash" ]

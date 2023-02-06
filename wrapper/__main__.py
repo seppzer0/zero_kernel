@@ -1,10 +1,13 @@
 import io
 import os
 import sys
-import shutil
+import json
 import argparse
+import platform
+import tools.cleanmaster as cm
 import tools.customcmd as ccmd
 import tools.fileoperations as fo
+import tools.messagedecorator as msg
 
 
 def parse_args() -> argparse.Namespace:
@@ -17,14 +20,17 @@ def parse_args() -> argparse.Namespace:
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
     parser_bundle = subparsers.add_parser("bundle", help="build the kernel + collect assets")
-    # common argument attributes
+    # add a single argument for the main parser
+    main_parser.add_argument("--clean",
+                             action="store_true",
+                             help="clean the root directory")
+    # common argument attributes for subprasers
     help_losversion = "select LineageOS version"
     help_codename = "select device codename"
     help_buildenv = "select whether this is a 'local' or 'docker' build"
     help_clean = "remove Docker image from the host machine after build"
     help_loglvl = "select log level"
     choices_buildenv = ["local", "docker"]
-    choices_codename = ["dumpling", "cheeseburger"]
     choices_loglvl = ["normal", "verbose", "quiet"]
     default_loglvl = "normal"
     # kernel
@@ -34,7 +40,6 @@ def parse_args() -> argparse.Namespace:
     parser_kernel.add_argument("losversion",
                                help=help_losversion)
     parser_kernel.add_argument("codename",
-                               choices=choices_codename,
                                help=help_codename)
     parser_kernel.add_argument("-c", "--clean",
                                dest="clean",
@@ -56,7 +61,6 @@ def parse_args() -> argparse.Namespace:
     parser_assets.add_argument("losversion",
                                help=help_losversion)
     parser_assets.add_argument("codename",
-                               choices=choices_codename,
                                help=help_codename)
     parser_assets.add_argument("chroot",
                                choices=["full", "minimal"],
@@ -84,7 +88,6 @@ def parse_args() -> argparse.Namespace:
     parser_bundle.add_argument("losversion",
                                help=help_losversion)
     parser_bundle.add_argument("codename",
-                               choices=choices_codename,
                                help=help_codename)
     parser_bundle.add_argument("--conan-cache",
                                action="store_true",
@@ -104,6 +107,26 @@ def parse_args() -> argparse.Namespace:
                                default=default_loglvl,
                                help=help_loglvl)
     return main_parser.parse_args(args)
+
+
+def validate_settings(codename, buildenv):
+    """Run settings validations."""
+    # detect OS family
+    if buildenv == "local":
+        if not platform.system() == "Linux":
+            msg.error("Can't build Linux kernel on a non-Unix machine.")
+        else:
+            # check that it is Debian-based
+            try:
+                ccmd.launch("apt --version", "quiet")
+            except Exception as e:
+                msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
+    # check if specified device is supported
+    device = "dumplinger" if codename in ["dumpling", "cheeseburger"] else codename
+    with open(os.path.join(os.getenv("ROOTPATH"), "manifests", "devices.json")) as f:
+        devices = json.load(f)
+    if device not in devices.keys():
+        msg.error("Unsupported device codename specified.")
 
 
 def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
@@ -157,10 +180,18 @@ def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
 def main(args: argparse.Namespace):
     # this is for logs to get shown properly in various build systems
     sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0), write_through=True)
-    # share environment variables across all modules
-    os.environ["LOGLEVEL"] = args.loglvl
     os.environ["ROOTPATH"] = os.path.dirname(os.path.realpath(sys.argv[0]))
     os.chdir(os.getenv("ROOTPATH"))
+    # clean root directory and exit if selected
+    if args.clean:
+        cm.root()
+        sys.exit(0)
+    os.environ["LOGLEVEL"] = args.loglvl
+    with open(os.path.join(os.getenv("ROOTPATH"), "manifests", "info.json")) as f:
+        data = json.load(f)
+        os.environ["KNAME"] = data["name"]
+        os.environ["KVERSION"] = data["version"]
+    validate_settings(args.codename, args.buildenv)
     # build the image and deploy the container
     docker_name = "s0nhbuilder"
     docker_wdir = "s0nhbuild"
@@ -189,7 +220,7 @@ def main(args: argparse.Namespace):
         # remove Docker files after the build
         docker_files = ["Dockerfile", ".dockerignore"]
         for f in docker_files:
-            os.remove(os.path.join(workdir, f))
+            cm.remove(os.path.join(workdir, f))
     # launch the selected wrapper module
     ccmd.launch(form_cmd(args, script, docker_name, docker_wdir))
     # clean Docker image from host machine after the build
