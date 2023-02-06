@@ -1,38 +1,42 @@
 {
     "android_prebuilts_build-tools": {
+        "type": "git",
         "path": "android_prebuilts_build-tools",
         "url": "https://github.com/LineageOS/android_prebuilts_build-tools",
         "branch": "lineage-20.0",
         "commit": ""
     },
     "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9": {
+        "type": "git",
         "path": "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9",
         "url": "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9",
         "branch": "android-13.0.0_r0.52",
         "commit": ""
     },
     "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9": {
+        "type": "git",
         "path": "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9",
         "url": "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9",
         "branch": "android-13.0.0_r0.52",
         "commit": ""
     },
     "AnyKernel3": {
+        "type": "git",
         "path": "AnyKernel3",
         "url": "https://github.com/osm0sis/AnyKernel3",
         "branch": "master",
         "commit": ""
     },
     "rtl8812au": {
+        "type": "git",
         "path": "rtl8812au",
         "url": "https://github.com/aircrack-ng/rtl8812au",
         "branch": "v5.6.4.2",
         "commit": ""
     },
-    "android_kernel_oneplus_msm8998": {
-        "path": "android_kernel_oneplus_msm8998",
-        "url": "https://github.com/LineageOS/android_kernel_oneplus_msm8998",
-        "branch": "lineage-20",
-        "commit": ""
+    "clang": {
+        "type": "generic",
+        "path": "clang",
+        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/529a8adc22e54aecc2278960d1a6d84967fb7318/clang-r433403b.tar.gz"
     }
 }

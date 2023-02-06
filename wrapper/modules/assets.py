@@ -7,6 +7,7 @@ import argparse
 import requests
 # append to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import cleanmaster as cm
 import customcmd as ccmd
 import fileoperations as fo
 import messagedecorator as msg
@@ -48,7 +49,7 @@ def init():
             ans = input("[Y/n]: ").lower() if not args.clean else "y"
             if ans == "y":
                 msg.note("Cleaning 'assets' directory..")
-                shutil.rmtree(assetdir)
+                cm.remove(assetdir)
                 os.mkdir(assetdir)
                 msg.done("Done!")
             elif ans == "n":
@@ -58,7 +59,7 @@ def init():
     print("\n", end="")
 
 
-def api_los_rom():
+def api_rom():
     """Get the latest version of LineageOS ROM."""
     device = args.codename
     romtype = "nightly"
@@ -106,15 +107,17 @@ def api_github(project):
 
 # launch the script
 parse_args()
-msg.banner("OP5/T NetHunter Kernel Asset Collector")
+msg.banner("s0nh Asset Collector")
 init()
 assets = [
-    api_los_rom(),
+    api_rom(),
     api_github("engstk/android_device_oneplus_cheeseburger"),
     api_github("topjohnwu/Magisk"),
     api_github("Magisk-Modules-Repo/wirelessFirmware"),
-    "https://store.nethunter.com/repo/com.offsec.nethunter_2022040200.apk",
-    "https://store.nethunter.com/repo/com.offsec.nhterm_2020040100.apk",
+    "https://store.nethunter.com/NetHunter.apk",
+    "https://store.nethunter.com/NetHunterKeX.apk",
+    "https://store.nethunter.com/NetHunterStore.apk",
+    "https://store.nethunter.com/NetHunterTerminal.apk",
     "https://store.nethunter.com/repo/org.pocketworkstation.pckeyboard_1041001.apk",
     f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{args.chroot}.tar.xz"
 ]

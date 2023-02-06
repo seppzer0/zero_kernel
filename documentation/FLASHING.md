@@ -6,7 +6,7 @@ Please also note that the instructions provided are made for a <u>clean installa
 
 *As for now*, dirty installations (=with data preservation) are not tested nor researched.
 
-Also keep in mind that after execution of the documented steps, <u>**your device will have disabled DM-Verity and Force Encrypt, which can be seen as (and actually is) a security risk.**</u>
+Also keep in mind that after executing all of the documented steps, <u>**your device will have disabled DM-Verity and Force Encrypt, which can be seen as (and actually is) a security risk.**</u>
 
 <br>
 

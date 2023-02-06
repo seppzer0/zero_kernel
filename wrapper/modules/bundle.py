@@ -7,6 +7,7 @@ import itertools
 import subprocess
 # append to PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
+import cleanmaster as cm
 import customcmd as ccmd
 import fileoperations as fo
 import messagedecorator as msg
@@ -42,7 +43,7 @@ def conan_sources():
     sourcedir = os.path.join(workdir, "source")
     print("\n", end="")
     msg.note("Copying sources for Conan packaging..")
-    shutil.rmtree(sourcedir, ignore_errors=True)
+    cm.remove(sourcedir, allow_errors=True)
     fo.ucopy(workdir, sourcedir, ["__pycache__",
                                   ".vscode",
                                   "source",
@@ -51,8 +52,7 @@ def conan_sources():
                                   "Dockerfile",
                                   ".dockerignore",
                                   "assets",
-                                  "conanfile.py",
-                                  "manifest.json"])
+                                  "conanfile.py"])
     msg.done("Done!")
 
 
@@ -77,17 +77,21 @@ def conan_package(options, reference):
 
 def conan_upload(reference):
     """Upload Conan component to the remote."""
+    # configure Conan client and upload packages
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     alias = "s0nhconan"
-    cmd = f"conan upload -f {reference} -r {alias}"
+    cmd = f"conan remote add {alias} {url} && "\
+          f"conan user -p {os.getenv('CONAN_PASSWORD')} -r {alias} {os.getenv('CONAN_LOGIN_USERNAME')} && "\
+          f"conan upload -f {reference} -r {alias}"
+    ccmd.launch(cmd)
 
 
 # launch script
 parse_args()
 # form Conan reference
 workdir = os.getenv("ROOTPATH")
-name = "s0nh"
-version = "0.1"
+name = os.getenv("KNAME")
+version = os.getenv("KVERSION")
 user = args.codename
 channel = "stable" if subprocess.check_output("git branch --show-current", shell=True).decode("utf-8") == "main" else "testing"
 reference = f"{name}/{version}@{user}/{channel}"
