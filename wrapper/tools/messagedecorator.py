@@ -12,23 +12,23 @@ def banner(text):
 
 
 def note(msgtext):
-    """A "note" decorator."""
+    """A "note" wrapper."""
     print(f"[ * ] {msgtext}")
 
 
 def error(msgtext, dont_exit=False):
-    """An "error" decorator."""
+    """An "error" wrapper."""
     print(f"[ ! ] {msgtext}", file=sys.stderr)
     if not dont_exit:
         sys.exit(1)
 
 
 def cancel(msgtext):
-    """A "cancel" decorator."""
+    """A "cancel" wrapper."""
     print(f"[ ~ ] {msgtext}")
     sys.exit(0)
 
 
 def done(msgtext):
-    """A "done" decorator."""
+    """A "done" wrapper."""
     print(f"[ + ] {msgtext}")

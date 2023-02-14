@@ -1,4 +1,4 @@
-# LineageOS + NetHunter Kernel For OnePlus 5/T
+# s0nh — LineageOS + NetHunter Kernel
 
 ## **Disclaimer**
 
@@ -11,7 +11,7 @@
 
 ## **If you're seeing this on GitHub**
 
-If you are seeing this project on **GitHub** -- please take a note that you are viewing only **a mirror**.
+If you are seeing this project on **GitHub** -- please note that you are viewing only **a mirror**.
 
 Project development is mainly done on **GitLab**.
 
@@ -26,7 +26,7 @@ The kernel has the following features:
 
 ## **Usage**
 
-The custom build wrapper consists of 3 main components:
+The custom build wrapper consists of 3 main parts:
 
 - kernel builder;
 - assets collector;
@@ -65,7 +65,7 @@ python3 -m pip install -r requirements.txt
 
 ### **Kernel**
 
-The kernel build process can be launched by simply using the `python3 wrapper kernel <arguments>` command.
+Kernel build process can be launched by using the `python3 wrapper kernel <arguments>` command.
 
 For more options you can refer to the help message below.
 
@@ -88,7 +88,7 @@ optional arguments:
 
 ### **Assets**
 
-As mentioned, there is also an asset downloader, which can download latest versions of LineageOS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
+As mentioned, there is also an asset downloader, which can collect latest versions of LineageOS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
 $ python3 wrapper assets --help
@@ -112,9 +112,11 @@ optional arguments:
 
 ### **Bundle / Conan packaging**
 
-There is an option named `bundle` which combines the build artifacts of both `kernel` and `assets` modules into a single Conan component.
+There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` modules into a single Conan component.
 
-This is especially useful for linking the kernel version with the appropriate LineageOS ROM version, as there are cases when an old kernel version can used along the newer ROM version (adapted for the *new* kernel), which ultimately leads to you system working improperly of breaking down completely.
+This is especially useful for linking the kernel version with the appropriate LineageOS ROM version.
+
+There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
 
 ```help
 $ python3 wrapper bundle --help
