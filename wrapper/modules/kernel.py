@@ -61,12 +61,12 @@ def create_vars():
     """Create links to local file paths."""
     global workdir, paths, codename
     workdir = os.getenv("ROOTPATH")
+    codename = args.codename
     os.chdir(workdir)
     # define paths
     tools = ""
     device = ""
     paths = ""
-    codename = "dumplinger" if args.codename in ["dumpling", "cheeseburger"] else args.codename
     with open(os.path.join(workdir, "manifests", "tools.json")) as f:
         tools = json.load(f)
     with open(os.path.join(workdir, "manifests", "devices.json")) as f:
@@ -154,9 +154,10 @@ def modify():
     # AnyKernel3 (remove placeholders and inject modified files)
     cm.remove(os.path.join(paths["AnyKernel3"]["path"], "ramdisk"))
     cm.remove(os.path.join(paths["AnyKernel3"]["path"], "modules"))
-    fo.ucopy(os.path.join(workdir, "modifications", codename, "anykernel3", "ramdisk"),
+    mcodename = "dumplinger" if args.codename in ["dumpling", "cheeseburger"] else args.codename
+    fo.ucopy(os.path.join(workdir, "modifications", mcodename, "anykernel3", "ramdisk"),
              os.path.join(paths["AnyKernel3"]["path"], "ramdisk"))
-    fo.ucopy(os.path.join(workdir, "modifications", codename, "anykernel3", "anykernel.sh"),
+    fo.ucopy(os.path.join(workdir, "modifications", mcodename, "anykernel3", "anykernel.sh"),
              os.path.join(paths["AnyKernel3"]["path"], "anykernel.sh"))
     # rtl8812au (apply code patches and remove .git* files)
     msg.note("Adding RTL8812AU drivers into the kernel..")

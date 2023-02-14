@@ -11,8 +11,8 @@ class S0nhConan(ConanFile):
     settings = None
     options = {
                 "losversion": ["20.0"],
-                "codename": ["cheeseburger", "dumpling"],
-                "chroot": ["minimal", "full"]
+                "chroot": ["minimal", "full"],
+                "codename": ["dumpling", "cheeseburger"]
               }
 
     def export_sources(self):

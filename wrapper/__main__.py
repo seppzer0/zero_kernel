@@ -122,10 +122,9 @@ def validate_settings(codename, buildenv):
             except Exception as e:
                 msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
     # check if specified device is supported
-    device = "dumplinger" if codename in ["dumpling", "cheeseburger"] else codename
     with open(os.path.join(os.getenv("ROOTPATH"), "manifests", "devices.json")) as f:
         devices = json.load(f)
-    if device not in devices.keys():
+    if codename not in devices.keys():
         msg.error("Unsupported device codename specified.")
 
 
@@ -155,7 +154,7 @@ def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
             cmd = cmd.replace(f'-w /{wdir}',
                               f'-w /{wdir} '\
                               f'-v $(pwd)/{assetsdir}:/{wdir}/{assetsdir}')
-        # set up Conan client
+        # setup Conan client
         if args.command == "bundle":
             if args.conan_upload:
                 cmd = cmd.replace(f'-w /{wdir}',
@@ -211,7 +210,7 @@ def main(args: argparse.Namespace):
             script += " --conan-upload"
     workdir = os.path.dirname(os.path.realpath(sys.argv[0]))
     conan_cache = os.path.join(os.getenv("HOME"), ".conan")
-    # build Docker image and create a container
+    # build Docker image
     if args.buildenv == "docker":
         fo.ucopy(os.path.join(workdir, "docker"),
                  os.path.join(workdir))
@@ -221,7 +220,7 @@ def main(args: argparse.Namespace):
         docker_files = ["Dockerfile", ".dockerignore"]
         for f in docker_files:
             cm.remove(os.path.join(workdir, f))
-    # launch the selected wrapper module
+    # launch the selected wrapper component
     ccmd.launch(form_cmd(args, script, docker_name, docker_wdir))
     # clean Docker image from host machine after the build
     if args.clean_docker:
