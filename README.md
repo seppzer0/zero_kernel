@@ -49,13 +49,12 @@ optional arguments:
   --clean               clean the root directory
 ```
 
-
 ### **Prerequisites**
 
 To launch the tool you need to make sure you have the following:
 
 - Python 3.6+;
-- a Debian-based operating system AND/OR Docker installation.
+- a Debian-based operating system **AND/OR** Docker/Podman installation.
 
 You will also need a few Python packages. To install them, use:
 
@@ -71,17 +70,17 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-docker] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename
+usage: wrapper kernel [-h] [-c] [--clean-image] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename
 
 positional arguments:
-  {local,docker}        select whether this is a 'local' or 'docker' build
+  {local,docker,podman}        select build environment
   losversion            select LineageOS version
   codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
   -c, --clean           don't build anything, just clean the environment
-  --clean-docker        remove Docker image from the host machine after build
+  --clean-image        remove Docker image from the host machine after build
   --log-level {normal,verbose,quiet}
                         select log level
 ```
@@ -92,10 +91,10 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--clean-docker] [--clean] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename {full,minimal}
+usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename {full,minimal}
 
 positional arguments:
-  {local,docker}        select whether this is a 'local' or 'docker' build
+  {local,docker,podman}        select build environment
   losversion            select LineageOS version
   codename              select device codename
   {full,minimal}        select Kali chroot type
@@ -104,7 +103,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --extra-assets EXTRA_ASSETS
                         select a JSON file with extra assets
-  --clean-docker        remove Docker image from the host machine after build
+  --clean-image        remove Docker/Podman image from the host machine after build
   --clean               autoclean 'assets' folder if it exists
   --log-level {normal,verbose,quiet}
                         select log level
@@ -120,18 +119,18 @@ There are cases when an old kernel version is used with the newer ROM version (a
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-cache] [--conan-upload] [--clean-docker] [--log-level {normal,verbose,quiet}] {local,docker} losversion codename
+usage: wrapper bundle [-h] [--conan-cache] [--conan-upload] [--clean-image] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename
 
 positional arguments:
-  {local,docker}        select whether this is a 'local' or 'docker' build
+  {local,docker,podman}        select build environment
   losversion            select LineageOS version
   codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
-  --conan-cache         mount Conan cache into Docker container
+  --conan-cache         mount Conan cache into Docker/Podman container
   --conan-upload        upload Conan packages to remote
-  --clean-docker        remove Docker image from the host machine after build
+  --clean-image        remove Docker/Podman image from the host machine after build
   --log-level {normal,verbose,quiet}
                         select log level
 ```

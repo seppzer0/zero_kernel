@@ -49,8 +49,6 @@ def conan_sources():
                                   "source",
                                   "release",
                                   "localversion",
-                                  "Dockerfile",
-                                  ".dockerignore",
                                   "assets",
                                   "conanfile.py"])
     msg.done("Done!")
@@ -88,6 +86,7 @@ def conan_upload(reference):
 
 # launch script
 parse_args()
+msg.outputstream()
 # form Conan reference
 workdir = os.getenv("ROOTPATH")
 name = os.getenv("KNAME")

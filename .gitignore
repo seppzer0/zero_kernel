@@ -1,10 +1,10 @@
 .vscode
 android_*
-*.log
-clang
+clang*
 **/__pycache__
 assets
 localversion
 release
 rtl8812au
 source
+AnyKernel3

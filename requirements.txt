@@ -1,4 +1,4 @@
 requests
 argparse
-conan
+conan<2.0.0
 bandit

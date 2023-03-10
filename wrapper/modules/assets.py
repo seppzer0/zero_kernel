@@ -107,6 +107,7 @@ def api_github(project):
 
 # launch the script
 parse_args()
+msg.outputstream()
 msg.banner("s0nh Asset Collector")
 init()
 assets = [

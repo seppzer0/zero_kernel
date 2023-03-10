@@ -85,7 +85,7 @@ def create_vars():
         if ftype == "generic":
             # download and unpack
             # NOTE: this is specific, for .tar.gz files
-            if path not in os.listdir():
+            if path.split(os.sep)[-1] not in os.listdir():
                 fn = url.split("/")[-1]
                 dn = fn.split(".")[0]
                 if fn not in os.listdir() and dn not in os.listdir():
@@ -94,14 +94,15 @@ def create_vars():
                 with tarfile.open(fn) as f:
                     f.extractall(path)
                 cm.remove(fn)
+            else:
+                msg.note(f"Found an existing path: {path}")
         elif ftype == "git":
             # break data into individual vars
             branch = paths[e]["branch"]
             commit = paths[e]["commit"]
             cmd = f"git clone -b {branch} --depth 1 {url} {path}"
             if not os.path.isdir(path):
-                # it is best to always show the "git clone" command
-                ccmd.launch(cmd, "verbose")
+                ccmd.launch(cmd)
                 # checkout a specific commit if it is specified
                 if commit:
                     cmd = f"git checkout {commit}"
@@ -335,6 +336,7 @@ def form_release(name):
 
 # launch the script
 parse_args()
+msg.outputstream()
 msg.banner("s0nh Kernel Builder w/ Kali NetHunter")
 create_vars()
 # prepare build

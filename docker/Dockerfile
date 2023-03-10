@@ -1,7 +1,9 @@
 FROM debian:stable-slim
 
-# environment variable to control Conan upload process
+# variable store
 ENV CONAN_UPLOAD_CUSTOM 0
+ARG WDIR="/s0nhbuild"
+
 # install basic packages
 RUN \
     apt update \
@@ -23,9 +25,13 @@ RUN \
                 bc \
     && \
     apt autoremove -y
+
 # place sources from host to container
-COPY . /s0nhbuild
+COPY . $WDIR
+WORKDIR $WDIR
+
 # install pip packages
-RUN python3 -m pip install -r /s0nhbuild/requirements.txt
-# set entrypoint
+RUN python3 -m pip install -r requirements.txt
+
+# launch app
 CMD [ "/bin/bash" ]

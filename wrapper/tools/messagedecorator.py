@@ -1,3 +1,5 @@
+import io
+import os
 import sys
 
 
@@ -32,3 +34,12 @@ def cancel(msgtext):
 def done(msgtext):
     """A "done" wrapper."""
     print(f"[ + ] {msgtext}")
+
+
+def outputstream():
+    """Stream output messages."""
+    stream = os.getenv("OSTREAM", "screen")
+    if stream != "screen":
+        sys.stdout = open(stream, "a")
+    else:
+        sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0), write_through=True)

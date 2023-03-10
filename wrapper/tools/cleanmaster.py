@@ -43,8 +43,6 @@ def root(extra=[]):
             "source",
             "release",
             "localversion",
-            "Dockerfile",
-            ".dockerignore",
             "assets",
             "conanfile.py"]
     # add extra elements to clean up from root directory

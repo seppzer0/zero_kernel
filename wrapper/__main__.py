@@ -4,8 +4,8 @@ import sys
 import json
 import argparse
 import platform
-import tools.cleanmaster as cm
 import tools.customcmd as ccmd
+import tools.cleanmaster as cm
 import tools.fileoperations as fo
 import tools.messagedecorator as msg
 
@@ -15,24 +15,25 @@ def parse_args() -> argparse.Namespace:
     # show the 'help' message if no arguments supplied
     args = None if sys.argv[1:] else ["-h"]
     # parser and subparsers
-    main_parser = argparse.ArgumentParser(description="A custom wrapper for the s0nh kernel.")
-    subparsers = main_parser.add_subparsers(dest="command")
+    parser_parent = argparse.ArgumentParser(description="A custom wrapper for the s0nh kernel.")
+    subparsers = parser_parent.add_subparsers(dest="command")
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
     parser_bundle = subparsers.add_parser("bundle", help="build the kernel + collect assets")
     # add a single argument for the main parser
-    main_parser.add_argument("--clean",
-                             action="store_true",
-                             help="clean the root directory")
-    # common argument attributes for subprasers
+    parser_parent.add_argument("--clean",
+                               action="store_true",
+                               help="clean the root directory")
+    # common argument attributes for subparsers
     help_losversion = "select LineageOS version"
     help_codename = "select device codename"
-    help_buildenv = "select whether this is a 'local' or 'docker' build"
-    help_clean = "remove Docker image from the host machine after build"
+    help_buildenv = "select build environment"
+    help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
-    choices_buildenv = ["local", "docker"]
+    choices_buildenv = ["local", "docker", "podman"]
     choices_loglvl = ["normal", "verbose", "quiet"]
     default_loglvl = "normal"
+    help_logfile = "save logs to a file"
     # kernel
     parser_kernel.add_argument("buildenv",
                                choices=choices_buildenv,
@@ -47,13 +48,16 @@ def parse_args() -> argparse.Namespace:
                                help="don't build anything, just clean the environment")
     parser_kernel.add_argument("--clean-docker",
                                action="store_true",
-                               dest="clean_docker",
+                               dest="clean_image",
                                help=help_clean)
     parser_kernel.add_argument("--log-level",
                                dest="loglvl",
                                choices=choices_loglvl,
                                default=default_loglvl,
                                help=help_loglvl)
+    parser_kernel.add_argument("-o", "--output",
+                               dest="outlog",
+                               help=help_logfile)
     # assets
     parser_assets.add_argument("buildenv",
                                choices=choices_buildenv,
@@ -68,9 +72,9 @@ def parse_args() -> argparse.Namespace:
     parser_assets.add_argument("--extra-assets",
                                dest="extra_assets",
                                help="select a JSON file with extra assets")
-    parser_assets.add_argument("--clean-docker",
+    parser_assets.add_argument("--clean-image",
                                action="store_true",
-                               dest="clean_docker",
+                               dest="clean_image",
                                help=help_clean)
     parser_assets.add_argument("--clean",
                                dest="clean",
@@ -81,6 +85,9 @@ def parse_args() -> argparse.Namespace:
                                choices=choices_loglvl,
                                default=default_loglvl,
                                help=help_loglvl)
+    parser_assets.add_argument("-o", "--output",
+                               dest="outlog",
+                               help=help_logfile)
     # bundle
     parser_bundle.add_argument("buildenv",
                                choices=choices_buildenv,
@@ -99,14 +106,17 @@ def parse_args() -> argparse.Namespace:
                                help="upload Conan packages to remote")
     parser_bundle.add_argument("--clean-docker",
                                action="store_true",
-                               dest="clean_docker",
+                               dest="clean_image",
                                help=help_clean)
     parser_bundle.add_argument("--log-level",
                                dest="loglvl",
                                choices=choices_loglvl,
                                default=default_loglvl,
                                help=help_loglvl)
-    return main_parser.parse_args(args)
+    parser_bundle.add_argument("-o", "--output",
+                               dest="outlog",
+                               help=help_logfile)
+    return parser_parent.parse_args(args)
 
 
 def validate_settings(codename, buildenv):
@@ -138,7 +148,7 @@ def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
     cmd = base_cmd
     # wrap the command into Docker
     if args.buildenv == "docker":
-        cmd = f'docker run -it --rm -e ROOTPATH={os.getenv("ROOTPATH")} -w /{wdir} {name_docker} /bin/bash -c "{cmd}"'
+        cmd = f'{args.buildenv} run -it --rm -e ROOTPATH={os.getenv("ROOTPATH")} -w /{wdir} {name_docker} /bin/bash -c "{cmd}"'
         # mount directories
         if args.command == "kernel":
             reldir = "release"
@@ -177,11 +187,9 @@ def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
 
 
 def main(args: argparse.Namespace):
-    # this is for logs to get shown properly in various build systems
-    sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0), write_through=True)
+    # various environment preparations
     os.environ["ROOTPATH"] = os.path.dirname(os.path.realpath(sys.argv[0]))
     os.chdir(os.getenv("ROOTPATH"))
-    # clean root directory and exit if selected
     if args.clean:
         cm.root()
         sys.exit(0)
@@ -191,10 +199,16 @@ def main(args: argparse.Namespace):
         os.environ["KNAME"] = data["name"]
         os.environ["KVERSION"] = data["version"]
     validate_settings(args.codename, args.buildenv)
-    # build the image and deploy the container
     docker_name = "s0nhbuilder"
     docker_wdir = "s0nhbuild"
     script = ""
+    # setup output stream
+    if args.command and args.outlog:
+        msg.note(f"Writing output to {args.outlog}")
+        if args.outlog in os.listdir():
+            os.remove(args.outlog)
+        os.environ["OSTREAM"] = args.outlog
+        msg.outputstream()
     # determine script and it's arguments
     if args.command == "kernel":
         script = f"kernel.py {args.codename} {args.losversion}"
@@ -210,21 +224,15 @@ def main(args: argparse.Namespace):
             script += " --conan-upload"
     workdir = os.path.dirname(os.path.realpath(sys.argv[0]))
     conan_cache = os.path.join(os.getenv("HOME"), ".conan")
-    # build Docker image
-    if args.buildenv == "docker":
-        fo.ucopy(os.path.join(workdir, "docker"),
-                 os.path.join(workdir))
-        os.chdir(os.path.join(workdir))
-        ccmd.launch(f"docker build . -t {docker_name}")
-        # remove Docker files after the build
-        docker_files = ["Dockerfile", ".dockerignore"]
-        for f in docker_files:
-            cm.remove(os.path.join(workdir, f))
+    # build isolated image (using Docker BuildKit or Podman)
+    if args.buildenv in ["docker", "podman"]:
+        os.environ["DOCKER_BUILDKIT"] = "1"
+        ccmd.launch(f"{args.buildenv} build . -f docker{os.sep}Dockerfile -t {docker_name}")
     # launch the selected wrapper component
     ccmd.launch(form_cmd(args, script, docker_name, docker_wdir))
-    # clean Docker image from host machine after the build
-    if args.clean_docker:
-        ccmd.launch(f"docker rmi {docker_name}")
+    # clean Docker/Podman image from host machine after the build
+    if args.clean_image:
+        ccmd.launch(f"{args.buildenv} rmi {docker_name}")
 
 
 if __name__ == '__main__':
