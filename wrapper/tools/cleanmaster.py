@@ -41,9 +41,10 @@ def root(extra=[]):
             "AnyKernel3",
             "rtl8812au",
             "source",
-            "release",
+            "kernel",
             "localversion",
             "assets",
+            "release-light",
             "conanfile.py"]
     # add extra elements to clean up from root directory
     if extra:

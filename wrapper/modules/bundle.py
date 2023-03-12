@@ -20,6 +20,12 @@ def parse_args():
                         help="select LineageOS version")
     parser.add_argument("codename",
                         help="select device codename")
+    parser.add_argument("package_type",
+                        help="select package type of the bundle")
+    parser.add_argument("--rom-only",
+                        dest="rom_only",
+                        action="store_true",
+                        help="download only the ROM as an asset")
     global args
     args = parser.parse_args()
 
@@ -29,13 +35,16 @@ def build_kernel(losver, clean_only=False):
     cmd = f"python3 {os.path.join(workdir, 'wrapper', 'modules', 'kernel.py')} {args.codename} {losver}"
     if clean_only:
         cmd += " -c"
-    if not os.path.isdir("release") or clean_only is True:
+    if not os.path.isdir("kernel") or clean_only is True:
         ccmd.launch(cmd)
 
 
 def collect_assets(losver, chroot):
     """Collect assets."""
-    ccmd.launch(f"python3 {os.path.join(workdir, 'wrapper', 'modules', 'assets.py')} {args.codename} {losver} {chroot} --clean")
+    cmd = f"python3 {os.path.join(workdir, 'wrapper', 'modules', 'assets.py')} {args.codename} {losver} {chroot} --clean"
+    if args.rom_only:
+        cmd += " --rom-only"
+    ccmd.launch(cmd)
 
 
 def conan_sources():
@@ -47,7 +56,7 @@ def conan_sources():
     fo.ucopy(workdir, sourcedir, ["__pycache__",
                                   ".vscode",
                                   "source",
-                                  "release",
+                                  "kernel",
                                   "localversion",
                                   "assets",
                                   "conanfile.py"])
@@ -87,26 +96,43 @@ def conan_upload(reference):
 # launch script
 parse_args()
 msg.outputstream()
-# form Conan reference
 workdir = os.getenv("ROOTPATH")
-name = os.getenv("KNAME")
-version = os.getenv("KVERSION")
-user = args.codename
-channel = "stable" if subprocess.check_output("git branch --show-current", shell=True).decode("utf-8") == "main" else "testing"
-reference = f"{name}/{version}@{user}/{channel}"
-# form option sets
-losversion = [args.losversion]
-chroot = ["minimal", "full"]
-option_sets = list(itertools.product(losversion, chroot))
-# build and upload Conan packages
-fo.ucopy(os.path.join(workdir, "conan"), workdir)
-for opset in option_sets:
-    build_kernel(opset[0])
-    build_kernel(opset[0], True)
-    conan_sources()
-    collect_assets(opset[0], opset[1])
-    conan_package(opset, reference)
+# get either a "kernel+ROM" or "kernel+assets=Conan" bundle (the latter is heavier)
+if args.package_type == "generic-slim":
+    build_kernel(args.losversion)
+    collect_assets(args.losversion, "minimal")
+    # make a unified "release-light" directory with both .zips
+    reldir_light = "release-light"
+    kdir = "kernel"
+    adir = "assets"
+    # copy kernel
+    kfn = "".join(os.listdir(kdir))
+    shutil.copy(os.path.join(workdir, kdir, kfn),
+                os.path.join(workdir, reldir_light, kfn))
+    # copy asset (ROM)
+    afn = "".join(os.listdir(adir))
+    shutil.copy(os.path.join(workdir, adir, afn),
+                os.path.join(workdir, reldir_light, afn))
+elif args.package_type == "conan":
+    # form Conan reference
+    name = os.getenv("KNAME")
+    version = os.getenv("KVERSION")
+    user = args.codename
+    channel = "stable" if subprocess.check_output("git branch --show-current", shell=True).decode("utf-8").splitlines()[0] == "main" else "testing"
+    reference = f"{name}/{version}@{user}/{channel}"
+    # form option sets
+    losversion = [args.losversion]
+    chroot = ["minimal", "full"]
+    option_sets = list(itertools.product(losversion, chroot))
+    # build and upload Conan packages
+    fo.ucopy(os.path.join(workdir, "conan"), workdir)
+    for opset in option_sets:
+        build_kernel(opset[0])
+        build_kernel(opset[0], True)
+        conan_sources()
+        collect_assets(opset[0], opset[1])
+        conan_package(opset, reference)
+    # upload packages
+    if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
+        conan_upload(reference)
 os.chdir(workdir)
-# upload package
-if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
-    conan_upload(reference)

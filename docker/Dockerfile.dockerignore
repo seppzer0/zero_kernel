@@ -1,8 +1,16 @@
-__pycache__
+# basic
 .vscode
+**/__pycache__
+
+# git subrepos (==submodules)
 android_*
-AnyKernel3
-rtl8812au
 clang*
-source
+rtl8812au
+AnyKernel3
+
+# misc local artifacts
+kernel
 assets
+source
+release*
+localversion

@@ -8,13 +8,9 @@ def launch(cmd, loglvl=os.getenv("LOGLEVEL", "normal")):
     if loglvl == "verbose":
         print(f"[cmd] {cmd}")
     if loglvl == "quiet":
-        rc = subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL).returncode
+        subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, check=False)
     else:
-        rc = subprocess.run(cmd, shell=True).returncode
-    # in case of an error -> exit with message
-    if rc != 0:
-        print(f"Error executing command: {cmd}")
-        sys.exit(1)
+        subprocess.run(cmd, shell=True, check=False)
 
 
 # generate reports in multiple file formats

@@ -26,6 +26,10 @@ def parse_args(description="An asset downloader for kernel flashing."):
     parser.add_argument("--extra-assets",
                         dest="extra_assets",
                         help="select a JSON file in 'scripts' with extra assets")
+    parser.add_argument("--rom-only",
+                        dest="rom_only",
+                        action="store_true",
+                        help="download only the ROM as an asset")
     parser.add_argument("--clean",
                         dest="clean",
                         action="store_true",
@@ -67,7 +71,7 @@ def api_rom():
     url = f"https://download.lineageos.org/api/v1/{device}/{romtype}/{incr}"
     data = requests.get(url)
     try:
-        data = data.json()["response"][-1]["url"]
+        data = data.json()["response"][0]["url"]
     except Exception:
         msg.error(f"Couldn't connect to LOS API, HTTP status code: {data.status_code}",
                   dont_exit=True)
@@ -93,7 +97,7 @@ def api_github(project):
     except Exception:
         # if not available via API -- use "git clone"
         rdir = os.path.join(assetdir, url.rsplit("/", 1)[1])
-        msg.note(f"Non-API GitHub download for {project}")
+        msg.note(f"Non-API GitHub resolution for {project}")
         ccmd.launch(f"rm -rf {rdir}")
         ccmd.launch(f"git clone --depth 1 {url} {rdir}")
         os.chdir(rdir)
@@ -110,50 +114,56 @@ parse_args()
 msg.outputstream()
 msg.banner("s0nh Asset Collector")
 init()
-assets = [
-    api_rom(),
-    api_github("engstk/android_device_oneplus_cheeseburger"),
-    api_github("topjohnwu/Magisk"),
-    api_github("Magisk-Modules-Repo/wirelessFirmware"),
-    "https://store.nethunter.com/NetHunter.apk",
-    "https://store.nethunter.com/NetHunterKeX.apk",
-    "https://store.nethunter.com/NetHunterStore.apk",
-    "https://store.nethunter.com/NetHunterTerminal.apk",
-    "https://store.nethunter.com/repo/org.pocketworkstation.pckeyboard_1041001.apk",
-    f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{args.chroot}.tar.xz"
-]
-# read extra assets from JSON file
-if args.extra_assets:
-    extra_json = os.path.join(workdir, args.extra_assets)
-    if os.path.isfile(extra_json):
-        print("\n", end="")
-        msg.note("Applying extra assets..")
-        with open(extra_json) as f:
-            data = json.load(f)
-            # validate the input JSON
-            rootkeys = ["github", "local", "other"]
-            if not all(le in data.keys() for le in rootkeys):
-                msg.error("Incorrect JSON syntax detected."
-                          "Allowed keys: 'github', 'local', 'other'.")
-            # append extra asset data
-            for k in rootkeys:
-                if data[k]:
-                    if k == "github":
-                        for e in data[k]:
-                            assets.append(api_github(e))
-                    else:
-                        for e in data[k]:
-                            assets.append(fo.download(e))
-        msg.done("Extra assets added!")
-        print("\n", end="")
-# collect all the specified assets into single directory
-nhpatch = "nhpatch.sh"
-fo.ucopy(os.path.join(workdir, "modifications", nhpatch),
-         os.path.join(assetdir, nhpatch))
 os.chdir(assetdir)
-for e in assets:
-    if e:
-        fo.download(e)
+# process the ROM-only download
+if args.rom_only:
+    fo.download(api_rom())
+    print("\n", end="")
+    msg.done("ROM-only asset collection complete!")
+else:
+    assets = [
+        api_rom(),
+        api_github("engstk/android_device_oneplus_cheeseburger"),
+        api_github("topjohnwu/Magisk"),
+        api_github("Magisk-Modules-Repo/wirelessFirmware"),
+        "https://store.nethunter.com/NetHunter.apk",
+        "https://store.nethunter.com/NetHunterKeX.apk",
+        "https://store.nethunter.com/NetHunterStore.apk",
+        "https://store.nethunter.com/NetHunterTerminal.apk",
+        "https://store.nethunter.com/repo/org.pocketworkstation.pckeyboard_1041001.apk",
+        f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{args.chroot}.tar.xz"
+    ]
+    # read extra assets from JSON file
+    if args.extra_assets:
+        extra_json = os.path.join(workdir, args.extra_assets)
+        if os.path.isfile(extra_json):
+            print("\n", end="")
+            msg.note("Applying extra assets..")
+            with open(extra_json) as f:
+                data = json.load(f)
+                # validate the input JSON
+                rootkeys = ["github", "local", "other"]
+                if not all(le in data.keys() for le in rootkeys):
+                    msg.error("Incorrect JSON syntax detected."
+                              "Allowed keys: 'github', 'local', 'other'.")
+                # append extra asset data
+                for k in rootkeys:
+                    if data[k]:
+                        if k == "github":
+                            for e in data[k]:
+                                assets.append(api_github(e))
+                        else:
+                            for e in data[k]:
+                                assets.append(fo.download(e))
+            msg.done("Extra assets added!")
+            print("\n", end="")
+    # collect all the specified assets into single directory
+    nhpatch = "nhpatch.sh"
+    fo.ucopy(os.path.join(workdir, "modifications", nhpatch),
+             os.path.join(assetdir, nhpatch))
+    for e in assets:
+        if e:
+            fo.download(e)
+    print("\n", end="")
+    msg.done("Assets collected!")
 os.chdir(workdir)
-print("\n", end="")
-msg.done("Assets collected!")

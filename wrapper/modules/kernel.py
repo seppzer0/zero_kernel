@@ -323,12 +323,12 @@ def form_release(name):
     buildtime = time.strftime("%Y%m%d")
     # form the final ZIP file
     name = f"{name}-{kernelversion}-{buildtime}"
-    reldir = os.path.join(workdir, "release")
-    if not os.path.isdir(reldir):
-        os.mkdir(reldir)
+    kdir = os.path.join(workdir, "kernel")
+    if not os.path.isdir(kdir):
+        os.mkdir(kdir)
     os.chdir(paths["AnyKernel3"]["path"])
     # this is not the best solution, but is the easiest
-    cmd = f"zip -r9 {workdir + os.sep}release/{name}.zip * -x .git* README.md *placeholder"
+    cmd = f"zip -r9 {os.path.join(kdir, name)}.zip * -x .git* README.md *placeholder"
     ccmd.launch(cmd)
     os.chdir(workdir)
     msg.done("Done!")
@@ -349,5 +349,5 @@ with open("localversion", "w") as f:
 modify()
 # build and pack
 build()
-form_release(f"{os.getenv('KNAME')}-{args.codename}")
+form_release(f"{os.getenv('KNAME', 's0nh')}-{args.codename}")
 os.chdir(workdir)

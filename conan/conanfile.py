@@ -29,5 +29,5 @@ class S0nhConan(ConanFile):
 
     def package(self):
         # package built kernel with collected assets
-        self.copy("*.zip", src="release", dst="kernel", keep_path=False)
+        self.copy("*.zip", src="kernel", dst="kernel", keep_path=False)
         self.copy("*", src="assets", dst="assets")

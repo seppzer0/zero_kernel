@@ -70,19 +70,22 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-image] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename
+usage: wrapper kernel [-h] [-c] [--clean-image] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename
 
 positional arguments:
-  {local,docker,podman}        select build environment
+  {local,docker,podman}
+                        select build environment
   losversion            select LineageOS version
   codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
   -c, --clean           don't build anything, just clean the environment
-  --clean-image        remove Docker image from the host machine after build
+  --clean-image        remove Docker/Podman image from the host machine after build
   --log-level {normal,verbose,quiet}
                         select log level
+  -o OUTLOG, --output OUTLOG
+                        save logs to a file
 ```
 
 ### **Assets**
@@ -91,10 +94,12 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename {full,minimal}
+usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] [-o OUTLOG]
+                      {local,docker,podman} losversion codename {full,minimal}
 
 positional arguments:
-  {local,docker,podman}        select build environment
+  {local,docker,podman}
+                        select build environment
   losversion            select LineageOS version
   codename              select device codename
   {full,minimal}        select Kali chroot type
@@ -103,36 +108,52 @@ optional arguments:
   -h, --help            show this help message and exit
   --extra-assets EXTRA_ASSETS
                         select a JSON file with extra assets
-  --clean-image        remove Docker/Podman image from the host machine after build
+  --rom-only            download only the ROM as an asset
+  --clean-image         remove Docker/Podman image from the host machine after build
   --clean               autoclean 'assets' folder if it exists
   --log-level {normal,verbose,quiet}
                         select log level
+  -o OUTLOG, --output OUTLOG
+                        save logs to a file
 ```
 
-### **Bundle / Conan packaging**
+### **Bundle**
 
-There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` modules into a single Conan component.
+There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` modules into a single package.
 
 This is especially useful for linking the kernel version with the appropriate LineageOS ROM version.
 
 There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
 
+Currently, there are two types of packaging available:
+
+- `conan`;
+- `generic-slim`.
+
+While `conan` packaging type includes all of the assets into a single Conan component, `generic-slim` is a much simpler option that packs only the ROM alongside with the kernel.
+
+This is done to reduce package sizes while ensuring the kernel+ROM functionality.
+
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-cache] [--conan-upload] [--clean-image] [--log-level {normal,verbose,quiet}] {local,docker,podman} losversion codename
+usage: wrapper bundle [-h] [--conan-upload] [--clean-image] [--rom-only] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {conan,generic-slim}
 
 positional arguments:
-  {local,docker,podman}        select build environment
+  {local,docker,podman}
+                        select build environment
   losversion            select LineageOS version
   codename              select device codename
+  {conan,generic-slim}  select package type of the bundle
 
 optional arguments:
   -h, --help            show this help message and exit
-  --conan-cache         mount Conan cache into Docker/Podman container
   --conan-upload        upload Conan packages to remote
   --clean-image        remove Docker/Podman image from the host machine after build
+  --rom-only            download only the ROM as an asset
   --log-level {normal,verbose,quiet}
                         select log level
+  -o OUTLOG, --output OUTLOG
+                        save logs to a file
 ```
 
 ## **See also**
