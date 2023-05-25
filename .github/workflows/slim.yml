@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 env:
-  IS_PRERELEASE: ${{ github.event.inputs.isPrerelease || "false" }}
+  IS_PRERELEASE: ${{ github.event.inputs.isPrerelease || 'false' }}
 
 jobs:
   release:
