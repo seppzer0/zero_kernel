@@ -1,4 +1,4 @@
-name: Publish light release
+name: Publish Slim Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
     inputs:
-        IS_PRERELEASE:
+        isPrerelease:
           description: "Select whether this is pre-release"
           required: true
           default: "false"
@@ -18,29 +18,32 @@ on:
 permissions:
   contents: write
 
+env:
+  IS_PRERELEASE: ${{ github.event.inputs.isPrerelease || "false" }}
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - name: Build
+      - name: Build And Publish
         run: |
           python3 -m pip install -r requirements.txt
-          python3 wrapper bundle docker 20.0 dumpling generic-slim --rom-only --clean-image
+          python3 wrapper bundle docker 20.0 dumpling generic-slim --clean-image
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
       - name: Publish
-        uses: ncipollo/release-action@v1.10.0
+        uses: ncipollo/release-action@v1.12.0
         with:
-          allowUpdates: true
-          tag: "s0nh-${{ steps.date.outputs.date }}"
+          allowUpdates: false
+          tag: "v0.1.0-${{ steps.date.outputs.date }}"
           body: ${{ github.event.release.body }}
-          prerelease: ${{ inputs.IS_PRERELEASE }}
-          artifacts: "release-light/*.zip"
+          prerelease: ${{ env.IS_PRERELEASE }}
+          artifacts: "release-slim/*.zip"
           token: ${{ secrets.GITHUB_TOKEN }}

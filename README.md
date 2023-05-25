@@ -8,21 +8,12 @@
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
-
-## **If you're seeing this on GitHub**
-
-If you are seeing this project on **GitHub** -- please note that you are viewing only **a mirror**.
-
-Project development is mainly done on **GitLab**.
-
-
 ## **Kernel Features**
 
 The kernel has the following features:
 
 - Kali NetHunter support;
 - RTL8812AU Wi-Fi drivers.
-
 
 ## **Usage**
 
@@ -51,10 +42,12 @@ optional arguments:
 
 ### **Prerequisites**
 
-To launch the tool you need to make sure you have the following:
+**It is highly recommended to use `docker` option to run this tool.** For that you need Docker Engine or Docker Desktop, depending on your OS.
 
-- Python 3.6+;
-- a Debian-based operating system **AND/OR** Docker/Podman installation.
+To run this tool in a `local` environment, you will need:
+
+- a Debian-based Linux distribution (other types of distros are untested);
+- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`.
 
 You will also need a few Python packages. To install them, use:
 
@@ -148,7 +141,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --conan-upload        upload Conan packages to remote
-  --clean-image        remove Docker/Podman image from the host machine after build
+  --clean-image         remove Docker/Podman image from the host machine after build
   --rom-only            download only the ROM as an asset
   --log-level {normal,verbose,quiet}
                         select log level
@@ -158,5 +151,5 @@ optional arguments:
 
 ## **See also**
 
-- [TODO List](documentation/TODO.md);
-- [Kernel Flashing Instructions](documentation/FLASHING.md).
+- [TODO List](docs/TODO.md);
+- [Kernel Flashing Instructions](docs/FLASHING.md).

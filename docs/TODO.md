@@ -18,10 +18,20 @@
 - [ ] add build counter mechanism for CI/CD pipelines;
 - [ ] add published Conan package validator;
 - [x] add codename specific elements to final kernel zip;
-- [x] add a simpler and lighter bundle creator (kernel+ROM);
+- [x] add a simpler and slimer bundle creator (kernel+ROM);
 - [ ] add return types to functions;
 - [x] add requirements.txt for pip;
 - [x] add proper OS detection for preventing local builds in unsupported systems;
 - [x] add static analysis for the wrapper;
 - [x] add a single-point manifest with main info on the tool;
-- [ ] add a unified banner for the wrapper.
+- [ ] add a unified banner for the wrapper;
+- [ ] add description when creating a release via CI/CD;
+- [ ] improve CI/CD flexibility (variable-wise);
+- [ ] add static analysis report to release body;
+- [ ] improve documentation (markdown);
+- [x] improve documentation (methods);
+- [x] apply OOP paradigm;
+- [ ] add tests (unit/integration/etc);
+- [ ] switch to Poetry (`poetry.lock` instead of `requirements.txt`);
+- [ ] create a commit-based lockfile system for reproducible kernel builds;
+- [ ] implement generators.

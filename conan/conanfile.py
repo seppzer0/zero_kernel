@@ -7,7 +7,7 @@ class S0nhConan(ConanFile):
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     description = "A modified LOS kernel with Kali NetHunter functionality."
-    topics = ("lineageos", "oneplus5", "oneplus5t", "nethunter")
+    topics = ("lineageos", "oneplus5", "oneplus5t", "kali-nethunter")
     settings = None
     options = {
                 "losversion": ["20.0"],

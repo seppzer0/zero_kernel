@@ -2,11 +2,17 @@ import os
 import sys
 import shutil
 import requests
-import messagedecorator as msg
+from typing import List
+import messages as msg
 
 
-def ucopy(src, dst, exceptions=[]):
-    """A universal method to copy files into desired destinations."""
+def ucopy(src: str, dst: str, exceptions: List[str] = []) -> None:
+    """A universal method to copy files into desired destinations.
+
+    :param str src: Source path.
+    :param str dst: Destination path.
+    :param list exceptions: Elements that will not be removed.
+    """
     # for a directory (it's contents)
     if os.path.isdir(src):
         if not os.path.isdir(dst):
@@ -26,8 +32,11 @@ def ucopy(src, dst, exceptions=[]):
         shutil.copy(src, dst)
 
 
-def download(url):
-    """A simple file downloader."""
+def download(url: str) -> None:
+    """A simple file downloader.
+
+    :param str url: URL to the file.
+    """
     file = url.split("/")[-1]
     msg.note(f"Downloading {file} ..")
     print(f"      URL: {url}")

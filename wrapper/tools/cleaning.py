@@ -1,11 +1,17 @@
 import os
 import glob
 import shutil
-import customcmd as ccmd
+from typing import List, Union
+import commands as ccmd
 
 
-def remove(elements, allow_errors: bool = False):
-    """An ultimate analog to 'rm -rf'."""
+def remove(elements: Union[str, List[str]], allow_errors: bool = False):
+    """An ultimate alternative to 'rm -rf'.
+
+    :param elements: Files and/or directories to remove.
+    :param bool allow_errors: Don't exit on errors.
+    :type elements: str or List[str]
+    """
     # if a given argument is a string --> convert it into a one-element list
     if isinstance(elements, str):
         elements = [elements]
@@ -22,19 +28,24 @@ def remove(elements, allow_errors: bool = False):
                 remove(fn)
 
 
-def git(directory):
-    """Clean up git directories."""
+def git(directory: str) -> None:
+    """Clean up a git directory.
+
+    :param str directory: Path to the directory.
+    """
     goback = os.getcwd()
     os.chdir(directory)
-    cmd = "git clean -fdx && git reset --hard HEAD"
-    ccmd.launch(cmd)
+    ccmd.launch("git clean -fdx")
+    ccmd.launch("git reset --hard HEAD")
     os.chdir(goback)
 
 
-def root(extra=[]):
-    """
-    Fully clean the root directory.
+def root(extra: List[str] = []) -> None:
+    """Fully clean the root directory.
+
     NOTE: .vscode is not cleaned, __pycache__ --> via py3clean
+
+    :param list extra: Extra elements to be removed.
     """
     trsh = ["android_*",
             "clang*",
@@ -44,7 +55,7 @@ def root(extra=[]):
             "kernel",
             "localversion",
             "assets",
-            "release-light",
+            "release-slim",
             "conanfile.py"]
     # add extra elements to clean up from root directory
     if extra:

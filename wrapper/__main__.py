@@ -5,10 +5,17 @@ import json
 import shutil
 import argparse
 import platform
-import tools.customcmd as ccmd
-import tools.cleanmaster as cm
+from operator import itemgetter
+
+import tools.messages as msg
+import tools.commands as ccmd
+import tools.cleaning as cm
 import tools.fileoperations as fo
-import tools.messagedecorator as msg
+
+from models.kernel import KernelBuilder
+from models.assets import AssetCollector
+from models.bundle import BundleCreator
+from engines.container import ContainerEngine
 
 
 def parse_args() -> argparse.Namespace:
@@ -112,10 +119,6 @@ def parse_args() -> argparse.Namespace:
                                action="store_true",
                                dest="clean_image",
                                help=help_clean)
-    parser_bundle.add_argument("--rom-only",
-                               dest="rom_only",
-                               action="store_true",
-                               help="download only the ROM as an asset")
     parser_bundle.add_argument("--log-level",
                                dest="loglvl",
                                choices=choices_loglvl,
@@ -132,7 +135,7 @@ def validate_settings(args: argparse.Namespace):
     # detect OS family
     if args.buildenv == "local":
         if not platform.system() == "Linux":
-            msg.error("Can't build Linux kernel on a non-Unix machine.")
+            msg.error("Can't build kernel on a non-Linux machine.")
         else:
             # check that it is Debian-based
             try:
@@ -148,67 +151,9 @@ def validate_settings(args: argparse.Namespace):
         # check Conan-related argument usage
         if args.package_type != "conan" and args.conan_upload:
             msg.error("Cannot use Conan-related arguments with non-Conan packaging\n")
-        # do a similar check for the generic-slim packaging option
-        if (args.package_type != "generic-slim" and args.rom_only) or \
-           (args.package_type == "generic-slim" and not args.rom_only):
-            msg.error("Cannot use 'generic-slim' without '--rom-only' and vice versa\n")
 
 
-def form_cmd(args: argparse.Namespace, name_script, name_docker="", wdir=""):
-    """Form a command to run the build."""
-    # override path for execution within Docker
-    if args.buildenv == "docker":
-        os.environ["ROOTPATH"] = os.path.join("/", wdir)
-    # declare base cmd
-    base_cmd = f"python3 {os.path.join(os.getenv('ROOTPATH'), 'wrapper', 'modules', name_script)}"
-    cmd = base_cmd
-    # wrap the command into Docker
-    if args.buildenv == "docker":
-        cmd = f'{args.buildenv} run -i --rm -e ROOTPATH={os.getenv("ROOTPATH")} -w /{wdir} {name_docker} /bin/bash -c "{cmd}"'
-        # mount directories
-        if args.command == "kernel":
-            kdir = "kernel"
-            if not os.path.isdir(kdir):
-                os.mkdir(kdir)
-            cmd = cmd.replace(f'-w /{wdir}',
-                              f'-w /{wdir} '\
-                              f'-v $(pwd)/{kdir}:/{wdir}/{kdir}')
-        elif args.command == "assets":
-            assetsdir = "assets"
-            if not os.path.isdir(assetsdir):
-                os.mkdir(assetsdir)
-            cmd = cmd.replace(f'-w /{wdir}',
-                              f'-w /{wdir} '\
-                              f'-v $(pwd)/{assetsdir}:/{wdir}/{assetsdir}')
-        if args.command == "bundle":
-            if args.package_type == "generic-slim":
-                # mount directory with "light" release artifacts
-                reldir_light = "release-light"
-                shutil.rmtree(reldir_light, ignore_errors=True)
-                os.mkdir(reldir_light)
-                cmd = cmd.replace(f'-w /{wdir}',
-                                  f'-w /{wdir} '\
-                                  f'-v $(pwd)/{reldir_light}:/{wdir}/{reldir_light}')
-            elif args.package_type == "conan":
-                if args.conan_upload:
-                    cmd = cmd.replace(f'-w /{wdir}',
-                                      f'-e CONAN_UPLOAD_CUSTOM=1 -w /{wdir}')
-                cmd = cmd.replace(base_cmd, base_cmd + " && chmod 777 -R /root/.conan")
-                # determine the path to local Conan cache and check if it exists
-                conan_cache_dir = ""
-                if os.getenv("CONAN_USER_HOME"):
-                    conan_cache_dir = os.getenv("CONAN_USER_HOME")
-                else:
-                    conan_cache_dir = os.path.join(os.getenv("HOME"), ".conan")
-                if os.path.isdir(conan_cache_dir):
-                    cmd = cmd.replace(f'-w /{wdir}',
-                                      f'-w /{wdir} -v {conan_cache_dir}:/"/root/.conan"')
-                else:
-                    msg.error("Could not find Conan local cache on the host machine.")
-    return cmd
-
-
-def main(args: argparse.Namespace):
+def main(args: argparse.Namespace) -> None:
     # various environment preparations
     os.environ["ROOTPATH"] = os.path.dirname(os.path.realpath(sys.argv[0]))
     os.chdir(os.getenv("ROOTPATH"))
@@ -221,9 +166,6 @@ def main(args: argparse.Namespace):
         os.environ["KNAME"] = data["name"]
         os.environ["KVERSION"] = data["version"]
     validate_settings(args)
-    docker_name = "s0nhbuilder"
-    docker_wdir = "s0nhbuild"
-    script = ""
     # setup output stream
     if args.command and args.outlog:
         msg.note(f"Writing output to {args.outlog}")
@@ -231,34 +173,54 @@ def main(args: argparse.Namespace):
             os.remove(args.outlog)
         os.environ["OSTREAM"] = args.outlog
         msg.outputstream()
-    # determine script and it's arguments
-    if args.command == "kernel":
-        script = f"kernel.py {args.codename} {args.losversion}"
-        if args.clean:
-            script += " -c"
-    elif args.command == "assets":
-        script = f"assets.py {args.codename} {args.losversion} {args.chroot}"
-        if args.extra_assets:
-            script += " --extra-assets"
-        if args.rom_only:
-            script += " --rom-only"
-    elif args.command == "bundle":
-        script = f"bundle.py {args.losversion} {args.codename} {args.package_type}"
-        if args.conan_upload:
-            script += " --conan-upload"
-        if args.rom_only:
-            script += " --rom-only"
-    workdir = os.path.dirname(os.path.realpath(sys.argv[0]))
-    conan_cache = os.path.join(os.getenv("HOME"), ".conan")
-    # build isolated image (using Docker BuildKit or Podman)
+    # containerized build
     if args.buildenv in ["docker", "podman"]:
-        os.environ["DOCKER_BUILDKIT"] = "1"
-        ccmd.launch(f"{args.buildenv} build . -f docker{os.sep}Dockerfile -t {docker_name}")
-    # launch the selected wrapper component
-    ccmd.launch(form_cmd(args, script, docker_name, docker_wdir))
-    # clean Docker/Podman image from host machine after the build
-    if args.clean_image:
-        ccmd.launch(f"{args.buildenv} rmi {docker_name}")
+        arguments = vars(args)
+        arguments["build_module"] = args.command
+        params = {
+            "buildenv",
+            "build_module",
+            "codename",
+            "losversion",
+            "clean_image",
+            "chroot",
+            "package_type",
+            "clean_kernel",
+            "clean_assets",
+            "rom_only",
+            "extra_assets",
+            "conan_upload"
+        }
+        passed_params = {}
+        for key, value in arguments.items():
+            if key in params:
+                passed_params[key] = value
+        del arguments
+        del params
+        ContainerEngine(config=passed_params)
+    # local build
+    else:
+        if args.command == "kernel":
+            KernelBuilder(
+                args.codename,
+                args.losversion,
+                args.clean
+            )
+        elif args.command == "assets":
+            AssetCollector(
+                args.codename,
+                args.losversion,
+                args.chroot,
+                args.clean,
+                args.rom_only,
+                args.extra_assets
+            )
+        elif args.command == "bundle":
+            BundleCreator(
+                args.codename,
+                args.losversion,
+                args.package_type
+            )
 
 
 if __name__ == '__main__':
