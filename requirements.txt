@@ -2,3 +2,4 @@ requests
 argparse
 conan<2.0.0
 bandit
+pydantic

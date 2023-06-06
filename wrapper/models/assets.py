@@ -1,37 +1,44 @@
-import io
 import os
-import sys
 import json
 import shutil
-import argparse
 import requests
+from pathlib import Path
 from typing import Optional
 
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
-import cleaning as cm
-import commands as ccmd
-import fileoperations as fo
-import messages as msg
+import wrapper.tools.cleaning as cm
+import wrapper.tools.commands as ccmd
+import wrapper.tools.fileoperations as fo
+import wrapper.tools.messages as msg
 
 
 class AssetCollector:
     """Asset collector."""
 
-    def __init__(self, codename: str, losversion: str, chroot: str, clean: bool, rom_only: bool, extra_assets: Optional[bool] = False):
+    def __init__(
+        self,
+        codename: str,
+        losversion: str,
+        chroot: str,
+        clean: bool,
+        rom_only: bool,
+        extra_assets: Optional[bool] = False
+    ) -> None:
         self._codename = codename
         self._losversion = losversion
         self._chroot = chroot
         self._extra_assets = extra_assets
         self._clean = clean
         self._rom_only = rom_only
-        self._workdir = os.getenv("ROOTPATH")
-        self._assetdir = os.path.join(self._workdir, "assets")
-        self._exec()
 
-    def __exit__(self):
-        os.chdir(self._workdir)
+    @property
+    def _workdir(self):
+        return Path(os.getenv("ROOTPATH"))
 
-    def _exec(self) -> None:
+    @property
+    def _assetdir(self):
+        return Path(self._workdir, "assets")
+
+    def run(self) -> None:
         msg.banner("s0nh Asset Collector")
         os.chdir(self._workdir)
         self._check()
@@ -47,7 +54,7 @@ class AssetCollector:
                 self._api_github("engstk/android_device_oneplus_cheeseburger"),
                 self._api_github("topjohnwu/Magisk"),
                 self._api_github("Magisk-Modules-Repo/wirelessFirmware"),
-                "https://store.nethunter.com/NetHunter.apk",
+                "https://store.nethunter.com/repo/com.offsec.nethunter_2022040200.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
                 "https://store.nethunter.com/NetHunterTerminal.apk",
@@ -56,8 +63,8 @@ class AssetCollector:
             ]
             # read extra assets from JSON file
             if self._extra_assets:
-                extra_json = os.path.join(self._workdir, self._extra_assets)
-                if os.path.isfile(extra_json):
+                extra_json = Path(self._workdir, self._extra_assets)
+                if extra_json.is_file():
                     print("\n", end="")
                     msg.note("Applying extra assets..")
                     with open(extra_json) as f:
@@ -72,7 +79,7 @@ class AssetCollector:
                             if data[k]:
                                 if k == "github":
                                     for e in data[k]:
-                                        assets.append(_api_github(e))
+                                        assets.append(self._api_github(e))
                                 else:
                                     for e in data[k]:
                                         assets.append(fo.download(e))
@@ -80,8 +87,8 @@ class AssetCollector:
                     print("\n", end="")
             # collect all the specified assets into single directory
             nhpatch = "nhpatch.sh"
-            fo.ucopy(os.path.join(self._workdir, "modifications", nhpatch),
-                     os.path.join(self._assetdir, nhpatch))
+            fo.ucopy(Path(self._workdir, "modifications", nhpatch),
+                     Path(self._assetdir, nhpatch))
             for e in assets:
                 if e:
                     fo.download(e)
@@ -93,15 +100,15 @@ class AssetCollector:
         """Initiate some checks before execution."""
         os.chdir(self._workdir)
         # directory validation
-        if not os.path.isdir(self._assetdir):
+        if not self._assetdir.is_dir():
             os.mkdir(self._assetdir)
         else:
             if len(os.listdir(self._assetdir)) != 0:
-                msg.note(f"Found an existing \"{self._assetdir.split(os.sep)[-1]}\" folder, clean it?")
+                msg.note(f"Found an existing \"{self._assetdir.name}\" folder, clean it?")
                 ans = input("[Y/n]: ").lower() if not self._clean else "y"
                 if ans == "y":
                     msg.note("Cleaning 'assets' directory..")
-                    cm.remove(self._assetdir)
+                    cm.remove(str(self._assetdir))
                     os.mkdir(self._assetdir)
                     msg.done("Done!")
                 elif ans == "n":
@@ -152,7 +159,7 @@ class AssetCollector:
             data = response["assets"][0]["browser_download_url"]
         except Exception:
             # if not available via API -- use "git clone"
-            rdir = os.path.join(self._assetdir, url.rsplit("/", 1)[1])
+            rdir = Path(self._assetdir, url.rsplit("/", 1)[1])
             msg.note(f"Non-API GitHub resolution for {project}")
             ccmd.launch(f"rm -rf {rdir}")
             ccmd.launch(f"git clone --depth 1 {url} {rdir}")

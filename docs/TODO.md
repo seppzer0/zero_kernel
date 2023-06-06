@@ -25,13 +25,15 @@
 - [x] add static analysis for the wrapper;
 - [x] add a single-point manifest with main info on the tool;
 - [ ] add a unified banner for the wrapper;
-- [ ] add description when creating a release via CI/CD;
+- [ ] add release body when creating a release via CI/CD;
 - [ ] improve CI/CD flexibility (variable-wise);
 - [ ] add static analysis report to release body;
-- [ ] improve documentation (markdown);
-- [x] improve documentation (methods);
+- [x] improve documentation;
 - [x] apply OOP paradigm;
 - [ ] add tests (unit/integration/etc);
-- [ ] switch to Poetry (`poetry.lock` instead of `requirements.txt`);
+- [ ] switch to Poetry for dependency management;
 - [ ] create a commit-based lockfile system for reproducible kernel builds;
-- [ ] implement generators.
+- [ ] implement generators;
+- [x] switch to `pathlib`;
+- [ ] switch to `raise` instead of `sys.exit`;
+- [ ] use `pydantic`.

@@ -1,38 +1,32 @@
 import os
-import sys
-import glob
 import json
 import shutil
-import argparse
 import itertools
-import subprocess
 from typing import List
+from pathlib import Path
 
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "tools"))
-import cleaning as cm
-import commands as ccmd
-import fileoperations as fo
-import messages as msg
+import wrapper.tools.cleaning as cm
+import wrapper.tools.commands as ccmd
+import wrapper.tools.fileoperations as fo
+import wrapper.tools.messages as msg
 
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "models"))
-from kernel import KernelBuilder
-from assets import AssetCollector
+from wrapper.models.kernel import KernelBuilder
+from wrapper.models.assets import AssetCollector
 
 
 class BundleCreator:
     """Bundle kernel + asset artifacts."""
 
-    def __init__(self, codename: str, losversion: str, package_type: str):
+    def __init__(self, codename: str, losversion: str, package_type: str) -> None:
         self._codename = codename
         self._losversion = losversion
         self._package_type = package_type
-        self._workdir = os.getenv("ROOTPATH")
-        self._exec()
 
-    def __exit__(self):
-        os.chdir(self._workdir)
+    @property
+    def _workdir(self) -> os.PathLike:
+        return Path(os.getenv("ROOTPATH"))
 
-    def _exec(self) -> None:
+    def run(self) -> None:
         os.chdir(self._workdir)
         # get either a "kernel+ROM" or "kernel+assets=Conan" bundle (the latter is bigger)
         if self._package_type == "generic-slim":
@@ -44,22 +38,26 @@ class BundleCreator:
             adir = "assets"
             # clean up
             if reldir_slim in os.listdir():
-                contents = glob.glob(os.path.join(reldir_slim, "*"))
+                contents = Path(reldir_slim).glob("*")
                 for f in contents:
                     os.remove(f)
             else:
                 os.mkdir(reldir_slim)
             # copy kernel
             kfn = "".join(os.listdir(kdir))
-            shutil.copy(os.path.join(self._workdir, kdir, kfn),
-                        os.path.join(self._workdir, reldir_slim, kfn))
+            shutil.copy(
+                self._workdir / kdir / kfn,
+                self._workdir / reldir_slim / kfn
+            )
             # copy the asset (ROM)
             afn = "".join(os.listdir(adir))
-            shutil.copy(os.path.join(self._workdir, adir, afn),
-                        os.path.join(self._workdir, reldir_slim, afn))
+            shutil.copy(
+                self._workdir / adir / afn,
+                self._workdir / reldir_slim / afn
+            )
         elif self._package_type == "conan":
             # form Conan reference
-            name = os.getenv("KNAME")
+            name = "s0nh"
             version = os.getenv("KVERSION")
             user = self._codename
             channel = "stable" if ccmd.launch("git branch --show-current", get_output=True) == "main" else "testing"
@@ -68,7 +66,7 @@ class BundleCreator:
             chroot = ["minimal", "full"]
             option_sets = list(itertools.product([self._losversion], chroot))
             # build and upload Conan packages
-            fo.ucopy(os.path.join(self._workdir, "conan"), self._workdir)
+            fo.ucopy(self._workdir / "conan", self._workdir)
             for opset in option_sets:
                 self._build_kernel(opset[0])
                 self._build_kernel(opset[0], True)
@@ -76,8 +74,10 @@ class BundleCreator:
                 self._collect_assets(opset[0], opset[1])
                 self._conan_package(opset, reference)
             # upload packages
-            if os.getenv("self._CONAN_UPLOAD_CUSTOM") == "1":
+            if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
                 self._conan_upload(reference)
+        # navigate back to root directory
+        os.chdir(self._workdir)
 
     def _build_kernel(self, losver: str, clean_only: bool = False) -> None:
         """Build the kernel.
@@ -85,8 +85,8 @@ class BundleCreator:
         :param str losver: LineageOS version.
         :param bool clean_only: Append an argument to only clean kernel directory.
         """
-        if not os.path.isdir("kernel") or clean_only is True:
-            KernelBuilder(self._codename, losver, clean_only)
+        if not Path("kernel").is_dir() or clean_only is True:
+            KernelBuilder(self._codename, losver, clean_only).run()
 
     def _collect_assets(self, losver: str, chroot: str) -> None:
         """Collect assets.
@@ -94,21 +94,27 @@ class BundleCreator:
         :param str losver: LineageOS version.
         :param str chroot: Type of chroot.
         """
-        AssetCollector(self._codename, losver, chroot, True, True)
+        AssetCollector(self._codename, losver, chroot, True, True).run()
 
     def _conan_sources(self) -> None:
         """Prepare sources for rebuildable Conan packages."""
-        sourcedir = os.path.join(self._workdir, "source")
+        sourcedir = self._workdir / "source"
         print("\n", end="")
         msg.note("Copying sources for Conan packaging..")
-        cm.remove(sourcedir, allow_errors=True)
-        fo.ucopy(self._workdir, sourcedir, ("__pycache__",
-                                            ".vscode",
-                                            "source",
-                                            "kernel",
-                                            "localversion",
-                                            "assets",
-                                            "conanfile.py"))
+        cm.remove(str(sourcedir), allow_errors=True)
+        fo.ucopy(
+            self._workdir,
+            sourcedir,
+            (
+                "__pycache__",
+                ".vscode",
+                "source",
+                "kernel",
+                "localversion",
+                "assets",
+                "conanfile.py"
+            )
+        )
         msg.done("Done!")
 
     @staticmethod
@@ -122,8 +128,7 @@ class BundleCreator:
             json_data = json.load(f)
         return json_data
 
-    @staticmethod
-    def _conan_package(options: List[str], reference: str) -> None:
+    def _conan_package(self, options: List[str], reference: str) -> None:
         """Create the Conan package.
 
         :param list options: Conan options.

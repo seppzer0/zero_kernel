@@ -1,6 +1,6 @@
 import os
-import sys
 import subprocess
+from pathlib import Path
 
 
 def launch(cmd, loglvl=os.getenv("LOGLEVEL", "normal")):
@@ -15,6 +15,6 @@ def launch(cmd, loglvl=os.getenv("LOGLEVEL", "normal")):
 
 # generate reports in multiple file formats
 formats = ("json", "html")
-apath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), os.pardir, "wrapper")
+apath = Path(Path(__file__).parents[1], "wrapper")
 for ft in formats:
     launch(f"python3 -m bandit -r -f {ft} {apath} -o report.{ft}", "verbose")

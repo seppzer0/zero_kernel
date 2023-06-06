@@ -1,6 +1,7 @@
 # basic
 .vscode
 **/__pycache__
+.mypy_cache
 
 # git subrepos (==submodules)
 android_*

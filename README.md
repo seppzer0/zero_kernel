@@ -8,6 +8,20 @@
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
+## **Contents**
+
+- [s0nh — LineageOS + NetHunter Kernel](#s0nh--lineageos--nethunter-kernel)
+  - [**Disclaimer**](#disclaimer)
+  - [**Contents**](#contents)
+  - [**Kernel Features**](#kernel-features)
+  - [**Usage**](#usage)
+    - [**Prerequisites**](#prerequisites)
+    - [**Kernel**](#kernel)
+    - [**Assets**](#assets)
+    - [**Bundle**](#bundle)
+  - [**Examples**](#examples)
+  - [**See also**](#see-also)
+
 ## **Kernel Features**
 
 The kernel has the following features:
@@ -47,7 +61,8 @@ optional arguments:
 To run this tool in a `local` environment, you will need:
 
 - a Debian-based Linux distribution (other types of distros are untested);
-- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`.
+- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`;
+- `export PYTHONPATH=$(pwd)` executed in the root of the repository.
 
 You will also need a few Python packages. To install them, use:
 
@@ -148,6 +163,17 @@ optional arguments:
   -o OUTLOG, --output OUTLOG
                         save logs to a file
 ```
+
+## **Examples**
+
+Here are some examples of commands:
+
+- **(Recommended)** Build kernel and collect ROM via Docker:
+  - `python3 wrapper bundle docker 20.0 dumpling generic-slim`
+- Build kernel locally:
+  - `export PYTHONPATH=$(pwd) && python3 wrapper kernel local 20.0 dumpling`;
+- Collect all the assets locally:
+  - `export PYTHONPATH=$(pwd) && python3 wrapper assets local 20.0 dumpling full`
 
 ## **See also**
 

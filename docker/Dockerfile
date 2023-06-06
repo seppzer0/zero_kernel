@@ -1,8 +1,9 @@
 FROM debian:stable-slim
 
 # variable store
-ENV CONAN_UPLOAD_CUSTOM 0
 ARG WDIR="/s0nh_build"
+ENV PYTHONPATH $WDIR
+ENV CONAN_UPLOAD_CUSTOM 0
 
 # install basic packages
 RUN \

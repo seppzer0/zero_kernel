@@ -12,14 +12,14 @@ on:
           default: "false"
           type: choice
           options:
-          - "true"
-          - "false"
+          - true
+          - false
 
 permissions:
   contents: write
 
 env:
-  IS_PRERELEASE: ${{ github.event.inputs.isPrerelease || 'false' }}
+  IS_PRERELEASE: ${{ github.event.inputs.isPrerelease || false }}
 
 jobs:
   release:
@@ -42,6 +42,7 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           allowUpdates: false
+          replacesArtifacts: false
           tag: "v0.1.0-${{ steps.date.outputs.date }}"
           body: ${{ github.event.release.body }}
           prerelease: ${{ env.IS_PRERELEASE }}

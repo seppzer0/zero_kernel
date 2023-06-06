@@ -37,6 +37,6 @@
     "clang": {
         "type": "generic",
         "path": "clang",
-        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/529a8adc22e54aecc2278960d1a6d84967fb7318/clang-r433403b.tar.gz"
+        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-r458507.tar.gz"
     }
 }
