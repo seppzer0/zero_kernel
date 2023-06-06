@@ -115,4 +115,4 @@ class ContainerEngine:
         # navigate to root directory and clean image from host machine
         os.chdir(self._initial_dir)
         if self._clean_image:
-            ccmd(f"{self._buildenv} rmi {self._image_name}")
+            ccmd.launch(f"{self._buildenv} rmi {self._image_name}")
