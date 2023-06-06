@@ -61,14 +61,17 @@ optional arguments:
 To run this tool in a `local` environment, you will need:
 
 - a Debian-based Linux distribution (other types of distros are untested);
-- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`;
-- `export PYTHONPATH=$(pwd)` executed in the root of the repository.
+- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`.
 
 You will also need a few Python packages. To install them, use:
 
 ```sh
 python3 -m pip install -r requirements.txt
 ```
+
+**NOTE**: Whether you selected the `docker` or `local` build option, you must create an environment variable `PYTHONPATH` directing to the folder with this repo.
+
+E.g., on Linux it would `export PYTHONPATH=$(pwd)` in the root of the repository.
 
 ### **Kernel**
 
