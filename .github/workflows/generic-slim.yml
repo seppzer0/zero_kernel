@@ -1,4 +1,4 @@
-name: Publish Slim Release
+name: Generic Slim Release
 
 on:
   push:
@@ -36,16 +36,28 @@ jobs:
           python3 -m pip install -r requirements.txt
           export PYTHONPATH=$(pwd)
           python3 wrapper bundle docker 20.0 dumpling generic-slim --clean-image
+      - name: Get current version
+        id: version
+        run: echo "::set-output name=version::$(cat version)"
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
-      - name: Publish
-        uses: ncipollo/release-action@v1.12.0
+      - name: Form a tag name
+        id: tagname
+        run: echo "::set-output name=tagname::$(${{ steps.version.outputs.version }}-${{ steps.date.outputs.date }})"
+      - name: Create a tag
+        uses: actions/github-script@v5
         with:
-          allowUpdates: false
-          replacesArtifacts: false
-          tag: "v0.1.0-${{ steps.date.outputs.date }}"
-          body: ${{ github.event.release.body }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.tagname.outputs.tagname }}',
+              sha: context.sha
+            })
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
           prerelease: ${{ env.IS_PRERELEASE }}
-          artifacts: "release-slim/*.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
+          files: "release-slim/*.zip"
