@@ -44,7 +44,7 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
       - name: Form a tag name
         id: tagname
-        run: echo "::set-output name=tagname::$(${{ steps.version.outputs.version }}-${{ steps.date.outputs.date }})"
+        run: echo "::set-output name=tagname::${{ steps.version.outputs.version }}-${{ steps.date.outputs.date }}"
       - name: Create a tag
         uses: actions/github-script@v5
         with:
