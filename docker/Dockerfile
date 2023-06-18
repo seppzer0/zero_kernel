@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM debian:bullseye-slim
 
 # variable store
 ARG WDIR="/s0nh_build"
