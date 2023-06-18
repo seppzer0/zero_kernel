@@ -4,14 +4,14 @@
 .mypy_cache
 
 # git subrepos (==submodules)
-android_*
-clang*
-rtl8812au
-AnyKernel3
+/android_*
+/clang*
+/rtl8812au
+/AnyKernel3
 
 # misc local artifacts
-kernel
-assets
-source
-release*
-localversion
+/kernel
+/assets
+/source
+/release*
+/localversion

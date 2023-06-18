@@ -5,13 +5,13 @@ import argparse
 import platform
 from pathlib import Path
 
+import wrapper.tools.cleaning as cm
 import wrapper.tools.messages as msg
 import wrapper.tools.commands as ccmd
-import wrapper.tools.cleaning as cm
 
+from wrapper.models.bundle import BundleCreator
 from wrapper.models.kernel import KernelBuilder
 from wrapper.models.assets import AssetCollector
-from wrapper.models.bundle import BundleCreator
 
 from wrapper.engines.container import ContainerEngine
 
@@ -190,7 +190,7 @@ def validate_settings(config: dict) -> None:
             # check that it is Debian-based
             try:
                 ccmd.launch("apt --version", "quiet")
-            except Exception as e:
+            except Exception:
                 msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
     # check if specified device is supported
     with open(Path(os.getenv("ROOTPATH"), "manifests", "devices.json")) as f:

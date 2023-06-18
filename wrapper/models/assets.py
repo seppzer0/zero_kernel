@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Optional
 
 import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
 import wrapper.tools.commands as ccmd
 import wrapper.tools.fileoperations as fo
-import wrapper.tools.messages as msg
 
 
 class AssetCollector:
@@ -54,7 +54,7 @@ class AssetCollector:
                 self._api_github("engstk/android_device_oneplus_cheeseburger"),
                 self._api_github("topjohnwu/Magisk"),
                 self._api_github("Magisk-Modules-Repo/wirelessFirmware"),
-                "https://store.nethunter.com/repo/com.offsec.nethunter_2022040200.apk",
+                "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
                 "https://store.nethunter.com/NetHunterTerminal.apk",
@@ -73,7 +73,7 @@ class AssetCollector:
                         rootkeys = ("github", "local", "other")
                         if not all(le in data.keys() for le in rootkeys):
                             msg.error("Incorrect JSON syntax detected."
-                                      "Allowed keys: 'github', 'local', 'other'.")
+                                      "Allowed keys: 'github', 'local', 'other' .")
                         # append extra asset data
                         for k in rootkeys:
                             if data[k]:

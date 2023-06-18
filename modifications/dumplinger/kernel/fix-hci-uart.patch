@@ -1,0 +1,21 @@
+From 9fbd815b18b16734a6c4dd5c4a9044a7329aba2d Mon Sep 17 00:00:00 2001
+From: yesimxev <yesimxev@gitlab.com>
+Date: Wed, 8 Feb 2023 13:13:56 +0000
+Subject: [PATCH] Fixed rx_lock undefined in HCI_UART
+
+---
+ drivers/bluetooth/hci_uart.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/bluetooth/hci_uart.h b/drivers/bluetooth/hci_uart.h
+index c08b27c327d6..67533c63fe2a 100644
+--- a/drivers/bluetooth/hci_uart.h
++++ b/drivers/bluetooth/hci_uart.h
+@@ -87,6 +87,7 @@ struct hci_uart {
+ 
+ 	struct sk_buff		*tx_skb;
+ 	unsigned long		tx_state;
++        spinlock_t              rx_lock;
+ 
+ 	unsigned int init_speed;
+ 	unsigned int oper_speed;

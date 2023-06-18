@@ -44,20 +44,11 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
       - name: Form a tag name
         id: tagname
-        run: echo "::set-output name=tagname::${{ steps.version.outputs.version }}-${{ steps.date.outputs.date }}"
-      - name: Create a tag
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.tagname.outputs.tagname }}',
-              sha: context.sha
-            })
+        run: echo "::set-output name=tagname::v${{ steps.version.outputs.version }}-${{ steps.date.outputs.date }}"
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           tag_name: ${{ steps.tagname.outputs.tagname }}
           prerelease: ${{ env.IS_PRERELEASE }}
           token: ${{ secrets.GITHUB_TOKEN }}

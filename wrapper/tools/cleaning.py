@@ -6,7 +6,7 @@ from typing import List, Union
 import wrapper.tools.commands as ccmd
 
 
-def remove(elements: Union[os.PathLike, List[os.PathLike]], allow_errors: bool = False) -> None:
+def remove(elements: Union[str, os.PathLike, List[os.PathLike]], allow_errors: bool = False) -> None:
     """An ultimate alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.

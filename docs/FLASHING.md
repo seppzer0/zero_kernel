@@ -60,7 +60,7 @@ Before doing anything, please ensure that you have:
 
 ### **2.2 In OS**
 
-- install Magisk apk, open it and do what the pop-ups say (finish root installation, which will automatically reboot your device);
+- install Magisk apk, open it and do what the pop-up says (finish root installation, which will automatically reboot your device; if you don't see the pop-up, close the Magisk app and open it again);
 - install NetHunter + NetHunter Terminal apps;
 - open the NetHunter app and grant all the permissions (at some point you will see an error indicating that some permissions are not granted; that's normal, the next step will fix that);
 - open the NetHunter Terminal app, select `AndroidSu` option, navigate through your storage and launch the `nhpatch.sh`;

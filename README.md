@@ -27,7 +27,8 @@
 The kernel has the following features:
 
 - Kali NetHunter support;
-- RTL8812AU Wi-Fi drivers.
+- RTL8812AU Wi-Fi drivers;
+- packet injection support for internal Wi-Fi chipset.
 
 ## **Usage**
 
@@ -174,9 +175,9 @@ Here are some examples of commands:
 - **(Recommended)** Build kernel and collect ROM via Docker:
   - `python3 wrapper bundle docker 20.0 dumpling generic-slim`
 - Build kernel locally:
-  - `export PYTHONPATH=$(pwd) && python3 wrapper kernel local 20.0 dumpling`;
+  - `python3 wrapper kernel local 20.0 dumpling`;
 - Collect all the assets locally:
-  - `export PYTHONPATH=$(pwd) && python3 wrapper assets local 20.0 dumpling full`
+  - `python3 wrapper assets local 20.0 dumpling full`
 
 ## **See also**
 

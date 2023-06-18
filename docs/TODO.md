@@ -2,8 +2,9 @@
 
 ## Kernel features
 
-- [ ] add working monitor mode support for internal Wi-Fi card;
-- [ ] add DM-Verity and Force Encrypt disabler.
+- [x] add monitor mode support for internal Wi-Fi chipset (with Wi-Fi packet injection);
+- [ ] add DM-Verity and Force Encrypt disabler;
+- [ ] add KernelSU support.
 
 ## Build process features
 
@@ -36,4 +37,5 @@
 - [ ] implement generators;
 - [x] switch to `pathlib`;
 - [ ] switch to `raise` instead of `sys.exit`;
-- [ ] use `pydantic`.
+- [ ] use `pydantic`;
+- [ ] add a FAQ page.

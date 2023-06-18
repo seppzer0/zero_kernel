@@ -12,7 +12,7 @@ do.cleanup=0
 do.cleanuponabort=0
 device.name1=dumpling
 device.name2=cheeseburger
-supported.versions=12
+supported.versions=13
 supported.patchlevels=
 '; } # end properties
 

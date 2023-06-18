@@ -3,9 +3,9 @@ import argparse
 
 import wrapper.tools.messages as msg
 
+from wrapper.models.bundle import BundleCreator
 from wrapper.models.kernel import KernelBuilder
 from wrapper.models.assets import AssetCollector
-from wrapper.models.bundle import BundleCreator
 
 
 def parse_args() -> argparse.Namespace:

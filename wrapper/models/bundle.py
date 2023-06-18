@@ -6,9 +6,9 @@ from typing import List
 from pathlib import Path
 
 import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
 import wrapper.tools.commands as ccmd
 import wrapper.tools.fileoperations as fo
-import wrapper.tools.messages as msg
 
 from wrapper.models.kernel import KernelBuilder
 from wrapper.models.assets import AssetCollector
