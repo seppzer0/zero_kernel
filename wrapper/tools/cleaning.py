@@ -1,4 +1,5 @@
 import os
+import glob
 import shutil
 from pathlib import Path
 from typing import List, Union
@@ -25,12 +26,12 @@ def remove(elements: Union[str, os.PathLike, List[os.PathLike]], allow_errors: b
         # a simple list-through removal
         if "*" not in e:
             if os.path.isdir(e):
-                shutil.rmtree(e, ignore_errors=allow_errors)
+                shutil.rmtree(e)
             elif os.path.isfile(e):
                 os.remove(e)
         # a recursive "glob" removal
         else:
-            for fn in Path(e).glob("*"):
+            for fn in glob.glob(e):
                 remove(fn)
 
 
@@ -63,7 +64,6 @@ def root(extra: List[str] = []) -> None:
         "localversion",
         "assets",
         "release-slim",
-        "conanfile.py"
     ]
     # add extra elements to clean up from root directory
     if extra:

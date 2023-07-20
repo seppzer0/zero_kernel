@@ -14,3 +14,6 @@ assets
 source
 release*
 localversion
+
+# and the Dockerfile itself
+Dockerfile

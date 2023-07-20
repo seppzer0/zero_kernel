@@ -1,4 +1,4 @@
-# s0nh — LineageOS + NetHunter Kernel
+# s0nh_kernel — LineageOS + NetHunter Kernel
 
 ## **Disclaimer**
 
@@ -10,7 +10,7 @@
 
 ## **Contents**
 
-- [s0nh — LineageOS + NetHunter Kernel](#s0nh--lineageos--nethunter-kernel)
+- [s0nh\_kernel — LineageOS + NetHunter Kernel](#s0nh_kernel--lineageos--nethunter-kernel)
   - [**Disclaimer**](#disclaimer)
   - [**Contents**](#contents)
   - [**Kernel Features**](#kernel-features)
@@ -67,8 +67,10 @@ To run this tool in a `local` environment, you will need:
 You will also need a few Python packages. To install them, use:
 
 ```sh
-python3 -m pip install -r requirements.txt
+python3 -m poetry install
 ```
+
+You will potentiallty need `poetry` installed in your system. This can be achieved with `python3 -m pip install poetry`.
 
 **NOTE**: Whether you selected the `docker` or `local` build option, you must create an environment variable `PYTHONPATH` directing to the folder with this repo.
 
@@ -93,11 +95,12 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -c, --clean           don't build anything, just clean the environment
-  --clean-image        remove Docker/Podman image from the host machine after build
+  --clean-image         remove Docker/Podman image from the host machine after build
   --log-level {normal,verbose,quiet}
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
+
 ```
 
 ### **Assets**
@@ -106,8 +109,7 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] [-o OUTLOG]
-                      {local,docker,podman} losversion codename {full,minimal}
+usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {full,minimal}
 
 positional arguments:
   {local,docker,podman}
@@ -137,31 +139,31 @@ This is especially useful for linking the kernel version with the appropriate Li
 
 There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
 
-Currently, there are two types of packaging available:
+Currently, there are three types of packaging available:
 
 - `conan`;
-- `generic-slim`.
+- `slim`;
+- `full`.
 
-While `conan` packaging type includes all of the assets into a single Conan component, `generic-slim` is a much simpler option that packs only the ROM alongside with the kernel.
+Options `full` and `conan` collect all of the assets required to successfuly flash the kernel onto your device. The difference between the two is that `full` option places everything into a local `release-full` directory, while `conan` organizes everything as a Conan package.
 
-This is done to reduce package sizes while ensuring the kernel+ROM functionality.
+An option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-upload] [--clean-image] [--rom-only] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {conan,generic-slim}
+usage: wrapper bundle [-h] [--conan-upload] [--clean-image] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {conan,slim,full}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
   losversion            select LineageOS version
   codename              select device codename
-  {conan,generic-slim}  select package type of the bundle
+  {conan,slim,full}     select package type of the bundle
 
 optional arguments:
   -h, --help            show this help message and exit
   --conan-upload        upload Conan packages to remote
   --clean-image         remove Docker/Podman image from the host machine after build
-  --rom-only            download only the ROM as an asset
   --log-level {normal,verbose,quiet}
                         select log level
   -o OUTLOG, --output OUTLOG
@@ -173,7 +175,7 @@ optional arguments:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle docker 20.0 dumpling generic-slim`
+  - `python3 wrapper bundle docker 20.0 dumpling slim`
 - Build kernel locally:
   - `python3 wrapper kernel local 20.0 dumpling`;
 - Collect all the assets locally:
@@ -181,5 +183,6 @@ Here are some examples of commands:
 
 ## **See also**
 
+- [FAQ](docs/FAQ.md);
 - [TODO List](docs/TODO.md);
 - [Kernel Flashing Instructions](docs/FLASHING.md).

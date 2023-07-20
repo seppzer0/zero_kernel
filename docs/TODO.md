@@ -16,26 +16,30 @@
 - [x] improve log level setting throughout all stages of the build;
 - [x] improve file/directory cleaning mechanism in a form of a dedicated module;
 - [x] improve Clang download mechanism;
-- [ ] add build counter mechanism for CI/CD pipelines;
+- [x] add build counter mechanism for CI/CD pipelines;
 - [ ] add published Conan package validator;
 - [x] add codename specific elements to final kernel zip;
 - [x] add a simpler and slimer bundle creator (kernel+ROM);
-- [ ] add return types to functions;
+- [x] add return types to functions;
 - [x] add requirements.txt for pip;
 - [x] add proper OS detection for preventing local builds in unsupported systems;
 - [x] add static analysis for the wrapper;
 - [x] add a single-point manifest with main info on the tool;
-- [ ] add a unified banner for the wrapper;
 - [ ] add release body when creating a release via CI/CD;
-- [ ] improve CI/CD flexibility (variable-wise);
 - [ ] add static analysis report to release body;
 - [x] improve documentation;
 - [x] apply OOP paradigm;
 - [ ] add tests (unit/integration/etc);
-- [ ] switch to Poetry for dependency management;
+- [x] switch to Poetry for dependency management;
 - [ ] create a commit-based lockfile system for reproducible kernel builds;
 - [ ] implement generators;
 - [x] switch to `pathlib`;
 - [ ] switch to `raise` instead of `sys.exit`;
 - [ ] use `pydantic`;
-- [ ] add a FAQ page.
+- [x] add a FAQ page;
+- [ ] add wiki;
+- [ ] refactor Docker/Podman command formation;
+- [ ] refactor logging mechanism;
+- [x] fix Podman usage (.dockerignore);
+- [ ] dedicate kernel source patchers as separate modules (LineageOS, AOSP, AOSPA etc);
+- [ ] add a separate method for multiline patching in files.

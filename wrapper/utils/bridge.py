@@ -40,7 +40,7 @@ def parse_args() -> argparse.Namespace:
         "--package-type",
         dest="package_type",
         help="select bundle packaging type",
-        choices=["conan", "generic-slim"]
+        choices=["conan", "slim", "full"]
     )
     parser.add_argument(
         "--clean-kernel",

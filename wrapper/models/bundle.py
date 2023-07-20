@@ -29,32 +29,32 @@ class BundleCreator:
     def run(self) -> None:
         os.chdir(self._workdir)
         # get either a "kernel+ROM" or "kernel+assets=Conan" bundle (the latter is bigger)
-        if self._package_type == "generic-slim":
+        if self._package_type in ("slim", "full"):
             self._build_kernel(self._losversion)
             self._collect_assets(self._losversion, "minimal")
             # make a unified "release-slim" directory with both .zips
-            reldir_slim = "release-slim"
+            reldir_generic = f"release-{self._package_type}"
             kdir = "kernel"
             adir = "assets"
             # clean up
-            if reldir_slim in os.listdir():
-                contents = Path(reldir_slim).glob("*")
+            if reldir_generic in os.listdir():
+                contents = Path(reldir_generic).glob("*")
                 for f in contents:
                     os.remove(f)
             else:
-                os.mkdir(reldir_slim)
+                os.mkdir(reldir_generic)
             # copy kernel
             kfn = "".join(os.listdir(kdir))
             shutil.copy(
                 self._workdir / kdir / kfn,
-                self._workdir / reldir_slim / kfn
+                self._workdir / reldir_generic / kfn
             )
-            # copy the asset (ROM)
-            afn = "".join(os.listdir(adir))
-            shutil.copy(
-                self._workdir / adir / afn,
-                self._workdir / reldir_slim / afn
-            )
+            # copy the assets
+            for afn in os.listdir(adir):
+                shutil.copy(
+                    self._workdir / adir / afn,
+                    self._workdir / reldir_generic / afn
+                )
         elif self._package_type == "conan":
             # form Conan reference
             name = "s0nh"
@@ -66,7 +66,7 @@ class BundleCreator:
             chroot = ["minimal", "full"]
             option_sets = list(itertools.product([self._losversion], chroot))
             # build and upload Conan packages
-            fo.ucopy(self._workdir / "conan", self._workdir)
+            #fo.ucopy(self._workdir / "conan", self._workdir)
             for opset in option_sets:
                 self._build_kernel(opset[0])
                 self._build_kernel(opset[0], True)
@@ -88,13 +88,19 @@ class BundleCreator:
         if not Path("kernel").is_dir() or clean_only is True:
             KernelBuilder(self._codename, losver, clean_only).run()
 
+    @property
+    def _rom_only_flag(self) -> str:
+        """Determine the value of the --rom-only flag."""
+        return True if "full" in self._package_type else False
+
     def _collect_assets(self, losver: str, chroot: str) -> None:
         """Collect assets.
 
         :param str losver: LineageOS version.
         :param str chroot: Type of chroot.
         """
-        AssetCollector(self._codename, losver, chroot, True, True).run()
+        
+        AssetCollector(self._codename, losver, chroot, True, self._rom_only_flag).run()
 
     def _conan_sources(self) -> None:
         """Prepare sources for rebuildable Conan packages."""
@@ -112,7 +118,7 @@ class BundleCreator:
                 "kernel",
                 "localversion",
                 "assets",
-                "conanfile.py"
+                "conanfile.py",
             )
         )
         msg.done("Done!")

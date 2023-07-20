@@ -1,14 +1,13 @@
 import os
 import json
-import shutil
-import requests
 from pathlib import Path
 from typing import Optional
 
 import wrapper.tools.cleaning as cm
 import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
 import wrapper.tools.fileoperations as fo
+
+from wrapper.clients import GitHubApi, LineageApi
 
 
 class AssetCollector:
@@ -45,21 +44,21 @@ class AssetCollector:
         os.chdir(self._assetdir)
         # process the ROM-only download
         if self._rom_only:
-            fo.download(self._api_rom())
+            fo.download(LineageApi(self._codename, self._rom_only).run())
             print("\n", end="")
             msg.done("ROM-only asset collection complete!")
         else:
             assets = [
-                self._api_rom(),
-                self._api_github("engstk/android_device_oneplus_cheeseburger"),
-                self._api_github("topjohnwu/Magisk"),
-                self._api_github("Magisk-Modules-Repo/wirelessFirmware"),
+                GitHubApi("topjohnwu/Magisk", self._assetdir).run(),
+                LineageApi(self._codename, self._rom_only).run(),
                 "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
                 "https://store.nethunter.com/NetHunterTerminal.apk",
                 "https://store.nethunter.com/repo/org.pocketworkstation.pckeyboard_1041001.apk",
-                f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{self._chroot}.tar.xz"
+                f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{self._chroot}.tar.xz",
+                "https://eu.dl.twrp.me/cheeseburger_dumpling/twrp-3.7.0_12-1-cheeseburger_dumpling.img",
+                #"https://sourceforge.net/projects/multi-function-patch/files/DFE-NEO/DFE-NEO-1.5.3.015-BETA.zip",
             ]
             # read extra assets from JSON file
             if self._extra_assets:
@@ -72,23 +71,26 @@ class AssetCollector:
                         # validate the input JSON
                         rootkeys = ("github", "local", "other")
                         if not all(le in data.keys() for le in rootkeys):
-                            msg.error("Incorrect JSON syntax detected."
-                                      "Allowed keys: 'github', 'local', 'other' .")
+                            msg.error(
+                                "Incorrect JSON syntax detected."
+                                "Allowed keys: 'github', 'local', 'other' ."
+                            )
                         # append extra asset data
                         for k in rootkeys:
                             if data[k]:
-                                if k == "github":
-                                    for e in data[k]:
-                                        assets.append(self._api_github(e))
-                                else:
-                                    for e in data[k]:
-                                        assets.append(fo.download(e))
+                                for e in data[k]:
+                                    if k == "github":
+                                        assets.append(GitHubApi(e))
+                                    else:
+                                        assets.append(e)
                     msg.done("Extra assets added!")
                     print("\n", end="")
             # collect all the specified assets into single directory
             nhpatch = "nhpatch.sh"
-            fo.ucopy(Path(self._workdir, "modifications", nhpatch),
-                     Path(self._assetdir, nhpatch))
+            fo.ucopy(
+                Path(self._workdir, "modifications", nhpatch),
+                Path(self._assetdir, nhpatch)
+            )
             for e in assets:
                 if e:
                     fo.download(e)
@@ -116,57 +118,3 @@ class AssetCollector:
                 else:
                     msg.error("Invalid option selected.")
         print("\n", end="")
-
-    def _api_rom(self) -> str:
-        """Get the latest version of LineageOS ROM.
-
-        :return: URL to the latest ROM .zip archive.
-        :rtype: str
-        """
-        device = self._codename
-        romtype = "nightly"
-        incr = "ro.build.version.incremental"
-        url = f"https://download.lineageos.org/api/v1/{device}/{romtype}/{incr}"
-        data = requests.get(url)
-        try:
-            data = data.json()["response"][0]["url"]
-        except Exception:
-            exit_flag = False if self._rom_only else True
-            msg.error(f"Could not connect to LOS API, HTTP status code: {data.status_code}",
-                      dont_exit=exit_flag)
-        return data
-
-    def _api_github(self, project: str) -> str:
-        """Get the latest version of an artifact from GitHub project.
-
-        :param str project: A name of the project in <owner>/<repo> form.
-        :return: URL to the latest artifact from specified GitHub project.
-        :rtype: str
-        """
-        url = f"https://github.com/{project}"
-        api_url = f"https://api.github.com/repos/{project}/releases/latest"
-        response = requests.get(api_url).json()
-        # this will check whether the GitHub API usage is exceeded
-        try:
-            data = response["message"]
-            if "API rate limit" in data:
-                msg.error("GitHub API call rate was exceeded, try a bit later.",
-                          dont_exit=True)
-        except Exception:
-            pass
-        # get the latest version of GitHub project via API
-        try:
-            data = response["assets"][0]["browser_download_url"]
-        except Exception:
-            # if not available via API -- use "git clone"
-            rdir = Path(self._assetdir, url.rsplit("/", 1)[1])
-            msg.note(f"Non-API GitHub resolution for {project}")
-            ccmd.launch(f"rm -rf {rdir}")
-            ccmd.launch(f"git clone --depth 1 {url} {rdir}")
-            os.chdir(rdir)
-            ccmd.launch("rm -rf .git*")
-            os.chdir(self._assetdir)
-            shutil.make_archive(f"{rdir}", "zip", rdir)
-            ccmd.launch(f"rm -rf {rdir}")
-            return
-        return data

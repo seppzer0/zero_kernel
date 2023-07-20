@@ -48,7 +48,7 @@ class ContainerEngine:
         # force enable Docker Buildkit create Docker image
         if self._buildenv == "docker":
             os.environ["DOCKER_BUILDKIT"] = "1"
-        cmd = f"{self._buildenv} build . -f {self._local_workdir / 'docker' / 'Dockerfile'} -t {self._image_name}"
+        cmd = f"{self._buildenv} build . -f {self._local_workdir / 'Dockerfile'} -t {self._image_name}"
         ccmd.launch(cmd)
         # prepare launch command
         base_cmd = f"python3 {Path('wrapper', 'utils', 'bridge.py')}"
@@ -63,7 +63,7 @@ class ContainerEngine:
         }
         # form a base command that will be launched in container
         for arg, value in arguments.items():
-            if value not in [None, False]:
+            if value not in (None, False):
                 base_cmd += f" {arg}={value}"
         cmd = f'{self._buildenv} run -i --rm -e ROOTPATH=/{self._docker_workdir} -w /{self._docker_workdir} {self._image_name} /bin/bash -c "{base_cmd}"'
         # mount directories
@@ -86,17 +86,17 @@ class ContainerEngine:
                 f'-v {os.getenv("ROOTPATH")}/{assetsdir}:/{self._docker_workdir}/{assetsdir}'
             )
         if self._build_module == "bundle":
-            if self._package_type == "generic-slim":
-                # mount directory with "slim" release artifacts
-                reldir_slim = "release-slim"
-                shutil.rmtree(reldir_slim, ignore_errors=True)
-                os.mkdir(reldir_slim)
+            if self._package_type in ("slim", "full"):
+                # mount directory with  release artifacts
+                reldir_generic = f"release-{self._package_type}"
+                shutil.rmtree(reldir_generic, ignore_errors=True)
+                os.mkdir(reldir_generic)
                 cmd = cmd.replace(
                     f'-w /{self._docker_workdir}',
                     f'-w /{self._docker_workdir} '\
-                    f'-v {os.getenv("ROOTPATH")}/{reldir_slim}:/{self._docker_workdir}/{reldir_slim}'
+                    f'-v {os.getenv("ROOTPATH")}/{reldir_generic}:/{self._docker_workdir}/{reldir_generic}'
                 )
-                cmd = cmd.replace(base_cmd, base_cmd + f" && chmod 777 -R /{Path(self._docker_workdir, reldir_slim)}")
+                cmd = cmd.replace(base_cmd, base_cmd + f" && chmod 777 -R /{Path(self._docker_workdir, reldir_generic)}")
             elif self._package_type == "conan":
                 if self._conan_upload:
                     cmd = cmd.replace(f'-w /{self._docker_workdir}',

@@ -30,7 +30,7 @@
     "rtl8812au": {
         "type": "git",
         "path": "rtl8812au",
-        "url": "https://github.com/aircrack-ng/rtl8812au",
+        "url": "https://github.com/seppzer0/rtl8812au",
         "branch": "v5.6.4.2",
         "commit": ""
     },

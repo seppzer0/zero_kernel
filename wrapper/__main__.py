@@ -29,6 +29,7 @@ def parse_args() -> argparse.Namespace:
     # add a single argument for the main parser
     parser_parent.add_argument(
         "--clean",
+        dest="clean_root",
         action="store_true",
         help="clean the root directory"
     )
@@ -38,8 +39,8 @@ def parse_args() -> argparse.Namespace:
     help_buildenv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
-    choices_buildenv = ["local", "docker", "podman"]
-    choices_loglvl = ["normal", "verbose", "quiet"]
+    choices_buildenv = ("local", "docker", "podman")
+    choices_loglvl = ("normal", "verbose", "quiet")
     default_loglvl = "normal"
     help_logfile = "save logs to a file"
     # kernel
@@ -96,7 +97,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser_assets.add_argument(
         "chroot",
-        choices=["full", "minimal"],
+        choices=("full", "minimal"),
         help="select Kali chroot type"
     )
     parser_assets.add_argument(
@@ -150,7 +151,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser_bundle.add_argument(
         "package_type",
-        choices=["conan", "generic-slim"],
+        choices=["conan", "slim", "full"],
         help="select package type of the bundle"
     )
     parser_bundle.add_argument(
@@ -193,7 +194,7 @@ def validate_settings(config: dict) -> None:
             except Exception:
                 msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
     # check if specified device is supported
-    with open(Path(os.getenv("ROOTPATH"), "manifests", "devices.json")) as f:
+    with open(Path(os.getenv("ROOTPATH"), "wrapper", "manifests", "devices.json")) as f:
         devices = json.load(f)
     if config.get("codename") not in devices.keys():
         msg.error("Unsupported device codename specified.")
@@ -205,15 +206,15 @@ def validate_settings(config: dict) -> None:
 
 def main(args: argparse.Namespace) -> None:
     # start preparing the environment
-    os.environ["ROOTPATH"] = str(Path(__file__).parents[1])
+    os.environ["ROOTPATH"] = str(Path(__file__).absolute().parents[1])
     os.chdir(os.getenv("ROOTPATH"))
-    if args.clean:
+    if args.clean_root:
         cm.root()
         sys.exit(0)
     os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
-    with open(Path(os.getenv("ROOTPATH"), "version")) as f:
-        os.environ["KVERSION"] = f.read().splitlines()[0]
+    with open(Path(os.getenv("ROOTPATH"), "pyproject.toml")) as f:
+        os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # store arguments as a set, to pass later
     arguments = vars(args)
     arguments["build_module"] = args.command
@@ -247,7 +248,7 @@ def main(args: argparse.Namespace) -> None:
         os.environ["OSTREAM"] = args.outlog
         msg.outputstream()
     # containerized build
-    if args.buildenv in ["docker", "podman"]:
+    if args.buildenv in ("docker", "podman"):
         ContainerEngine(config=passed_params).run()
     # local build
     else:
@@ -274,7 +275,7 @@ def main(args: argparse.Namespace) -> None:
             ).run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # for print's to show in the right order
     os.environ["PYTHONUNBUFFERED"] = "1"
     main(parse_args())
