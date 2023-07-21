@@ -70,11 +70,11 @@ You will also need a few Python packages. To install them, use:
 python3 -m poetry install
 ```
 
-You will potentiallty need `poetry` installed in your system. This can be achieved with `python3 -m pip install poetry`.
+To install `poetry`, use `python3 -m pip install poetry`.
 
 **NOTE**: Whether you selected the `docker` or `local` build option, you must create an environment variable `PYTHONPATH` directing to the folder with this repo.
 
-E.g., on Linux it would `export PYTHONPATH=$(pwd)` in the root of the repository.
+E.g., on Linux it would be `export PYTHONPATH=$(pwd)` in the root of the repository.
 
 ### **Kernel**
 

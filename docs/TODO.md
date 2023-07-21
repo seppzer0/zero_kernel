@@ -42,4 +42,5 @@
 - [ ] refactor logging mechanism;
 - [x] fix Podman usage (.dockerignore);
 - [ ] dedicate kernel source patchers as separate modules (LineageOS, AOSP, AOSPA etc);
-- [ ] add a separate method for multiline patching in files.
+- [ ] add a separate method for multiline patching in files;
+- [ ] check Alpine Linux as a base for Docker/Podman images.

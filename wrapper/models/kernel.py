@@ -263,6 +263,16 @@ class KernelBuilder:
 
             self._paths[self._codename]["path"] /\
             "drivers" /\
+            "staging" /\
+            "qcacld-3.0" /\
+            "core" /\
+            "hdd" /\
+            "src" /\
+            "wlan_hdd_main.c":
+            ("hdd_adapter_t *hdd_get_first_valid_adapter()",),
+
+            self._paths[self._codename]["path"] /\
+            "drivers" /\
             "thermal" /\
             "msm_thermal-dev.c":
             ("int msm_thermal_ioctl_init()", "void msm_thermal_ioctl_cleanup()",),
