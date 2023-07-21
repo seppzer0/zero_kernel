@@ -1,6 +1,6 @@
 # FAQ
 
-This page contains answers to popular questions when working with this kernel.
+This page contains answers to popular questions in relation to this kernel.
 
 ## Q: How to TURN ON monitor mode on internal Wi-Fi card?
 
@@ -16,7 +16,7 @@ Be aware that while in monitor mode, you won't be able to connect to a Wi-Fi net
 Similarly, depending on which approach you chose to turn on the monitor mode, there are two options:
 
 - in Kali chroot environment -> `airmon-ng stop wlan0`;
-- in NetHunter app -> `Custom Commands` -> `Start wlan0 in monitor mode`.
+- in NetHunter app -> `Custom Commands` -> `Stop wlan0 in monitor mode`.
 
 ## Q: Why is there an unused wlan1 interface?
 

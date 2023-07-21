@@ -43,4 +43,5 @@
 - [x] fix Podman usage (.dockerignore);
 - [ ] dedicate kernel source patchers as separate modules (LineageOS, AOSP, AOSPA etc);
 - [ ] add a separate method for multiline patching in files;
-- [ ] check Alpine Linux as a base for Docker/Podman images.
+- [ ] check Alpine Linux as a base for Docker/Podman images;
+- [ ] make kernel building and assets collection processes asynchronous when launching the `bundle` option.

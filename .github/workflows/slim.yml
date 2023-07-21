@@ -38,10 +38,10 @@ jobs:
           python3 wrapper bundle docker 20.0 dumpling slim --clean-image
       - name: Get current version
         id: version
-        run: echo 'version=$(cat pyproject.toml | grep version | cut -d "\"" -f2)' >> $GITHUB_OUTPUT
+        run: echo "version=$(python3 scripts/get_version.py)" >> $GITHUB_OUTPUT
       - name: Form a tag name
         id: tagname
-        run: echo 'tagname=v${{ steps.version.outputs.version }}.${{ github.run_number }}' >> $GITHUB_OUTPUT
+        run: echo "tagname=v${{ steps.version.outputs.version }}.${{ github.run_number }}" >> $GITHUB_OUTPUT
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
