@@ -1,6 +1,6 @@
 {
     "dumpling": {
-        "lineage": {
+        "lineageos": {
             "type": "git",
             "path": "android_kernel_oneplus_msm8998",
             "url": "https://github.com/LineageOS/android_kernel_oneplus_msm8998",
@@ -16,7 +16,7 @@
         }
     },
     "cheeseburger": {
-        "lineage": {
+        "lineageos": {
             "type": "git",
             "path": "android_kernel_oneplus_msm8998",
             "url": "https://github.com/LineageOS/android_kernel_oneplus_msm8998",
