@@ -607,7 +607,7 @@ class KernelBuilder:
         # form the final ZIP file
         name = f"{name}-{kernelversion}-{buildtime}"
         kdir = self._workdir / "kernel"
-        if not kdir.is_file():
+        if not kdir.is_dir():
             os.mkdir(kdir)
         os.chdir(self._paths["AnyKernel3"]["path"])
         # this is not the best solution, but is the easiest
