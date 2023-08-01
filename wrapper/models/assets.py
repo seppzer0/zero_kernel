@@ -7,7 +7,7 @@ import wrapper.tools.cleaning as cm
 import wrapper.tools.messages as msg
 import wrapper.tools.fileoperations as fo
 
-from wrapper.clients import GitHubApi, LineageApi
+from wrapper.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 
 
 class AssetCollector:
@@ -16,18 +16,20 @@ class AssetCollector:
     def __init__(
         self,
         codename: str,
-        losversion: str,
+        rom: str,
         chroot: str,
         clean: bool,
         rom_only: bool,
-        extra_assets: Optional[bool] = False
+        extra_assets: Optional[bool] = False,
+        kernelsu: Optional[bool] = False
     ) -> None:
         self._codename = codename
-        self._losversion = losversion
+        self._rom = rom
         self._chroot = chroot
         self._extra_assets = extra_assets
         self._clean = clean
         self._rom_only = rom_only
+        self._kernelsu = kernelsu
 
     @property
     def _workdir(self):
@@ -44,20 +46,27 @@ class AssetCollector:
         os.chdir(self._assetdir)
         # process the ROM-only download
         if self._rom_only:
-            fo.download(LineageApi(self._codename, self._rom_only).run())
+            fo.download(LineageOsApi(self._codename, self._rom_only).run())
             print("\n", end="")
             msg.done("ROM-only asset collection complete!")
         else:
+            # determine which SU manager is required
+            su_manager = "tiann/KernelSU" if self._kernelsu else "topjohnwu/Magisk"
+            # same with the collected ROM
+            rom_collector_dto = ""
+            if self._rom == "lineageos":
+                rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
+            else:
+                rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
             assets = [
-                GitHubApi("topjohnwu/Magisk", self._assetdir).run(),
-                LineageApi(self._codename, self._rom_only).run(),
+                rom_collector_dto.run(),
+                GitHubApi(project=su_manager, assetdir=self._assetdir, file_filter=".apk").run(),
                 "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
                 "https://store.nethunter.com/NetHunterTerminal.apk",
-                "https://store.nethunter.com/repo/org.pocketworkstation.pckeyboard_1041001.apk",
-                f"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{self._chroot}.tar.xz",
                 "https://eu.dl.twrp.me/cheeseburger_dumpling/twrp-3.7.0_12-1-cheeseburger_dumpling.img",
+                "https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self._chroot),
                 #"https://sourceforge.net/projects/multi-function-patch/files/DFE-NEO/DFE-NEO-1.5.3.015-BETA.zip",
             ]
             # read extra assets from JSON file

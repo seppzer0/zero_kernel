@@ -30,7 +30,7 @@
     "rtl8812au": {
         "type": "git",
         "path": "rtl8812au",
-        "url": "https://github.com/seppzer0/rtl8812au",
+        "url": "https://github.com/aircrack-ng/rtl8812au",
         "branch": "v5.6.4.2",
         "commit": ""
     },
@@ -38,5 +38,12 @@
         "type": "generic",
         "path": "clang",
         "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-r458507.tar.gz"
+    },
+    "KernelSU": {
+        "type": "git",
+        "path": "KernelSU",
+        "url": "https://github.com/tiann/KernelSU",
+        "branch": "v0.6.2",
+        "commit": ""
     }
 }

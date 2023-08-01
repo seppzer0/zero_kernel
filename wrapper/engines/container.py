@@ -13,7 +13,7 @@ class ContainerEngine:
         self._buildenv = config.get("buildenv")
         self._build_module = config.get("build_module")
         self._codename = config.get("codename")
-        self._losversion = config.get("losversion")
+        self._rom = config.get("rom")
         self._clean_image = config.get("clean_image", False)
         self._chroot = config.get("chroot", None)
         self._package_type = config.get("package_type", None)
@@ -22,6 +22,7 @@ class ContainerEngine:
         self._rom_only = config.get("rom_only", False)
         self._extra_assets = config.get("extra_assets", False)
         self._conan_upload = config.get("conan_upload", False)
+        self._kernelsu = config.get("kernelsu", False)
 
     @property
     def _image_name(self) -> str:
@@ -45,7 +46,7 @@ class ContainerEngine:
 
     def run(self) -> None:
         os.chdir(self._local_workdir)
-        # force enable Docker Buildkit create Docker image
+        # force enable Docker Buildkit to create Docker image
         if self._buildenv == "docker":
             os.environ["DOCKER_BUILDKIT"] = "1"
         cmd = f"{self._buildenv} build . -f {self._local_workdir / 'Dockerfile'} -t {self._image_name}"
@@ -55,11 +56,12 @@ class ContainerEngine:
         arguments = {
             "--build-module": self._build_module,
             "--codename": self._codename,
-            "--losversion": self._losversion,
+            "--rom": self._rom,
             "--chroot": self._chroot,
             "--package-type": self._package_type,
             "--rom-only": self._rom_only,
-            "--extra-assets": self._extra_assets
+            "--extra-assets": self._extra_assets,
+            "--kernelsu": self._kernelsu,
         }
         # form a base command that will be launched in container
         for arg, value in arguments.items():
@@ -87,7 +89,7 @@ class ContainerEngine:
             )
         if self._build_module == "bundle":
             if self._package_type in ("slim", "full"):
-                # mount directory with  release artifacts
+                # mount directory with release artifacts
                 reldir_generic = f"release-{self._package_type}"
                 shutil.rmtree(reldir_generic, ignore_errors=True)
                 os.mkdir(reldir_generic)

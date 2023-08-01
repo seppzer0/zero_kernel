@@ -17,10 +17,17 @@ from wrapper.models.assets import AssetCollector
 class BundleCreator:
     """Bundle kernel + asset artifacts."""
 
-    def __init__(self, codename: str, losversion: str, package_type: str) -> None:
+    def __init__(
+            self,
+            codename: str,
+            rom: str,
+            package_type: str,
+            kernelsu: bool
+        ) -> None:
         self._codename = codename
-        self._losversion = losversion
+        self._rom = rom
         self._package_type = package_type
+        self._kernelsu = kernelsu
 
     @property
     def _workdir(self) -> os.PathLike:
@@ -28,11 +35,11 @@ class BundleCreator:
 
     def run(self) -> None:
         os.chdir(self._workdir)
-        # get either a "kernel+ROM" or "kernel+assets=Conan" bundle (the latter is bigger)
+        # get either a "kernel+ROM" or "kernel+assets=Conan" or "kernel+assets" bundle
         if self._package_type in ("slim", "full"):
-            self._build_kernel(self._losversion)
-            self._collect_assets(self._losversion, "minimal")
-            # make a unified "release-slim" directory with both .zips
+            self._build_kernel(self._rom)
+            self._collect_assets(self._rom, "minimal")
+            # make a unified "release-*" directory with both .zips
             reldir_generic = f"release-{self._package_type}"
             kdir = "kernel"
             adir = "assets"
@@ -63,10 +70,9 @@ class BundleCreator:
             channel = "stable" if ccmd.launch("git branch --show-current", get_output=True) == "main" else "testing"
             reference = f"{name}/{version}@{user}/{channel}"
             # form option sets
-            chroot = ["minimal", "full"]
-            option_sets = list(itertools.product([self._losversion], chroot))
+            chroot = ("minimal", "full")
+            option_sets = list(itertools.product([self._rom], chroot))
             # build and upload Conan packages
-            #fo.ucopy(self._workdir / "conan", self._workdir)
             for opset in option_sets:
                 self._build_kernel(opset[0])
                 self._build_kernel(opset[0], True)
@@ -79,28 +85,39 @@ class BundleCreator:
         # navigate back to root directory
         os.chdir(self._workdir)
 
-    def _build_kernel(self, losver: str, clean_only: bool = False) -> None:
+    def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         """Build the kernel.
 
-        :param str losver: LineageOS version.
+        :param str rom_name: LineageOS version.
         :param bool clean_only: Append an argument to only clean kernel directory.
         """
         if not Path("kernel").is_dir() or clean_only is True:
-            KernelBuilder(self._codename, losver, clean_only).run()
+            KernelBuilder(
+                codename = self._codename,
+                rom = rom_name,
+                clean = clean_only,
+                kernelsu = self._kernelsu,
+            ).run()
 
     @property
     def _rom_only_flag(self) -> str:
         """Determine the value of the --rom-only flag."""
-        return True if "full" in self._package_type else False
+        return True if "full" not in self._package_type else False
 
-    def _collect_assets(self, losver: str, chroot: str) -> None:
+    def _collect_assets(self, rom_name: str, chroot: str) -> None:
         """Collect assets.
 
-        :param str losver: LineageOS version.
+        :param str rom_name: LineageOS version.
         :param str chroot: Type of chroot.
         """
-        
-        AssetCollector(self._codename, losver, chroot, True, self._rom_only_flag).run()
+        AssetCollector(
+            codename = self._codename,
+            rom = rom_name,
+            chroot = chroot,
+            clean = True,
+            rom_only = self._rom_only_flag,
+            kernelsu = self._kernelsu,
+        ).run()
 
     def _conan_sources(self) -> None:
         """Prepare sources for rebuildable Conan packages."""
@@ -142,8 +159,8 @@ class BundleCreator:
         """
         cmd = f"conan export-pkg . {reference}"
         for option_value in options:
-            # not the best solution, but will work temporarily for 'losversion' and 'chroot' options
-            option_name = "losversion" if not any(c.isalpha() for c in option_value) else "chroot"
+            # not the best solution, but will work temporarily for 'rom' and 'chroot' options
+            option_name = "rom" if not any(c.isalpha() for c in option_value) else "chroot"
             cmd += f" -o {option_name}={option_value}"
         # add codename as an option separately
         cmd += f" -o codename={self._codename}"

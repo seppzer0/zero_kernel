@@ -34,24 +34,27 @@ def parse_args() -> argparse.Namespace:
         help="clean the root directory"
     )
     # common argument attributes for subparsers
-    help_losversion = "select LineageOS version"
+    help_rom = "select a ROM for the build"
     help_codename = "select device codename"
     help_buildenv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    default_loglvl = "normal"
+    choices_rom = ("lineageos", "aospa")
     help_logfile = "save logs to a file"
+    help_kernelsu = "add KernelSU support"
+    default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
         "buildenv",
         choices=choices_buildenv,
-        help=help_buildenv
+        help=help_buildenv,
     )
     parser_kernel.add_argument(
-        "losversion",
-        help=help_losversion
+        "rom",
+        help=help_rom,
+        choices=choices_rom
     )
     parser_kernel.add_argument(
         "codename",
@@ -81,6 +84,12 @@ def parse_args() -> argparse.Namespace:
         dest="outlog",
         help=help_logfile
     )
+    parser_kernel.add_argument(
+        "--kernelsu",
+        action="store_true",
+        dest="kernelsu",
+        help=help_kernelsu
+    )
     # assets
     parser_assets.add_argument(
         "buildenv",
@@ -88,8 +97,9 @@ def parse_args() -> argparse.Namespace:
         help=help_buildenv
     )
     parser_assets.add_argument(
-        "losversion",
-        help=help_losversion
+        "rom",
+        help=help_rom,
+        choices=choices_rom
     )
     parser_assets.add_argument(
         "codename",
@@ -135,6 +145,12 @@ def parse_args() -> argparse.Namespace:
         dest="outlog",
         help=help_logfile
     )
+    parser_assets.add_argument(
+        "--kernelsu",
+        action="store_true",
+        dest="kernelsu",
+        help=help_kernelsu
+    )
     # bundle
     parser_bundle.add_argument(
         "buildenv",
@@ -142,8 +158,9 @@ def parse_args() -> argparse.Namespace:
         help=help_buildenv
     )
     parser_bundle.add_argument(
-        "losversion",
-        help=help_losversion
+        "rom",
+        help=help_rom,
+        choices=choices_rom
     )
     parser_bundle.add_argument(
         "codename",
@@ -151,7 +168,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser_bundle.add_argument(
         "package_type",
-        choices=["conan", "slim", "full"],
+        choices=("conan", "slim", "full"),
         help="select package type of the bundle"
     )
     parser_bundle.add_argument(
@@ -177,6 +194,12 @@ def parse_args() -> argparse.Namespace:
         "-o", "--output",
         dest="outlog",
         help=help_logfile
+    )
+    parser_bundle.add_argument(
+        "--kernelsu",
+        action="store_true",
+        dest="kernelsu",
+        help=help_kernelsu
     )
     return parser_parent.parse_args(args)
 
@@ -215,14 +238,14 @@ def main(args: argparse.Namespace) -> None:
     # define env variable with kernel version
     with open(Path(os.getenv("ROOTPATH"), "pyproject.toml")) as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
-    # store arguments as a set, to pass later
+    # store arguments as a set, to pass on to models
     arguments = vars(args)
     arguments["build_module"] = args.command
     params = {
         "buildenv",
         "build_module",
         "codename",
-        "losversion",
+        "rom",
         "clean_image",
         "chroot",
         "package_type",
@@ -230,7 +253,8 @@ def main(args: argparse.Namespace) -> None:
         "clean_assets",
         "rom_only",
         "extra_assets",
-        "conan_upload"
+        "conan_upload",
+        "kernelsu",
     }
     passed_params = {}
     for key, value in arguments.items():
@@ -254,24 +278,27 @@ def main(args: argparse.Namespace) -> None:
     else:
         if args.command == "kernel":
             KernelBuilder(
-                args.codename,
-                args.losversion,
-                args.clean
+                codename = args.codename,
+                rom = args.rom,
+                clean = args.clean,
+                kernelsu = args.kernelsu,
             ).run()
         elif args.command == "assets":
             AssetCollector(
-                args.codename,
-                args.losversion,
-                args.chroot,
-                args.clean,
-                args.rom_only,
-                args.extra_assets
+                codename = args.codename,
+                rom = args.rom,
+                chroot = args.chroot,
+                clean = args.clean,
+                rom_only = args.rom_only,
+                extra_assets = args.extra_assets,
+                kernelsu = args.kernelsu,
             ).run()
         elif args.command == "bundle":
             BundleCreator(
-                args.codename,
-                args.losversion,
-                args.package_type
+                codename = args.codename,
+                rom = args.rom,
+                package_type = args.package_type,
+                kernelsu = args.kernelsu,
             ).run()
 
 

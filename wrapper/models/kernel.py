@@ -14,10 +14,11 @@ import wrapper.tools.fileoperations as fo
 class KernelBuilder:
     """Kernel builder."""
 
-    def __init__(self, codename: str, losversion: str, clean: bool) -> None:
+    def __init__(self, codename: str, rom: str, clean: bool, kernelsu: bool) -> None:
         self._codename = codename
-        self._losversion = losversion
+        self._rom = rom
         self._clean = clean
+        self._kernelsu = kernelsu
         self._paths = []
 
     @property
@@ -56,6 +57,11 @@ class KernelBuilder:
         """
         return "dumplinger" if self._codename in ("dumpling", "cheeseburger") else self._codename
 
+    @property
+    def _defconfig(self) -> str:
+        """Determine defconfig file name based on ROM."""
+        return "lineage_oneplus5_defconfig" if self._rom == "lineageos" else "paranoid_defconfig"
+
     @staticmethod
     def _export_path(path: os.PathLike) -> None:
         """Add path to PATH.
@@ -91,7 +97,7 @@ class KernelBuilder:
             tools = json.load(f)
         with open(self._workdir / "wrapper" / "manifests" / "devices.json") as f:
             data = json.load(f)
-            device = {self._codename: data[self._codename]}
+            device = {self._codename: data[self._codename][self._rom]}
         # join tools and devices manifests
         self._paths = {**tools, **device}
         for e in self._paths:
@@ -134,7 +140,6 @@ class KernelBuilder:
                     msg.note(f"Found an existing path: {path}")
             else:
                 msg.error("Invalid resource type detected. Use only: generic, git.")
-
 
     def _patch_strict_prototypes(self) -> None:
         """A patcher to add compatibility with Clang 15 '-Wstrict-prototype' mandatory rule."""
@@ -243,24 +248,6 @@ class KernelBuilder:
             "ce_service.c":
             ("struct ce_ops *ce_services_legacy()",),
 
-            #self._paths[self._codename]["path"] /\
-            #"drivers" /\
-            #"staging" /\
-            #"qca-wifi-host-cmn" /\
-            #"target_if" /\
-            #"core" /\
-            #"src" /\
-            #"target_if_main.c":
-            #("struct target_if_ctx *target_if_get_ctx()",),
-
-            #self._paths[self._codename]["path"] /\
-            #"drivers" /\
-            #"staging" /\
-            #"qca-wifi-host-cmn" /\
-            #"wlan_cfg" /\
-            #"wlan_cfg.c":
-            #("struct wlan_cfg_dp_soc_ctxt *wlan_cfg_soc_attach()",),
-
             self._paths[self._codename]["path"] /\
             "drivers" /\
             "staging" /\
@@ -293,6 +280,29 @@ class KernelBuilder:
             "mdss_util.c":
             ("struct mdss_util_intf *mdss_get_util_intf()",)
         }
+        # PA needs this, LineageOS does not
+        if self._rom == "aospa":
+            extra_data = {
+                self._paths[self._codename]["path"] /\
+                "drivers" /\
+                "staging" /\
+                "qca-wifi-host-cmn" /\
+                "target_if" /\
+                "core" /\
+                "src" /\
+                "target_if_main.c":
+                ("struct target_if_ctx *target_if_get_ctx()",),
+
+                self._paths[self._codename]["path"] /\
+                "drivers" /\
+                "staging" /\
+                "qca-wifi-host-cmn" /\
+                "wlan_cfg" /\
+                "wlan_cfg.c":
+                ("struct wlan_cfg_dp_soc_ctxt *wlan_cfg_soc_attach()",),
+            }
+            data.update(extra_data)
+        # start the patching process
         contents = ""
         for fname, funcnames in data.items():
             with open(fname, "r") as f:
@@ -318,6 +328,7 @@ class KernelBuilder:
         )
 
     def _patch_rtl8812au_source_mod_v5642(self) -> None:
+        """Modifications specific to v5.6.4.2 driver version."""
         # modifying Makefile
         og_lines = (
             "#EXTRA_CFLAGS += -Wno-parentheses-equality",
@@ -333,15 +344,11 @@ class KernelBuilder:
             "CONFIG_PLATFORM_I386_PC = n",
             "CONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
         )
-        with open("Makefile") as data:
-            with open("Makefile_new", 'w') as new_data:
-                for line in data:
-                    for indx, key in enumerate(og_lines):
-                        if key in line:
-                            msg.note(f"Replacing {key} with {nw_lines[indx]}")
-                            line = line.replace(key, nw_lines[indx])
-                    new_data.write(line)
-        os.replace("Makefile_new", "Makefile")
+        fo.replace_lines(
+            Path("Makefile").absolute(),
+            og_lines,
+            nw_lines
+        )
         # same with ioctl_cfg80211.h
         og_lines = (
             #"#define NL80211_BAND_5GHZ IEEE80211_BAND_5GHZ",
@@ -353,17 +360,10 @@ class KernelBuilder:
             #"#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS\n#define IEEE80211_NUM_BANDS 0",
             "#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))",
         )
-        with open(Path("os_dep", "linux", "ioctl_cfg80211.h")) as data:
-            with open(Path("os_dep", "linux", "ioctl_cfg80211_new.h"), 'w') as new_data:
-                for line in data:
-                    for indx, key in enumerate(og_lines):
-                        if key in line:
-                            msg.note(f"Replacing {key} with {nw_lines[indx]}")
-                            line = line.replace(key, nw_lines[indx])
-                    new_data.write(line)
-        os.replace(
-            Path("os_dep", "linux", "ioctl_cfg80211_new.h"),
-            Path("os_dep", "linux", "ioctl_cfg80211.h")
+        fo.replace_lines(
+            Path("os_dep", "linux", "ioctl_cfg80211.h").absolute(),
+            og_lines,
+            nw_lines
         )
         # ...and same with ioctl_cfg80211.c
         og_lines = (
@@ -380,54 +380,11 @@ class KernelBuilder:
             "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_DTIM_PERIOD;",
             #", WLAN_STATUS_SUCCESS, GFP_ATOMIC, NL80211_TIMEOUT_UNSPECIFIED);",
         )
-        with open(Path("os_dep", "linux", "ioctl_cfg80211.c")) as data:
-            with open(Path("os_dep", "linux", "ioctl_cfg80211_new.c"), 'w') as new_data:
-                for line in data:
-                    for indx, key in enumerate(og_lines):
-                        if key in line:
-                            msg.note(f"Replacing {key} with {nw_lines[indx]}")
-                            line = line.replace(key, nw_lines[indx])
-                    new_data.write(line)
-        os.replace(
-            Path("os_dep", "linux", "ioctl_cfg80211_new.c"),
-            Path("os_dep", "linux", "ioctl_cfg80211.c")
+        fo.replace_lines(
+            Path("os_dep", "linux", "ioctl_cfg80211.c").absolute(),
+            og_lines,
+            nw_lines
         )
-
-    def _patch_rtl8812au_source_mod_v534(self) -> None:
-        # modifying Makefile
-        path_for_topdir = self._paths[self._codename]["path"] /\
-                          "out" /\
-                          "drivers" /\
-                          "net" /\
-                          "wireless" /\
-                          "realtek" /\
-                          "rtl8812au"
-        og_lines = (
-            "EXTRA_CFLAGS += -Wno-unused-function",
-            "CONFIG_PLATFORM_I386_PC = n",
-            "########### COMMON  #################################",
-        )
-        nw_lines = (
-            "EXTRA_CFLAGS += -Wno-unused-function\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-parentheses-equality\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack",
-            "CONFIG_PLATFORM_I386_PC = n\nCONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
-            f"export TopDIR ?= {str(path_for_topdir)}\n########### COMMON  #################################",
-        )
-        with open("Makefile") as data:
-            with open("Makefile_new", 'w') as new_data:
-                for line in data:
-                    for indx, key in enumerate(og_lines):
-                        if key in line:
-                            msg.note(f"Replacing {key} with {nw_lines[indx]}")
-                            line = line.replace(key, nw_lines[indx])
-                    new_data.write(line)
-        os.replace("Makefile_new", "Makefile")
-        # fixing Kconfig
-        kconfig_data = ""
-        with open("Kconfig", "r") as f:
-            kconfig_data = f.read().replace("RTL88XXAU", "88XXAU")
-        with open("Kconfig", "w") as f:
-            f.write(kconfig_data)
-
 
     def _patch_rtl8812au(self) -> None:
         """Patch RTL8812AU sources.
@@ -455,7 +412,6 @@ class KernelBuilder:
             "rtl8812au"
         )
         self._patch_rtl8812au_source_mod_v5642()
-        #self._patch_rtl8812au_source_mod_v534()
         # clean .git* files
         for elem in os.listdir():
             if elem.startswith(".git"):
@@ -477,7 +433,7 @@ class KernelBuilder:
                     "arch" /\
                     "arm64" /\
                     "configs" /\
-                    "lineage_oneplus5_defconfig"
+                    self._defconfig
         with open(makefile, "a") as f:
             f.write("obj-$(CONFIG_88XXAU)		+= rtl8812au/")
         with open(kconfig, "r+") as f:
@@ -501,6 +457,75 @@ class KernelBuilder:
                 "CONFIG_CFG80211_WEXT_EXPORT=y",
                 "CONFIG_CONCURRENT_MODE=n",
                 "CONFIG_MAC80211=y",
+                "CONFIG_RTL8187=y",
+                "CONFIG_RTLWIFI=y",
+            )
+            f.write("\n".join(extra_configs))
+            f.write("\n")
+
+    def _patch_kernelsu(self) -> None:
+        """Patch KernelSU into the kernel."""
+        # copy KernelSU sources into kernel sources
+        msg.note("Adding KernelSU into the kernel..")
+        fo.ucopy(
+            self._paths["KernelSU"]["path"],
+            self._paths[self._codename]["path"] /\
+            "drivers" /\
+            "KernelSU"
+        )
+        # clean out .git* files
+        cm.remove(
+            self._paths[self._codename]["path"] /\
+            "drivers" /\
+            "KernelSU" /\
+            ".git*"
+        )
+        makefile = self._paths[self._codename]["path"] /\
+                   "drivers" /\
+                   "Makefile"
+        hooks = self._paths[self._codename]["path"] /\
+                "security" /\
+                "selinux" /\
+                "hooks.c"
+        # Makefile
+        with open(makefile, "a") as f:
+            f.write("obj-y += KernelSU/kernel")
+        # hooks.c
+        nw_code_block = '' \
+            '	if (!ksu_sid) {\n		security_secctx_to_secid("u:r:su:s0", strlen("u:r:su:s0"), &ksu_sid);\n' \
+            '	}\n	error = security_secid_to_secctx(old_tsec->sid, &secdata, &seclen);\n	if (!error) {\n' \
+            '		rc = strcmp("u:r:init:s0",secdata);\n		security_release_secctx(secdata, seclen);\n' \
+            '		if(rc == 0 && new_tsec->sid == ksu_sid){\n			return 0;\n		}\n	}'
+        og_lines = (
+            "	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);",
+            "	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);",
+            "		return 0; /* No change in credentials */",
+        )
+        nw_lines = (
+            "	static u32 ksu_sid;\n	char *secdata;\n	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);",
+            "	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);\n	int error;\n	u32 seclen;",
+            f"		return 0; /* No change in credentials */\n\n{nw_code_block}",
+        )
+        fo.replace_lines(
+             Path(hooks).absolute(),
+             og_lines,
+             nw_lines
+        )
+        # add configs into defconfig
+        defconfig = self._paths[self._codename]["path"] /\
+                    "arch" /\
+                    "arm64" /\
+                    "configs" /\
+                    self._defconfig
+        with open(defconfig, "a") as f:
+            extra_configs = (
+                "CONFIG_MODULES=y",
+                "CONFIG_MODULE_UNLOAD=y",
+                "CONFIG_MODVERSIONS=y",
+                "CONFIG_DIAG_CHAR=y",
+                "CONFIG_KPROBES=y",
+                "CONFIG_HAVE_KPROBES=y",
+                "CONFIG_KPROBE_EVENTS=y",
             )
             f.write("\n".join(extra_configs))
             f.write("\n")
@@ -536,6 +561,9 @@ class KernelBuilder:
         """Apply various patches."""
         self._patch_anykernel3()
         self._patch_kernel()
+        # optionally include KernelSU support
+        if self._kernelsu:
+            self._patch_kernelsu()
         self._patch_rtl8812au()
         msg.done("Patches added!")
 
@@ -546,12 +574,13 @@ class KernelBuilder:
         os.chdir(self._paths[self._codename]["path"])
         # launch "make" with the number of all available processing units
         punits = ccmd.launch("nproc --all", get_output=True)
-        cmd1 = f"make -j{punits} O=out lineage_oneplus5_defconfig "\
+        cmd1 = "make -j{} O=out {} "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
                "HOSTCC=clang "\
-               "HOSTCXX=clang+"
-        cmd2 = f"make -j{punits} O=out "\
+               "HOSTCXX=clang+"\
+                .format(punits, self._defconfig)
+        cmd2 = "make -j{} O=out "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
                "CROSS_COMPILE=aarch64-linux-android- "\
@@ -568,7 +597,8 @@ class KernelBuilder:
                "LLVM_IAS=1 "\
                "OBJCOPY=llvm-objcopy "\
                "OBJDUMP=llvm-objdump "\
-               "STRIP=llvm-strip"
+               "STRIP=llvm-strip"\
+                .format(punits)
         # launch and time the build process
         time_start = time.time()
         ccmd.launch(cmd1)
@@ -605,13 +635,14 @@ class KernelBuilder:
         kernelversion = ".".join([i.split("= ")[1].split("\n")[0] for i in head])
         buildtime = time.strftime("%Y%m%d")
         # form the final ZIP file
-        name = f"{name}-{kernelversion}-{buildtime}"
+        pretag = f"{name}-{self._rom}-ksu" if self._kernelsu else f"{name}-{self._rom}"
+        full_name = f"{pretag}-{kernelversion}-{buildtime}"
         kdir = self._workdir / "kernel"
-        if not kdir.is_file():
+        if not kdir.is_dir():
             os.mkdir(kdir)
         os.chdir(self._paths["AnyKernel3"]["path"])
         # this is not the best solution, but is the easiest
-        cmd = f"zip -r9 {kdir / name}.zip . -x *.git* *README* *LICENSE* *placeholder"
+        cmd = f"zip -r9 {kdir / full_name}.zip . -x *.git* *README* *LICENSE* *placeholder"
         ccmd.launch(cmd)
         os.chdir(self._workdir)
         msg.done("Done!")

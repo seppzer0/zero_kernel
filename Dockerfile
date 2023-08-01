@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM python:3.11-slim-bookworm as base
 
 # variable store
 ARG WDIR="/s0nh_build"
@@ -10,29 +10,27 @@ RUN \
     apt update \
     && \
     apt install -y \
-                build-essential \
-                nghttp2 \
-                libnghttp2-dev \
                 curl \
                 git \
                 gcc \
+                g++ \
                 libssl-dev \
-                python \
                 python3 \
                 python3-pip \
                 make \
                 zip \
-                sudo \
                 bc \
-    && \
-    apt autoremove -y
+                libgpgme-dev
 
 # place sources from host to container
 COPY . $WDIR
 WORKDIR $WDIR
 
 # install pip packages
-RUN python3 -m pip install poetry && python3 -m poetry install
+RUN python3 -m pip install pip --upgrade && \
+    python3 -m pip install poetry && \
+    python3 -m poetry config virtualenvs.create false && \
+    python3 -m poetry install --no-root
 
 # launch app
 CMD [ "/bin/bash" ]

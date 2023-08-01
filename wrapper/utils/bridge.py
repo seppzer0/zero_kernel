@@ -26,10 +26,10 @@ def parse_args() -> argparse.Namespace:
         help="select device codename"
     )
     parser.add_argument(
-        "--losversion",
-        dest="losversion",
+        "--rom",
+        dest="rom",
         required=True,
-        help="select LineageOS version"
+        help="select a ROM for the build"
     )
     parser.add_argument(
         "--chroot",
@@ -66,6 +66,12 @@ def parse_args() -> argparse.Namespace:
         help="choose to download extra assets",
         action="store_true"
     )
+    parser.add_argument(
+        "--kernelsu",
+        action="store_true",
+        dest="kernelsu",
+        help="add KernelSU support"
+    )
     return parser.parse_args(args)
 
 
@@ -73,24 +79,27 @@ def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
     if args.build_module == "kernel":
         KernelBuilder(
-            args.codename,
-            args.losversion,
-            args.clean_kernel
+            codename = args.codename,
+            rom = args.rom,
+            clean = args.clean_kernel,
+            kernelsu = args.kernelsu,
         ).run()
     elif args.build_module == "assets":
         AssetCollector(
-            args.codename,
-            args.losversion,
-            args.chroot,
-            args.clean_assets,
-            args.rom_only,
-            args.extra_assets
+            codename = args.codename,
+            rom = args.rom,
+            chroot = args.chroot,
+            clean = args.clean_assets,
+            rom_only = args.rom_only,
+            extra_assets = args.extra_assets,
+            kernelsu = args.kernelsu,
         ).run()
     elif args.build_module == "bundle":
         BundleCreator(
-            args.codename,
-            args.losversion,
-            args.package_type
+            codename = args.codename,
+            rom = args.rom,
+            package_type = args.package_type,
+            kernelsu = args.kernelsu,
         ).run()
 
 

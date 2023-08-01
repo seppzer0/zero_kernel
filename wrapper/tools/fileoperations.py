@@ -1,8 +1,8 @@
 import os
 import shutil
 import requests
-from typing import List
 from pathlib import Path
+from typing import List, Tuple
 
 import wrapper.tools.messages as msg
 
@@ -12,7 +12,7 @@ def ucopy(src: os.PathLike, dst: os.PathLike, exceptions: List[str] = []) -> Non
 
     :param path src: Source path.
     :param path dst: Destination path.
-    :param path exceptions: Elements that will not be removed.
+    :param List[str] exceptions: Elements that will not be removed.
     """
     # for a directory (it's contents)
     if src.is_dir():
@@ -58,3 +58,17 @@ def download(url: str) -> None:
     except Exception:
         msg.error("Download failed.")
     msg.done("Done!")
+
+
+def replace_lines(filename: os.PathLike, og_lines: Tuple[str], nw_lines: Tuple[str]) -> None:
+    """Replace lines in the specified file."""
+    filename_new = Path(str(filename) + "_new")
+    with open(filename) as data:
+        with open(filename_new, 'w') as new_data:
+            for line in data:
+                for indx, key in enumerate(og_lines):
+                    if key in line:
+                        msg.note(f"Replacing {key} with {nw_lines[indx]}")
+                        line = line.replace(key, nw_lines[indx])
+                new_data.write(line)
+    os.replace(filename_new, filename)

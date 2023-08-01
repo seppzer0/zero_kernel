@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Nethunter Kernel for OnePlus5/5T by @seppzer0
+kernel.string=Nethunter Kernel for OnePlus 5/T by @seppzer0
 do.devicecheck=1
 do.modules=0
 do.systemless=1

@@ -7,6 +7,7 @@ android_*
 clang*
 rtl8812au
 AnyKernel3
+KernelSU
 
 # misc local artifacts
 kernel

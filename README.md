@@ -1,4 +1,4 @@
-# s0nh_kernel — LineageOS + NetHunter Kernel
+# s0nh_kernel — an Android kernel w/ Kali Nethunter support
 
 ## **Disclaimer**
 
@@ -10,7 +10,7 @@
 
 ## **Contents**
 
-- [s0nh\_kernel — LineageOS + NetHunter Kernel](#s0nh_kernel--lineageos--nethunter-kernel)
+- [s0nh\_kernel — an Android kernel w/ Kali Nethunter support](#s0nh_kernel--an-android-kernel-w-kali-nethunter-support)
   - [**Disclaimer**](#disclaimer)
   - [**Contents**](#contents)
   - [**Kernel Features**](#kernel-features)
@@ -27,8 +27,9 @@
 The kernel has the following features:
 
 - Kali NetHunter support;
-- RTL8812AU Wi-Fi drivers;
-- packet injection support for internal Wi-Fi chipset.
+- RTL8812/21AU + RTL8814AU + RTL8187 Wi-Fi drivers;
+- packet injection support for internal Wi-Fi chipset;
+- KernelSU support.
 
 ## **Usage**
 
@@ -42,7 +43,7 @@ The custom build wrapper consists of 3 main parts:
 $ python3 wrapper --help
 usage: wrapper [-h] [--clean] {kernel,assets,bundle} ...
 
-A custom wrapper for the s0nh kernel.
+A custom wrapper for the s0nh_kernel.
 
 positional arguments:
   {kernel,assets,bundle}
@@ -84,23 +85,27 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-image] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename
+usage: wrapper kernel [-h] [-c] [--clean-image]
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
+                      [--kernelsu]
+                      {local,docker,podman} {lineageos,aospa} codename
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  losversion            select LineageOS version
+  {lineageos,aospa}     select a ROM for the build
   codename              select device codename
 
 optional arguments:
   -h, --help            show this help message and exit
   -c, --clean           don't build anything, just clean the environment
-  --clean-image         remove Docker/Podman image from the host machine after build
+  --clean-image         remove Docker/Podman image from the host machine after
+                        build
   --log-level {normal,verbose,quiet}
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-
+  --kernelsu            add KernelSU support
 ```
 
 ### **Assets**
@@ -109,12 +114,17 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only] [--clean-image] [--clean] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {full,minimal}
+usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only]
+                      [--clean-image] [--clean]
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
+                      [--kernelsu]
+                      {local,docker,podman} {lineageos,aospa} codename
+                      {full,minimal}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  losversion            select LineageOS version
+  {lineageos,aospa}     select a ROM for the build
   codename              select device codename
   {full,minimal}        select Kali chroot type
 
@@ -123,12 +133,14 @@ optional arguments:
   --extra-assets EXTRA_ASSETS
                         select a JSON file with extra assets
   --rom-only            download only the ROM as an asset
-  --clean-image         remove Docker/Podman image from the host machine after build
+  --clean-image         remove Docker/Podman image from the host machine after
+                        build
   --clean               autoclean 'assets' folder if it exists
   --log-level {normal,verbose,quiet}
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
+  --kernelsu            add KernelSU support
 ```
 
 ### **Bundle**
@@ -151,23 +163,29 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-upload] [--clean-image] [--log-level {normal,verbose,quiet}] [-o OUTLOG] {local,docker,podman} losversion codename {conan,slim,full}
+usage: wrapper bundle [-h] [--conan-upload] [--clean-image]
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
+                      [--kernelsu]
+                      {local,docker,podman} {lineageos,aospa} codename
+                      {conan,slim,full}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  losversion            select LineageOS version
+  {lineageos,aospa}     select a ROM for the build
   codename              select device codename
   {conan,slim,full}     select package type of the bundle
 
 optional arguments:
   -h, --help            show this help message and exit
   --conan-upload        upload Conan packages to remote
-  --clean-image         remove Docker/Podman image from the host machine after build
+  --clean-image         remove Docker/Podman image from the host machine after
+                        build
   --log-level {normal,verbose,quiet}
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
+  --kernelsu            add KernelSU support
 ```
 
 ## **Examples**
@@ -175,11 +193,11 @@ optional arguments:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle docker 20.0 dumpling slim`
+  - `python3 wrapper bundle docker lineageos dumpling slim`
 - Build kernel locally:
-  - `python3 wrapper kernel local 20.0 dumpling`;
+  - `python3 wrapper kernel local lineageos dumpling`;
 - Collect all the assets locally:
-  - `python3 wrapper assets local 20.0 dumpling full`
+  - `python3 wrapper assets local lineageos dumpling full`
 
 ## **See also**
 

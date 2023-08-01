@@ -4,7 +4,7 @@
 
 - [x] add monitor mode support for internal Wi-Fi chipset (with Wi-Fi packet injection);
 - [ ] add DM-Verity and Force Encrypt disabler;
-- [ ] add KernelSU support.
+- [x] add KernelSU support.
 
 ## Build process features
 
@@ -42,6 +42,9 @@
 - [ ] refactor logging mechanism;
 - [x] fix Podman usage (.dockerignore);
 - [ ] dedicate kernel source patchers as separate modules (LineageOS, AOSP, AOSPA etc);
-- [ ] add a separate method for multiline patching in files;
+- [x] add a separate method for multiline patching in files;
 - [ ] check Alpine Linux as a base for Docker/Podman images;
-- [ ] make kernel building and assets collection processes asynchronous when launching the `bundle` option.
+- [ ] make kernel building and assets collection processes asynchronous when launching the `bundle` option;
+- [ ] add wrapper argument storage and unifided access mechanism for models;
+- [x] add PA ROM support;
+- [ ] add a GH workflow for checking PRs.

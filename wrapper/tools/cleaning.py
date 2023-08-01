@@ -63,7 +63,8 @@ def root(extra: List[str] = []) -> None:
         "kernel",
         "localversion",
         "assets",
-        "release-slim",
+        "release-*",
+        "KernelSU",
     ]
     # add extra elements to clean up from root directory
     if extra:
