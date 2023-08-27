@@ -103,6 +103,7 @@ class ContainerEngine:
             "-i",
             "--rm",
             "-e ROOTPATH=/{}".format(self._docker_workdir),
+            "-e KVERSION={}".format(os.getenv("KVERSION")),
             "-w /{}".format(self._docker_workdir),
         ]
         # mount directories
