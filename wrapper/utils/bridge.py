@@ -67,10 +67,10 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
-        "--kernelsu",
+        "--ksu",
         action="store_true",
-        dest="kernelsu",
-        help="add KernelSU support"
+        dest="ksu",
+        help="add ksu support"
     )
     return parser.parse_args(args)
 
@@ -82,7 +82,7 @@ def main(args: argparse.Namespace) -> None:
             codename = args.codename,
             rom = args.rom,
             clean = args.clean_kernel,
-            kernelsu = args.kernelsu,
+            ksu = args.ksu,
         ).run()
     elif args.build_module == "assets":
         AssetCollector(
@@ -92,14 +92,14 @@ def main(args: argparse.Namespace) -> None:
             clean = args.clean_assets,
             rom_only = args.rom_only,
             extra_assets = args.extra_assets,
-            kernelsu = args.kernelsu,
+            ksu = args.ksu,
         ).run()
     elif args.build_module == "bundle":
         BundleCreator(
             codename = args.codename,
             rom = args.rom,
             package_type = args.package_type,
-            kernelsu = args.kernelsu,
+            ksu = args.ksu,
         ).run()
 
 

@@ -1,11 +1,4 @@
 {
-    "android_prebuilts_build-tools": {
-        "type": "git",
-        "path": "android_prebuilts_build-tools",
-        "url": "https://github.com/LineageOS/android_prebuilts_build-tools",
-        "branch": "lineage-20.0",
-        "commit": ""
-    },
     "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9": {
         "type": "git",
         "path": "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9",
@@ -37,13 +30,13 @@
     "clang": {
         "type": "generic",
         "path": "clang",
-        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-r458507.tar.gz"
+        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/eed2fff8b93ce059eea7ccd8fc5eee37f8adb432/clang-r458507.tar.gz"
     },
     "KernelSU": {
         "type": "git",
         "path": "KernelSU",
         "url": "https://github.com/tiann/KernelSU",
-        "branch": "v0.6.2",
+        "branch": "v0.6.7",
         "commit": ""
     }
 }

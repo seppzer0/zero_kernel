@@ -21,7 +21,7 @@ class AssetCollector:
         clean: bool,
         rom_only: bool,
         extra_assets: Optional[bool] = False,
-        kernelsu: Optional[bool] = False
+        ksu: Optional[bool] = False
     ) -> None:
         self._codename = codename
         self._rom = rom
@@ -29,7 +29,7 @@ class AssetCollector:
         self._extra_assets = extra_assets
         self._clean = clean
         self._rom_only = rom_only
-        self._kernelsu = kernelsu
+        self._ksu = ksu
 
     @property
     def _workdir(self):
@@ -44,23 +44,36 @@ class AssetCollector:
         os.chdir(self._workdir)
         self._check()
         os.chdir(self._assetdir)
+        # determine which SU manager and ROM are required
+        su_manager = "tiann/KernelSU" if self._ksu else "topjohnwu/Magisk"
+        rom_collector_dto = ""
+        if self._rom == "los":
+            rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
+        else:
+            rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
         # process the ROM-only download
         if self._rom_only:
-            fo.download(LineageOsApi(self._codename, self._rom_only).run())
+            fo.download(rom_collector_dto.run())
             print("\n", end="")
             msg.done("ROM-only asset collection complete!")
         else:
-            # determine which SU manager is required
-            su_manager = "tiann/KernelSU" if self._kernelsu else "topjohnwu/Magisk"
-            # same with the collected ROM
-            rom_collector_dto = ""
-            if self._rom == "lineageos":
-                rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
-            else:
-                rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
             assets = [
                 rom_collector_dto.run(),
-                GitHubApi(project=su_manager, assetdir=self._assetdir, file_filter=".apk").run(),
+                GitHubApi(
+                    project=su_manager,
+                    assetdir=self._assetdir,
+                    file_filter=".apk"
+                    ).run(),
+                GitHubApi(
+                    project="Ruan625Br/FileManagerSphere",
+                    assetdir=self._assetdir,
+                    file_filter=".apk"
+                    ).run(),
+                GitHubApi(
+                    project="klausw/hackerskeyboard",
+                    assetdir=self._assetdir,
+                    file_filter=".apk"
+                    ).run(),
                 "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",

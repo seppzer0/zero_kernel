@@ -616,6 +616,6 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=mac,ecm,hid,mass_stor
     setprop sys.usb.state ${sys.usb.config}
 
  # -- End of Mac's Part -- #
- # -- Nethunter HID END -- #
+ # -- NetHunter HID END -- #
 
 

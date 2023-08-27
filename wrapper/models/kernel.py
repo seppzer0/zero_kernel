@@ -14,15 +14,15 @@ import wrapper.tools.fileoperations as fo
 class KernelBuilder:
     """Kernel builder."""
 
-    def __init__(self, codename: str, rom: str, clean: bool, kernelsu: bool) -> None:
+    def __init__(self, codename: str, rom: str, clean: bool, ksu: bool) -> None:
         self._codename = codename
         self._rom = rom
         self._clean = clean
-        self._kernelsu = kernelsu
+        self._ksu = ksu
         self._paths = []
 
     @property
-    def _workdir(self) -> os.PathLike:
+    def _workdir(self) -> Path:
         return Path(os.getenv("ROOTPATH"))
 
     def run(self) -> None:
@@ -46,13 +46,13 @@ class KernelBuilder:
         self._patch_all()
         # build and package
         self._build()
-        self._form_release(f"{os.getenv('KNAME', 's0nh')}-{self._codename}")
+        self._form_release(f"{os.getenv('KNAME', 's0nh')}-{self._ucodename}")
 
     @property
     def _ucodename(self) -> str:
         """A unified device codename to apply patches for.
         
-        E.g, "dumplinger", combining "dumpling" and "cheeseburger",
+        E.g., "dumplinger", combining "dumpling" and "cheeseburger",
         both of which share the same kernel source.
         """
         return "dumplinger" if self._codename in ("dumpling", "cheeseburger") else self._codename
@@ -60,13 +60,13 @@ class KernelBuilder:
     @property
     def _defconfig(self) -> str:
         """Determine defconfig file name based on ROM."""
-        return "lineage_oneplus5_defconfig" if self._rom == "lineageos" else "paranoid_defconfig"
+        return "lineage_oneplus5_defconfig" if self._rom == "los" else "paranoid_defconfig"
 
     @staticmethod
-    def _export_path(path: os.PathLike) -> None:
+    def _export_path(path: Path) -> None:
         """Add path to PATH.
 
-        :param str path: A path that is being added to PATH.
+        :param path: A path that is being exported to PATH.
         """
         pathenv = str(f"{path}/bin/")
         # special rules for "android_prebuilts_build-tools"
@@ -128,6 +128,9 @@ class KernelBuilder:
                 branch = self._paths[e]["branch"]
                 commit = self._paths[e]["commit"]
                 cmd = f"git clone -b {branch} --depth 1 {url} {path}"
+                # KernelSU defines it's version based on commit history
+                if e.lower() == "kernelsu":
+                    cmd = cmd.replace(" --depth 1", "")
                 if not path.is_dir():
                     ccmd.launch(cmd)
                     # checkout a specific commit if it is specified
@@ -351,13 +354,9 @@ class KernelBuilder:
         )
         # same with ioctl_cfg80211.h
         og_lines = (
-            #"#define NL80211_BAND_5GHZ IEEE80211_BAND_5GHZ",
-            #"#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS",
             "#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))",
         )
         nw_lines = (
-            #"#define NL80211_BAND_5GHZ IEEE80211_BAND_5GHZ\n#define IEEE80211_BAND_2GHZ 0\n#define IEEE80211_BAND_5GHZ 0",
-            #"#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS\n#define IEEE80211_NUM_BANDS 0",
             "#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))",
         )
         fo.replace_lines(
@@ -371,14 +370,12 @@ class KernelBuilder:
             "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_SHORT_SLOT_TIME;",
             "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_CTS_PROT;",
             "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_DTIM_PERIOD;",
-            #", WLAN_STATUS_SUCCESS, GFP_ATOMIC);",
         )
         nw_lines = (
             "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_PREAMBLE;",
             "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME;",
             "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_CTS_PROT;",
             "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_DTIM_PERIOD;",
-            #", WLAN_STATUS_SUCCESS, GFP_ATOMIC, NL80211_TIMEOUT_UNSPECIFIED);",
         )
         fo.replace_lines(
             Path("os_dep", "linux", "ioctl_cfg80211.c").absolute(),
@@ -412,10 +409,7 @@ class KernelBuilder:
             "rtl8812au"
         )
         self._patch_rtl8812au_source_mod_v5642()
-        # clean .git* files
-        for elem in os.listdir():
-            if elem.startswith(".git"):
-                cm.remove(elem)
+        cm.remove(".git*")
         os.chdir(self._workdir)
         # include the driver into build process
         makefile = self._paths[self._codename]["path"] /\
@@ -436,18 +430,11 @@ class KernelBuilder:
                     self._defconfig
         with open(makefile, "a") as f:
             f.write("obj-$(CONFIG_88XXAU)		+= rtl8812au/")
-        with open(kconfig, "r+") as f:
-            a = [x.rstrip() for x in f]
-            index = 0
-            for item in a:
-                if item.startswith("endif"):
-                    a.insert(index, "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\"")
-                    break
-                index += 1
-            f.seek(0)
-            f.truncate()
-            for line in a:
-                f.write(line + "\n")
+        fo.insert_before_line(
+            kconfig,
+            "endif",
+            "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\""
+        )
         with open(defconfig, "a") as f:
             extra_configs = (
                 "CONFIG_88XXAU=y",
@@ -463,54 +450,55 @@ class KernelBuilder:
             f.write("\n".join(extra_configs))
             f.write("\n")
 
-    def _patch_kernelsu(self) -> None:
-        """Patch KernelSU into the kernel."""
-        # copy KernelSU sources into kernel sources
+    def _patch_ksu(self) -> None:
+        """Patch KernelSU into the kernel.
+        
+        During this process, a symlink is used to "place" KernelSU
+        source into the kernel sources. This is due to the fact that KernelSU
+        has an internal mechanism of getting it's version via accessing
+        .git data. And having .git data in kernel sources is not ideal.
+        """
         msg.note("Adding KernelSU into the kernel..")
-        fo.ucopy(
-            self._paths["KernelSU"]["path"],
-            self._paths[self._codename]["path"] /\
-            "drivers" /\
-            "KernelSU"
+        # extract KSU_GIT_VERSION env var manually
+        goback = Path.cwd()
+        os.chdir(self._paths["KernelSU"]["path"])
+        os.environ["KSU_GIT_VERSION"] = str(
+            # formula is retrieved from KernelSU's Makefile itself
+            10000 + int(ccmd.launch("git rev-list --count HEAD", get_output=True)) + 200
         )
-        # clean out .git* files
-        cm.remove(
-            self._paths[self._codename]["path"] /\
-            "drivers" /\
-            "KernelSU" /\
-            ".git*"
-        )
+        os.chdir(goback)
         makefile = self._paths[self._codename]["path"] /\
                    "drivers" /\
                    "Makefile"
-        hooks = self._paths[self._codename]["path"] /\
-                "security" /\
-                "selinux" /\
-                "hooks.c"
-        # Makefile
+        kconfig =  self._paths[self._codename]["path"] /\
+                   "drivers" /\
+                   "Kconfig"
+        # include into the build process via symlink
+        os.symlink(
+            self._paths["KernelSU"]["path"] / "kernel",
+            self._paths[self._codename]["path"] /\
+            "drivers" /\
+            "kernelsu"
+        )
         with open(makefile, "a") as f:
-            f.write("obj-y += KernelSU/kernel")
-        # hooks.c
-        nw_code_block = '' \
-            '	if (!ksu_sid) {\n		security_secctx_to_secid("u:r:su:s0", strlen("u:r:su:s0"), &ksu_sid);\n' \
-            '	}\n	error = security_secid_to_secctx(old_tsec->sid, &secdata, &seclen);\n	if (!error) {\n' \
-            '		rc = strcmp("u:r:init:s0",secdata);\n		security_release_secctx(secdata, seclen);\n' \
-            '		if(rc == 0 && new_tsec->sid == ksu_sid){\n			return 0;\n		}\n	}'
-        og_lines = (
-            "	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);",
-            "	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);",
-            "		return 0; /* No change in credentials */",
+            # TODO: maybe parametrize the "obj-y" with "obj-$(CONFIG_KSU)"
+            f.write("obj-y		+= kernelsu/\n")
+        fo.insert_before_line(
+            kconfig,
+            "endmenu",
+            "source \"drivers/kernelsu/Kconfig\""
         )
-        nw_lines = (
-            "	static u32 ksu_sid;\n	char *secdata;\n	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);",
-            "	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);\n	int error;\n	u32 seclen;",
-            f"		return 0; /* No change in credentials */\n\n{nw_code_block}",
+        # update KernelSU source via .patch file
+        fo.ucopy(
+            self._workdir / "wrapper" / "modifications" / self._ucodename / "kernel" / "kernelsu-compat.patch",
+            self._paths[self._codename]["path"]
         )
-        fo.replace_lines(
-             Path(hooks).absolute(),
-             og_lines,
-             nw_lines
-        )
+        os.chdir(self._paths[self._codename]["path"])
+        for pf in Path.cwd().glob("*.patch"):
+            msg.note(f"Applying patch: {pf}")
+            ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {pf}")
+            os.remove(pf)
+        os.chdir(goback)
         # add configs into defconfig
         defconfig = self._paths[self._codename]["path"] /\
                     "arch" /\
@@ -519,6 +507,9 @@ class KernelBuilder:
                     self._defconfig
         with open(defconfig, "a") as f:
             extra_configs = (
+                "CONFIG_KSU=y",
+                "CONFIG_KSU_DEBUG=y",
+                "CONFIG_OVERLAY_FS=y",
                 "CONFIG_MODULES=y",
                 "CONFIG_MODULE_UNLOAD=y",
                 "CONFIG_MODVERSIONS=y",
@@ -537,17 +528,23 @@ class KernelBuilder:
         clang_ver = ccmd.launch(clang_cmd, get_output=True).split("clang version ")[1].split(".")[0]
         if int(clang_ver) >= 15:
             self._patch_strict_prototypes()
-        # apply .patch files
+        # apply .patch files;
+        # here, patch for KernelSU is ignored;
+        #
+        # technically it *is* a patch for a *kernel*, but is also applied
+        # optionally elsewhere.
         fo.ucopy(
             self._workdir / "wrapper" / "modifications" / self._ucodename / "kernel",
-            self._paths[self._codename]["path"]
+            self._paths[self._codename]["path"],
+            ("kernelsu-compat.patch",)
         )
         os.chdir(self._paths[self._codename]["path"])
         for pf in Path.cwd().glob("*.patch"):
-            msg.note(f"Applying patch: {pf}")
-            ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {pf}")
-            os.remove(pf)
-        # additionally add support for CONFIG_MAC80211 kernel option
+            if "kernelsu" not in str(pf):
+                msg.note(f"Applying patch: {pf}")
+                ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {pf}")
+                os.remove(pf)
+        # additionally, add support for CONFIG_MAC80211 kernel option
         data = ""
         files = ("tx.c", "mlme.c")
         for fn in files:
@@ -562,8 +559,8 @@ class KernelBuilder:
         self._patch_anykernel3()
         self._patch_kernel()
         # optionally include KernelSU support
-        if self._kernelsu:
-            self._patch_kernelsu()
+        if self._ksu:
+            self._patch_ksu()
         self._patch_rtl8812au()
         msg.done("Patches added!")
 
@@ -616,7 +613,7 @@ class KernelBuilder:
     def _form_release(self, name: str) -> None:
         """Pack build artifacts into a .zip archive.
 
-        :param str name: The name of the archive.
+        :param name: The name of the archive.
         """
         print("\n", end="")
         msg.note("Forming final ZIP file..")
@@ -632,11 +629,11 @@ class KernelBuilder:
         # kernel version and timestamp
         with open(self._paths[self._codename]["path"] / "Makefile") as f:
             head = [next(f) for x in range(3)]
-        kernelversion = ".".join([i.split("= ")[1].split("\n")[0] for i in head])
-        buildtime = time.strftime("%Y%m%d")
+        ver_base = ".".join([i.split("= ")[1].splitlines()[0] for i in head])
+        ver_int = os.getenv("KVERSION")
         # form the final ZIP file
-        pretag = f"{name}-{self._rom}-ksu" if self._kernelsu else f"{name}-{self._rom}"
-        full_name = f"{pretag}-{kernelversion}-{buildtime}"
+        pretag = f"{name}-{self._rom}-ksu" if self._ksu else f"{name}-{self._rom}"
+        full_name = f"{pretag}-{ver_base}-{ver_int}"
         kdir = self._workdir / "kernel"
         if not kdir.is_dir():
             os.mkdir(kdir)

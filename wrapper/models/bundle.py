@@ -22,15 +22,15 @@ class BundleCreator:
             codename: str,
             rom: str,
             package_type: str,
-            kernelsu: bool
+            ksu: bool
         ) -> None:
         self._codename = codename
         self._rom = rom
         self._package_type = package_type
-        self._kernelsu = kernelsu
+        self._ksu = ksu
 
     @property
-    def _workdir(self) -> os.PathLike:
+    def _workdir(self) -> Path:
         return Path(os.getenv("ROOTPATH"))
 
     def run(self) -> None:
@@ -88,15 +88,15 @@ class BundleCreator:
     def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         """Build the kernel.
 
-        :param str rom_name: LineageOS version.
-        :param bool clean_only: Append an argument to only clean kernel directory.
+        :param rom_name: Name of the ROM.
+        :param clean_only: Append an argument to just clean the kernel directory.
         """
         if not Path("kernel").is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self._codename,
                 rom = rom_name,
                 clean = clean_only,
-                kernelsu = self._kernelsu,
+                ksu = self._ksu,
             ).run()
 
     @property
@@ -107,8 +107,8 @@ class BundleCreator:
     def _collect_assets(self, rom_name: str, chroot: str) -> None:
         """Collect assets.
 
-        :param str rom_name: LineageOS version.
-        :param str chroot: Type of chroot.
+        :param rom_name: Name of the ROM.
+        :param chroot: Type of chroot.
         """
         AssetCollector(
             codename = self._codename,
@@ -116,7 +116,7 @@ class BundleCreator:
             chroot = chroot,
             clean = True,
             rom_only = self._rom_only_flag,
-            kernelsu = self._kernelsu,
+            ksu = self._ksu,
         ).run()
 
     def _conan_sources(self) -> None:
@@ -144,8 +144,7 @@ class BundleCreator:
     def _conan_options(json_file: str) -> dict:
         """Read Conan options from a JSON file.
 
-        :param str json_file: Name of the JSON file to read data from.
-        :rtype: dict
+        :param json_file: Name of the JSON file to read data from.
         """
         with open(json_file) as f:
             json_data = json.load(f)
@@ -154,8 +153,8 @@ class BundleCreator:
     def _conan_package(self, options: List[str], reference: str) -> None:
         """Create the Conan package.
 
-        :param list options: Conan options.
-        :param str reference: Conan reference.
+        :param options: Conan options.
+        :param reference: Conan reference.
         """
         cmd = f"conan export-pkg . {reference}"
         for option_value in options:
@@ -170,7 +169,7 @@ class BundleCreator:
     def _conan_upload(reference: str) -> None:
         """Upload Conan component to the remote.
 
-        :param str reference: Conan reference.
+        :param reference: Conan reference.
         """
         # configure Conan client and upload packages
         url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"

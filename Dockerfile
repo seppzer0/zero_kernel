@@ -7,9 +7,9 @@ ENV CONAN_UPLOAD_CUSTOM 0
 
 # install basic packages
 RUN \
-    apt update \
+    apt-get update \
     && \
-    apt install -y \
+    apt-get install -y \
                 curl \
                 git \
                 gcc \

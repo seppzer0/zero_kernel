@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "s0nh-kernel-builder"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 authors = ["seppzer0"]
 packages = [{include = "wrapper"}]

@@ -6,7 +6,7 @@ import sys
 def banner(text: str) -> None:
     """A custom simple banner.
 
-    :param str text: Text to wrap.
+    :param text: Text to wrap.
     """
     banner_len = len(text) + 6
     print("\n" + "*" * banner_len)
@@ -19,7 +19,7 @@ def banner(text: str) -> None:
 def note(text: str) -> None:
     """A "note" wrapper.
 
-    :param str text: Text to wrap.
+    :param text: Text to wrap.
     """
     print(f"[ * ] {text}")
 
@@ -27,7 +27,7 @@ def note(text: str) -> None:
 def error(text: str, dont_exit: bool = False) -> None:
     """An "error" wrapper.
 
-    :param str text: Text to wrap.
+    :param text: Text to wrap.
     """
     print(f"[ ! ] {text}", file=sys.stderr)
     if not dont_exit:
@@ -37,7 +37,7 @@ def error(text: str, dont_exit: bool = False) -> None:
 def cancel(text: str) -> None:
     """A "cancel" wrapper.
 
-    :param str text: Text to wrap.
+    :param text: Text to wrap.
     """
     print(f"[ ~ ] {text}")
     sys.exit(0)
@@ -46,7 +46,7 @@ def cancel(text: str) -> None:
 def done(text: str) -> None:
     """A "done" wrapper.
 
-    :param str text: Text to wrap.
+    :param text: Text to wrap.
     """
     print(f"[ + ] {text}")
 

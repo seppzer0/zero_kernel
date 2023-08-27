@@ -1,0 +1,143 @@
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index 52913ea..e052b52 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -370,6 +370,8 @@ static int input_get_disposition(struct input_dev *dev,
+ 	return disposition;
+ }
+ 
++extern int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value);
++
+ static void input_handle_event(struct input_dev *dev,
+ 			       unsigned int type, unsigned int code, int value)
+ {
+@@ -377,6 +379,8 @@ static void input_handle_event(struct input_dev *dev,
+ 
+ 	disposition = input_get_disposition(dev, type, code, &value);
+ 
++	ksu_handle_input_handle_event(&type, &code, &value);
++
+ 	if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
+ 		dev->event(dev, type, code, value);
+ 
+diff --git a/fs/exec.c b/fs/exec.c
+index 341b872..d15bd7f 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1530,6 +1530,8 @@ static int exec_binprm(struct linux_binprm *bprm)
+ /*
+  * sys_execve() executes a new program.
+  */
++extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,
++			void *envp, int *flags);
+ static int do_execveat_common(int fd, struct filename *filename,
+ 			      struct user_arg_ptr argv,
+ 			      struct user_arg_ptr envp,
+@@ -1541,6 +1543,7 @@ static int do_execveat_common(int fd, struct filename *filename,
+ 	struct files_struct *displaced;
+ 	int retval;
+ 
++	ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);
+ 	if (IS_ERR(filename))
+ 		return PTR_ERR(filename);
+ 
+diff --git a/fs/open.c b/fs/open.c
+index b7e2889..1376604 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -338,6 +338,8 @@ SYSCALL_DEFINE4(fallocate, int, fd, int, mode, loff_t, offset, loff_t, len)
+ 	return error;
+ }
+ 
++extern int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,int *flags);
++
+ /*
+  * access() needs to use the real uid/gid, not the effective uid/gid.
+  * We do this by temporarily clearing all FS-related capabilities and
+@@ -353,6 +355,8 @@ SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
+ 	int res;
+ 	unsigned int lookup_flags = LOOKUP_FOLLOW;
+ 
++	ksu_handle_faccessat(&dfd, &filename, &mode, NULL);
++
+ 	if (mode & ~S_IRWXO)	/* where's F_OK, X_OK, W_OK, R_OK? */
+ 		return -EINVAL;
+ 
+diff --git a/fs/read_write.c b/fs/read_write.c
+index 27023e8..411a598 100644
+--- a/fs/read_write.c
++++ b/fs/read_write.c
+@@ -436,10 +436,14 @@ ssize_t __vfs_read(struct file *file, char __user *buf, size_t count,
+ }
+ EXPORT_SYMBOL(__vfs_read);
+ 
++extern int ksu_handle_vfs_read(struct file **file_ptr, char __user **buf_ptr,size_t *count_ptr, loff_t **pos);
++
+ ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
+ {
+ 	ssize_t ret;
+ 
++	ksu_handle_vfs_read(&file, &buf, &count, &pos);
++	
+ 	if (!(file->f_mode & FMODE_READ))
+ 		return -EBADF;
+ 	if (!(file->f_mode & FMODE_CAN_READ))
+diff --git a/fs/stat.c b/fs/stat.c
+index 004dd77..270855f 100644
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -87,6 +87,8 @@ int vfs_fstat(unsigned int fd, struct kstat *stat)
+ }
+ EXPORT_SYMBOL(vfs_fstat);
+ 
++extern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
++
+ int vfs_fstatat(int dfd, const char __user *filename, struct kstat *stat,
+ 		int flag)
+ {
+@@ -94,6 +96,8 @@ int vfs_fstatat(int dfd, const char __user *filename, struct kstat *stat,
+ 	int error = -EINVAL;
+ 	unsigned int lookup_flags = 0;
+ 
++	ksu_handle_stat(&dfd, &filename, &flag);
++	
+ 	if ((flag & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |
+ 		      AT_EMPTY_PATH)) != 0)
+ 		goto out;
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index fda755e..735b2dc 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2266,9 +2266,12 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
+ 			    const struct task_security_struct *old_tsec,
+ 			    const struct task_security_struct *new_tsec)
+ {
++	static u32 ksu_sid;
++	char *secdata;
+ 	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);
+ 	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);
+-	int rc;
++	int rc, error;
++	u32 seclen;
+ 
+ 	if (!nnp && !nosuid)
+ 		return 0; /* neither NNP nor nosuid */
+@@ -2276,6 +2279,17 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
+ 	if (new_tsec->sid == old_tsec->sid)
+ 		return 0; /* No change in credentials */
+ 
++	if (!ksu_sid)
++		security_secctx_to_secid("u:r:su:s0", strlen("u:r:su:s0"), &ksu_sid);
++
++	error = security_secid_to_secctx(old_tsec->sid, &secdata, &seclen);
++	if (!error) {
++		rc = strcmp("u:r:init:s0", secdata);
++		security_release_secctx(secdata, seclen);
++		if (rc == 0 && new_tsec->sid == ksu_sid)
++			return 0;
++	}
++
+ 	/*
+ 	 * The only transitions we permit under NNP or nosuid
+ 	 * are transitions to bounded SIDs, i.e. SIDs that are
+-- 

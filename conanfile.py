@@ -3,11 +3,11 @@ from conans import ConanFile
 
 class S0nhConan(ConanFile):
     name = "s0nh"
-    version = "0.3.0"
+    version = "0.3.1"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
-    description = "A modified LOS kernel with Kali NetHunter functionality."
-    topics = ("lineageos", "oneplus5", "oneplus5t", "kali-nethunter")
+    description = "An Android kernel w/ Kali NetHunter support."
+    topics = ("s0nh_kernel", "oneplus5", "oneplus5t", "kali-nethunter")
     settings = None
     options = {
                 "rom": ("lineage, aosp"),

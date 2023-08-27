@@ -7,18 +7,17 @@ from typing import List, Union
 import wrapper.tools.commands as ccmd
 
 
-def remove(elements: Union[str, os.PathLike, List[os.PathLike]], allow_errors: bool = False) -> None:
+def remove(elements: Union[str, Path, List[Path]], allow_errors: bool = False) -> None:
     """An ultimate alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
     Because of such specific as directories starting with a "." (e.g., .github).
 
     :param elements: Files and/or directories to remove.
-    :param bool allow_errors: Don't exit on errors.
-    :type elements: path or list[path]
+    :param allow_errors: Don't exit on errors.
     """
     # if a given argument is a string --> convert it into a one-element list
-    if isinstance(elements, str) or isinstance(elements, os.PathLike):
+    if isinstance(elements, str) or isinstance(elements, Path):
         elements = [str(elements)]
     for e in elements:
         # force convert into str
@@ -35,10 +34,10 @@ def remove(elements: Union[str, os.PathLike, List[os.PathLike]], allow_errors: b
                 remove(fn)
 
 
-def git(directory: os.PathLike) -> None:
+def git(directory: Path) -> None:
     """Clean up a git directory.
 
-    :param path directory: Path to the directory.
+    :param directory: Path to the directory.
     """
     goback = Path.cwd()
     os.chdir(directory)
@@ -52,7 +51,7 @@ def root(extra: List[str] = []) -> None:
 
     .vscode is not cleaned, __pycache__ --> via py3clean
 
-    :param list extra: Extra elements to be removed.
+    :param extra: Extra elements to be removed.
     """
     trsh = [
         "android_*",

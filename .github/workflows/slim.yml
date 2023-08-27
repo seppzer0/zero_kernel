@@ -37,7 +37,7 @@ jobs:
           python3 -m poetry config virtualenvs.create false
           python3 -m poetry install --no-root
           export PYTHONPATH=$(pwd)
-          python3 wrapper bundle docker lineageos dumpling slim --clean-image
+          python3 scripts/multi_build.py
       - name: Get current version
         id: version
         run: echo "version=$(python3 scripts/get_version.py)" >> $GITHUB_OUTPUT

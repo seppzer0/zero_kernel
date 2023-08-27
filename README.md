@@ -1,4 +1,4 @@
-# s0nh_kernel — an Android kernel w/ Kali Nethunter support
+# s0nh_kernel — an Android kernel w/ Kali NetHunter support
 
 ## **Disclaimer**
 
@@ -10,10 +10,11 @@
 
 ## **Contents**
 
-- [s0nh\_kernel — an Android kernel w/ Kali Nethunter support](#s0nh_kernel--an-android-kernel-w-kali-nethunter-support)
+- [s0nh\_kernel — an Android kernel w/ Kali NetHunter support](#s0nh_kernel--an-android-kernel-w-kali-nethunter-support)
   - [**Disclaimer**](#disclaimer)
   - [**Contents**](#contents)
   - [**Kernel Features**](#kernel-features)
+  - [**Supported ROMs**](#supported-roms)
   - [**Usage**](#usage)
     - [**Prerequisites**](#prerequisites)
     - [**Kernel**](#kernel)
@@ -30,6 +31,11 @@ The kernel has the following features:
 - RTL8812/21AU + RTL8814AU + RTL8187 Wi-Fi drivers;
 - packet injection support for internal Wi-Fi chipset;
 - KernelSU support.
+
+## **Supported ROMs**
+
+- LineageOS;
+- ParanoidAndroid* (partially, some of the features do not work).
 
 ## **Usage**
 
@@ -86,14 +92,13 @@ For more options you can refer to the help message below.
 ```help
 $ python3 wrapper kernel --help
 usage: wrapper kernel [-h] [-c] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
-                      [--kernelsu]
-                      {local,docker,podman} {lineageos,aospa} codename
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
+                      {local,docker,podman} {los,aospa} codename
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {lineageos,aospa}     select a ROM for the build
+  {los,aospa}           select a ROM for the build
   codename              select device codename
 
 optional arguments:
@@ -105,7 +110,7 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --kernelsu            add KernelSU support
+  --ksu                 add ksu support
 ```
 
 ### **Assets**
@@ -116,15 +121,14 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 $ python3 wrapper assets --help
 usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only]
                       [--clean-image] [--clean]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
-                      [--kernelsu]
-                      {local,docker,podman} {lineageos,aospa} codename
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
+                      {local,docker,podman} {los,aospa} codename
                       {full,minimal}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {lineageos,aospa}     select a ROM for the build
+  {los,aospa}           select a ROM for the build
   codename              select device codename
   {full,minimal}        select Kali chroot type
 
@@ -140,7 +144,7 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --kernelsu            add KernelSU support
+  --ksu                 add ksu support
 ```
 
 ### **Bundle**
@@ -164,15 +168,14 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 ```help
 $ python3 wrapper bundle --help
 usage: wrapper bundle [-h] [--conan-upload] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG]
-                      [--kernelsu]
-                      {local,docker,podman} {lineageos,aospa} codename
+                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
+                      {local,docker,podman} {los,aospa} codename
                       {conan,slim,full}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {lineageos,aospa}     select a ROM for the build
+  {los,aospa}           select a ROM for the build
   codename              select device codename
   {conan,slim,full}     select package type of the bundle
 
@@ -185,7 +188,7 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --kernelsu            add KernelSU support
+  --ksu                 add ksu support
 ```
 
 ## **Examples**
@@ -193,11 +196,11 @@ optional arguments:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle docker lineageos dumpling slim`
+  - `python3 wrapper bundle docker los dumpling slim`;
 - Build kernel locally:
-  - `python3 wrapper kernel local lineageos dumpling`;
+  - `python3 wrapper kernel local los dumpling`;
 - Collect all the assets locally:
-  - `python3 wrapper assets local lineageos dumpling full`
+  - `python3 wrapper assets local los dumpling full`.
 
 ## **See also**
 

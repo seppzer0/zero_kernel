@@ -41,9 +41,9 @@ def parse_args() -> argparse.Namespace:
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    choices_rom = ("lineageos", "aospa")
+    choices_rom = ("los", "aospa")
     help_logfile = "save logs to a file"
-    help_kernelsu = "add KernelSU support"
+    help_ksu = "add KernelSU support"
     default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
@@ -85,10 +85,10 @@ def parse_args() -> argparse.Namespace:
         help=help_logfile
     )
     parser_kernel.add_argument(
-        "--kernelsu",
+        "--ksu",
         action="store_true",
-        dest="kernelsu",
-        help=help_kernelsu
+        dest="ksu",
+        help=help_ksu
     )
     # assets
     parser_assets.add_argument(
@@ -146,10 +146,10 @@ def parse_args() -> argparse.Namespace:
         help=help_logfile
     )
     parser_assets.add_argument(
-        "--kernelsu",
+        "--ksu",
         action="store_true",
-        dest="kernelsu",
-        help=help_kernelsu
+        dest="ksu",
+        help=help_ksu
     )
     # bundle
     parser_bundle.add_argument(
@@ -196,16 +196,19 @@ def parse_args() -> argparse.Namespace:
         help=help_logfile
     )
     parser_bundle.add_argument(
-        "--kernelsu",
+        "--ksu",
         action="store_true",
-        dest="kernelsu",
-        help=help_kernelsu
+        dest="ksu",
+        help=help_ksu
     )
     return parser_parent.parse_args(args)
 
 
 def validate_settings(config: dict) -> None:
-    """Run settings validations."""
+    """Run settings validations.
+    
+    :param config: A dictionary containing app arguments.
+    """
     # detect OS family
     if config.get("buildenv") == "local":
         if not platform.system() == "Linux":
@@ -213,7 +216,7 @@ def validate_settings(config: dict) -> None:
         else:
             # check that it is Debian-based
             try:
-                ccmd.launch("apt --version", "quiet")
+                ccmd.launch("apt --version", loglvl="quiet")
             except Exception:
                 msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
     # check if specified device is supported
@@ -239,11 +242,11 @@ def main(args: argparse.Namespace) -> None:
     with open(Path(os.getenv("ROOTPATH"), "pyproject.toml")) as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # store arguments as a set, to pass on to models
-    arguments = vars(args)
+    arguments: dict = vars(args)
     arguments["build_module"] = args.command
     params = {
-        "buildenv",
         "build_module",
+        "buildenv",
         "codename",
         "rom",
         "clean_image",
@@ -254,7 +257,7 @@ def main(args: argparse.Namespace) -> None:
         "rom_only",
         "extra_assets",
         "conan_upload",
-        "kernelsu",
+        "ksu",
     }
     passed_params = {}
     for key, value in arguments.items():
@@ -281,7 +284,7 @@ def main(args: argparse.Namespace) -> None:
                 codename = args.codename,
                 rom = args.rom,
                 clean = args.clean,
-                kernelsu = args.kernelsu,
+                ksu = args.ksu,
             ).run()
         elif args.command == "assets":
             AssetCollector(
@@ -291,14 +294,14 @@ def main(args: argparse.Namespace) -> None:
                 clean = args.clean,
                 rom_only = args.rom_only,
                 extra_assets = args.extra_assets,
-                kernelsu = args.kernelsu,
+                ksu = args.ksu,
             ).run()
         elif args.command == "bundle":
             BundleCreator(
                 codename = args.codename,
                 rom = args.rom,
                 package_type = args.package_type,
-                kernelsu = args.kernelsu,
+                ksu = args.ksu,
             ).run()
 
 

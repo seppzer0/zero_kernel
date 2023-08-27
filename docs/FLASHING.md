@@ -21,8 +21,8 @@ Backup should be made with removed lockscreen passwords/fingerprints/PINs. Other
 Listed below files are required:
 
 - compiled kernel, obviously;
-- LineageOS ROM;
-- Magisk + some modules;
+- ROM;
+- Magisk or KernelSU;
 - TWRP, the official 3.7.0 version (supports operations with encrypted partitions);
 - DM-Verity and Force Encrypt disabler;
 - Kali NetHunter + Kali NetHunter Terminal apps;
@@ -48,21 +48,33 @@ Before doing anything, please ensure that you have:
 ### **2.1 In TWRP**
 
 - wipe your phone via `Wipe -> Advanced Wipe` menu, check all the shown boxes;
-- wipe your device again via the `Wipe -> Format Data` menu (this will remove any encryption that is present on your device);
+- wipe your device again via `Wipe -> Format Data` menu (this will remove any encryption that is present on your device);
 - reboot into TWRP via `Reboot -> Recovery`;
-- flash the ROM;
-- flash the kernel;
-- flash the root manager (Magisk; you must change the `.apk` extension into `.zip` for this);
-- flash the DM-Verity and Force Encrypt disabler zip (*?; requires further testing, there is a chance this is not actually needed*);
+- flash ROM;
+- flash kernel;
+- **if using Magisk** --> flash root manager (Magisk; you must change the `.apk` extension into `.zip` for this);
+- flash DM-Verity and Force Encrypt disabler zip;
 - reboot into system via `Reboot -> System` .
 
 ### **2.2 In OS**
 
+#### For Magisk users
+
 - install Magisk apk, open it and do what the pop-up says (finish root installation, which will automatically reboot your device; if you don't see the pop-up, close the Magisk app and open it again);
 - once booted back into OS, open Magisk app again and proceed with finishing the installation (when prompted with "Additional Setup", select the default `Patch vbmeta in boot image` in `Options` and `Direct install` in `Method` submenus);
 - install NetHunter + NetHunter Terminal apps;
-- open the NetHunter app and grant all the permissions (at some point you will see an error indicating that some permissions are not granted; that's normal, the next step will fix that);
-- open the NetHunter Terminal app, select `AndroidSu` option, navigate through your storage and launch the `nhpatch.sh`;
-- open the NetHunter app (permissions should be fixed now);
+- open NetHunter app and grant all the permissions (at some point you will see an error indicating that some permissions are not granted; that's normal, the next step will fix that);
+- in NetHunter Terminal app open `AndroidSu` shell, navigate through your storage and launch the `nhpatch.sh`;
+- open NetHunter app (permissions should be fixed now);
 - navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
-- open Nethunter Terminal app with the `kali` option (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
+- in NetHunter Terminal app open `Kali` shell (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
+
+#### For KernelSU users
+
+- install KernelSU Manager app, open it and verify that the `Superuser` tab works properly (should show the `Shell` item);
+- install NetHunter and NetHunter Terminal apps, but do not open them yet;
+- open KernelSU Manager app, grant SU permissions to both NetHunter and NetHunter Terminal apps via `Superuser` tab;
+- in NetHunter Terminal app open `AndroidSu` shell, navigate through your storage and launch the `nhpatch.sh`;
+- open the NetHunter app;
+- navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
+- in NetHunter Terminal app open `Kali` shell (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
