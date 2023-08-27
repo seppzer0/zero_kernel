@@ -51,4 +51,4 @@ jobs:
           tag_name: ${{ steps.tagname.outputs.tagname }}
           prerelease: ${{ env.IS_PRERELEASE }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: "release-slim/*.zip"
+          files: "multi-slim/*.zip"

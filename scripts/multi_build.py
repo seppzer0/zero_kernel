@@ -56,7 +56,7 @@ argsets = (
     },
 )
 os.chdir(apath)
-dir_shared = "multi_slim"
+dir_shared = "multi-slim"
 shutil.rmtree(dir_shared, ignore_errors=True)
 for count, argset in enumerate(argsets, 1):
     # create artifact holder directory
