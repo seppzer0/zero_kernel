@@ -87,7 +87,7 @@ for count, argset in enumerate(argsets, 1):
     codename = argset["codename"]
     ksu = "--ksu" if argset["ksu"] == "true" else ""
     size = argset["size"] if argset["module"] == "bundle" else ""
-    extra = "slim --rom_only --clean" if argset["module"] == "assets" else ""
+    extra = "minimal --rom_only --clean" if argset["module"] == "assets" else ""
     # if the build is last, make it automatically remove the Docker image from runner
     clean = "--clean-image" if count == len(argsets) else ""
     # form and launch the command

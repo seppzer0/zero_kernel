@@ -76,5 +76,6 @@ Before doing anything, please ensure that you have:
 - open KernelSU Manager app, grant SU permissions to both NetHunter and NetHunter Terminal apps via `Superuser` tab;
 - in NetHunter Terminal app open `AndroidSu` shell, navigate through your storage and launch the `nhpatch.sh`;
 - open the NetHunter app;
+- when seeing the Busybox-related error, ignore it and re-open the app;
 - navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
 - in NetHunter Terminal app open `Kali` shell (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
