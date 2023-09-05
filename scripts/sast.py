@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import wrapper.tools.commands as ccmd
+import tools.commands as ccmd
 
 
 # generate reports in multiple file formats

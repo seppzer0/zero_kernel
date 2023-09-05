@@ -2,7 +2,6 @@ FROM python:3.11-slim-bookworm as base
 
 # variable store
 ARG WDIR="/s0nh_build"
-ENV PYTHONPATH $WDIR
 ENV CONAN_UPLOAD_CUSTOM 0
 
 # install basic packages
@@ -10,17 +9,17 @@ RUN \
     apt-get update \
     && \
     apt-get install -y \
-                curl \
-                git \
-                gcc \
-                g++ \
-                libssl-dev \
-                python3 \
-                python3-pip \
-                make \
-                zip \
-                bc \
-                libgpgme-dev
+        curl \
+        git \
+        gcc \
+        g++ \
+        libssl-dev \
+        python3 \
+        python3-pip \
+        make \
+        zip \
+        bc \
+        libgpgme-dev
 
 # place sources from host to container
 COPY . $WDIR

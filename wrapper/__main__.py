@@ -5,15 +5,17 @@ import argparse
 import platform
 from pathlib import Path
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
+import tools.cleaning as cm
+import tools.messages as msg
+import tools.commands as ccmd
 
-from wrapper.models.bundle import BundleCreator
-from wrapper.models.kernel import KernelBuilder
-from wrapper.models.assets import AssetCollector
+from models.bundle import BundleCreator
+from models.kernel import KernelBuilder
+from models.assets import AssetCollector
 
-from wrapper.engines.container import ContainerEngine
+from engines.container import ContainerEngine
+
+from configs import Config as cfg
 
 
 def parse_args() -> argparse.Namespace:
@@ -220,7 +222,7 @@ def validate_settings(config: dict) -> None:
             except Exception:
                 msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
     # check if specified device is supported
-    with open(Path(os.getenv("ROOTPATH"), "wrapper", "manifests", "devices.json")) as f:
+    with open(Path(cfg.DIR_ROOT, "wrapper", "manifests", "devices.json")) as f:
         devices = json.load(f)
     if config.get("codename") not in devices.keys():
         msg.error("Unsupported device codename specified.")
@@ -232,17 +234,16 @@ def validate_settings(config: dict) -> None:
 
 def main(args: argparse.Namespace) -> None:
     # start preparing the environment
-    os.environ["ROOTPATH"] = str(Path(__file__).absolute().parents[1])
-    os.chdir(os.getenv("ROOTPATH"))
+    os.chdir(cfg.DIR_ROOT)
     if args.clean_root:
         cm.root()
         sys.exit(0)
     os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
-    with open(Path(os.getenv("ROOTPATH"), "pyproject.toml")) as f:
+    with open(Path(cfg.DIR_ROOT, "pyproject.toml")) as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # store arguments as a set, to pass on to models
-    arguments: dict = vars(args)
+    arguments = vars(args)
     arguments["build_module"] = args.command
     params = {
         "build_module",
@@ -279,30 +280,31 @@ def main(args: argparse.Namespace) -> None:
         ContainerEngine(config=passed_params).run()
     # local build
     else:
-        if args.command == "kernel":
-            KernelBuilder(
-                codename = args.codename,
-                rom = args.rom,
-                clean = args.clean,
-                ksu = args.ksu,
-            ).run()
-        elif args.command == "assets":
-            AssetCollector(
-                codename = args.codename,
-                rom = args.rom,
-                chroot = args.chroot,
-                clean = args.clean,
-                rom_only = args.rom_only,
-                extra_assets = args.extra_assets,
-                ksu = args.ksu,
-            ).run()
-        elif args.command == "bundle":
-            BundleCreator(
-                codename = args.codename,
-                rom = args.rom,
-                package_type = args.package_type,
-                ksu = args.ksu,
-            ).run()
+        match args.command:
+            case "kernel":
+                KernelBuilder(
+                    codename = args.codename,
+                    rom = args.rom,
+                    clean = args.clean,
+                    ksu = args.ksu,
+                ).run()
+            case "assets":
+                AssetCollector(
+                    codename = args.codename,
+                    rom = args.rom,
+                    chroot = args.chroot,
+                    clean = args.clean,
+                    rom_only = args.rom_only,
+                    extra_assets = args.extra_assets,
+                    ksu = args.ksu,
+                ).run()
+            case "bundle":
+                BundleCreator(
+                    codename = args.codename,
+                    rom = args.rom,
+                    package_type = args.package_type,
+                    ksu = args.ksu,
+                ).run()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import requests
 
-import wrapper.tools.messages as msg
+import tools.messages as msg
 
 
 class LineageOsApi:

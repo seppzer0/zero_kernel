@@ -3,31 +3,31 @@ import sys
 import json
 import time
 import tarfile
+from typing import List
 from pathlib import Path
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-import wrapper.tools.fileoperations as fo
+import tools.cleaning as cm
+import tools.messages as msg
+import tools.commands as ccmd
+import tools.fileoperations as fo
+from configs import Config as cfg
 
 
 class KernelBuilder:
     """Kernel builder."""
+
+    _root: Path = cfg.DIR_ROOT
+    _paths: List[str] = []
 
     def __init__(self, codename: str, rom: str, clean: bool, ksu: bool) -> None:
         self._codename = codename
         self._rom = rom
         self._clean = clean
         self._ksu = ksu
-        self._paths = []
-
-    @property
-    def _workdir(self) -> Path:
-        return Path(os.getenv("ROOTPATH"))
 
     def run(self) -> None:
         msg.banner("s0nh Kernel Builder w/ Kali NetHunter")
-        os.chdir(self._workdir)
+        os.chdir(self._root)
         self._create_vars()
         # clean directories
         self._clean_build()
@@ -89,60 +89,63 @@ class KernelBuilder:
 
     def _create_vars(self) -> None:
         """Create links to local file paths."""
-        os.chdir(self._workdir)
+        os.chdir(self._root)
         # define paths
         tools = ""
         device = ""
-        with open(self._workdir / "wrapper" / "manifests" / "tools.json") as f:
+        # load JSON data
+        with open(self._root / "wrapper" / "manifests" / "tools.json") as f:
             tools = json.load(f)
-        with open(self._workdir / "wrapper" / "manifests" / "devices.json") as f:
+        with open(self._root / "wrapper" / "manifests" / "devices.json") as f:
             data = json.load(f)
+            # load data only on the required device
             device = {self._codename: data[self._codename][self._rom]}
         # join tools and devices manifests
         self._paths = {**tools, **device}
         for e in self._paths:
             # convert path into the full form to use later as a Path() object
-            self._paths[e]["path"] = self._workdir / self._paths[e]["path"]
+            self._paths[e]["path"] = self._root / self._paths[e]["path"]
             # break data into individual required vars
             path = self._paths[e]["path"]
             url = self._paths[e]["url"]
             # break further processing into "generic" and "git" groups
             ftype = self._paths[e]["type"]
-            if ftype == "generic":
-                # download and unpack
-                # NOTE: this is specific, for .tar.gz files
-                if path.name not in os.listdir():
-                    fn = url.split("/")[-1]
-                    dn = fn.split(".")[0]
-                    if fn not in os.listdir() and dn not in os.listdir():
-                        fo.download(url)
-                    msg.note(f"Unpacking {fn}..")
-                    with tarfile.open(fn) as f:
-                        f.extractall(path)
-                    cm.remove(fn)
-                    msg.done("Done!")
-                else:
-                    msg.note(f"Found an existing path: {path}")
-            elif ftype == "git":
-                # break data into individual vars
-                branch = self._paths[e]["branch"]
-                commit = self._paths[e]["commit"]
-                cmd = f"git clone -b {branch} --depth 1 {url} {path}"
-                # KernelSU defines it's version based on commit history
-                if e.lower() == "kernelsu":
-                    cmd = cmd.replace(" --depth 1", "")
-                if not path.is_dir():
-                    ccmd.launch(cmd)
-                    # checkout a specific commit if it is specified
-                    if commit:
-                        cmd = f"git checkout {commit}"
-                        os.chdir(path)
+            match ftype:
+                case "generic":
+                    # download and unpack
+                    # NOTE: this is specific, for .tar.gz files
+                    if path.name not in os.listdir():
+                        fn = url.split("/")[-1]
+                        dn = fn.split(".")[0]
+                        if fn not in os.listdir() and dn not in os.listdir():
+                            fo.download(url)
+                        msg.note(f"Unpacking {fn}..")
+                        with tarfile.open(fn) as f:
+                            f.extractall(path)
+                        cm.remove(fn)
+                        msg.done("Done!")
+                    else:
+                        msg.note(f"Found an existing path: {path}")
+                case "git":
+                    # break data into individual vars
+                    branch = self._paths[e]["branch"]
+                    commit = self._paths[e]["commit"]
+                    cmd = f"git clone -b {branch} --depth 1 {url} {path}"
+                    # KernelSU defines it's version based on commit history
+                    if e.lower() == "kernelsu":
+                        cmd = cmd.replace(" --depth 1", "")
+                    if not path.is_dir():
                         ccmd.launch(cmd)
-                        os.chdir(self._workdir)
-                else:
-                    msg.note(f"Found an existing path: {path}")
-            else:
-                msg.error("Invalid resource type detected. Use only: generic, git.")
+                        # checkout a specific commit if it is specified
+                        if commit:
+                            cmd = f"git checkout {commit}"
+                            os.chdir(path)
+                            ccmd.launch(cmd)
+                            os.chdir(self._root)
+                    else:
+                        msg.note(f"Found an existing path: {path}")
+                case _:
+                    msg.error("Invalid resource type detected. Use only: generic, git.")
 
     def _patch_strict_prototypes(self) -> None:
         """A patcher to add compatibility with Clang 15 '-Wstrict-prototype' mandatory rule."""
@@ -233,7 +236,7 @@ class KernelBuilder:
             "msm_bus_rpm_smd.c":
             ("void msm_bus_rpm_set_mt_mask()",),
 
-            self._paths[self._codename]["path"]/\
+            self._paths[self._codename]["path"] /\
             "drivers" /\
             "soc" /\
             "qcom" /\
@@ -322,11 +325,11 @@ class KernelBuilder:
         cm.remove(self._paths["AnyKernel3"]["path"] / "ramdisk")
         cm.remove(self._paths["AnyKernel3"]["path"] / "models")
         fo.ucopy(
-            self._workdir / "wrapper" / "modifications" / self._ucodename / "anykernel3" / "ramdisk",
+            self._root / "wrapper" / "modifications" / self._ucodename / "anykernel3" / "ramdisk",
             self._paths["AnyKernel3"]["path"] / "ramdisk"
         )
         fo.ucopy(
-            self._workdir / "wrapper" / "modifications" / self._ucodename / "anykernel3" / "anykernel.sh",
+            self._root / "wrapper" / "modifications" / self._ucodename / "anykernel3" / "anykernel.sh",
             self._paths["AnyKernel3"]["path"] / "anykernel.sh"
         )
 
@@ -410,7 +413,7 @@ class KernelBuilder:
         )
         self._patch_rtl8812au_source_mod_v5642()
         cm.remove(".git*")
-        os.chdir(self._workdir)
+        os.chdir(self._root)
         # include the driver into build process
         makefile = self._paths[self._codename]["path"] /\
                    "drivers" /\
@@ -452,7 +455,7 @@ class KernelBuilder:
 
     def _patch_ksu(self) -> None:
         """Patch KernelSU into the kernel.
-        
+
         During this process, a symlink is used to "place" KernelSU
         source into the kernel sources. This is due to the fact that KernelSU
         has an internal mechanism of getting it's version via accessing
@@ -470,12 +473,12 @@ class KernelBuilder:
         makefile = self._paths[self._codename]["path"] /\
                    "drivers" /\
                    "Makefile"
-        kconfig =  self._paths[self._codename]["path"] /\
-                   "drivers" /\
-                   "Kconfig"
+        kconfig = self._paths[self._codename]["path"] /\
+                  "drivers" /\
+                  "Kconfig"
         # include into the build process via symlink
         os.symlink(
-            self._paths["KernelSU"]["path"] / "kernel",
+            self._paths["KernelSU"]["path"] / cfg.DIR_KERNEL,
             self._paths[self._codename]["path"] /\
             "drivers" /\
             "kernelsu"
@@ -490,7 +493,7 @@ class KernelBuilder:
         )
         # update KernelSU source via .patch file
         fo.ucopy(
-            self._workdir / "wrapper" / "modifications" / self._ucodename / "kernel" / "kernelsu-compat.patch",
+            self._root / "wrapper" / "modifications" / self._ucodename / cfg.DIR_KERNEL / "kernelsu-compat.patch",
             self._paths[self._codename]["path"]
         )
         os.chdir(self._paths[self._codename]["path"])
@@ -534,7 +537,7 @@ class KernelBuilder:
         # technically it *is* a patch for a *kernel*, but is also applied
         # optionally elsewhere.
         fo.ucopy(
-            self._workdir / "wrapper" / "modifications" / self._ucodename / "kernel",
+            self._root / "wrapper" / "modifications" / self._ucodename / cfg.DIR_KERNEL,
             self._paths[self._codename]["path"],
             ("kernelsu-compat.patch",)
         )
@@ -552,7 +555,7 @@ class KernelBuilder:
                 data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
             with open(Path("net", "mac80211", fn), "w") as f:
                 f.write(data)
-        os.chdir(self._workdir)
+        os.chdir(self._root)
 
     def _patch_all(self) -> None:
         """Apply various patches."""
@@ -634,12 +637,12 @@ class KernelBuilder:
         # form the final ZIP file
         pretag = f"{name}-{self._rom}-ksu" if self._ksu else f"{name}-{self._rom}"
         full_name = f"{pretag}-{ver_base}-{ver_int}"
-        kdir = self._workdir / "kernel"
+        kdir = self._root / cfg.DIR_KERNEL
         if not kdir.is_dir():
             os.mkdir(kdir)
         os.chdir(self._paths["AnyKernel3"]["path"])
         # this is not the best solution, but is the easiest
         cmd = f"zip -r9 {kdir / full_name}.zip . -x *.git* *README* *LICENSE* *placeholder"
         ccmd.launch(cmd)
-        os.chdir(self._workdir)
+        os.chdir(self._root)
         msg.done("Done!")

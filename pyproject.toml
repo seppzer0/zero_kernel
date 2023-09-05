@@ -6,7 +6,7 @@ authors = ["seppzer0"]
 packages = [{include = "wrapper"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 conan = "~1"
 argparse = "*"
 requests = "*"

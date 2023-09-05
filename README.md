@@ -15,6 +15,7 @@
   - [**Contents**](#contents)
   - [**Kernel Features**](#kernel-features)
   - [**Supported ROMs**](#supported-roms)
+  - [**Supported devices**](#supported-devices)
   - [**Usage**](#usage)
     - [**Prerequisites**](#prerequisites)
     - [**Kernel**](#kernel)
@@ -36,6 +37,11 @@ The kernel has the following features:
 
 - LineageOS;
 - ParanoidAndroid* (partially, some of the features do not work).
+
+## **Supported devices**
+
+- OnePlus 5;
+- OnePlus 5T.
 
 ## **Usage**
 
@@ -79,10 +85,6 @@ python3 -m poetry install
 
 To install `poetry`, use `python3 -m pip install poetry`.
 
-**NOTE**: Whether you selected the `docker` or `local` build option, you must create an environment variable `PYTHONPATH` directing to the folder with this repo.
-
-E.g., on Linux it would be `export PYTHONPATH=$(pwd)` in the root of the repository.
-
 ### **Kernel**
 
 Kernel build process can be launched by using the `python3 wrapper kernel <arguments>` command.
@@ -110,12 +112,12 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --ksu                 add ksu support
+  --ksu                 add KernelSU support
 ```
 
 ### **Assets**
 
-As mentioned, there is also an asset downloader, which can collect latest versions of LineageOS ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
+As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
 $ python3 wrapper assets --help
@@ -144,14 +146,14 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --ksu                 add ksu support
+  --ksu                 add KernelSU support
 ```
 
 ### **Bundle**
 
 There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` modules into a single package.
 
-This is especially useful for linking the kernel version with the appropriate LineageOS ROM version.
+This is especially useful for linking the kernel version with the appropriate ROM version.
 
 There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
 
@@ -188,7 +190,7 @@ optional arguments:
                         select log level
   -o OUTLOG, --output OUTLOG
                         save logs to a file
-  --ksu                 add ksu support
+  --ksu                 add KernelSU support
 ```
 
 ## **Examples**

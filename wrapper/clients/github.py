@@ -4,9 +4,9 @@ import requests
 from pathlib import Path
 from typing import Optional
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
+import tools.cleaning as cm
+import tools.messages as msg
+import tools.commands as ccmd
 
 
 class GitHubApi:

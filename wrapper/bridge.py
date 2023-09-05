@@ -1,11 +1,11 @@
 import sys
 import argparse
 
-import wrapper.tools.messages as msg
+import tools.messages as msg
 
-from wrapper.models.bundle import BundleCreator
-from wrapper.models.kernel import KernelBuilder
-from wrapper.models.assets import AssetCollector
+from models.bundle import BundleCreator
+from models.kernel import KernelBuilder
+from models.assets import AssetCollector
 
 
 def parse_args() -> argparse.Namespace:
@@ -17,7 +17,7 @@ def parse_args() -> argparse.Namespace:
         dest="build_module",
         required=True,
         help="select module",
-        choices=["kernel", "assets", "bundle"]
+        choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
         "--codename",
@@ -34,13 +34,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--chroot",
         help="select chroot type",
-        choices=["full", "minimal"]
+        choices=("full", "minimal")
     )
     parser.add_argument(
         "--package-type",
         dest="package_type",
         help="select bundle packaging type",
-        choices=["conan", "slim", "full"]
+        choices=("conan", "slim", "full")
     )
     parser.add_argument(
         "--clean-kernel",
@@ -70,37 +70,38 @@ def parse_args() -> argparse.Namespace:
         "--ksu",
         action="store_true",
         dest="ksu",
-        help="add ksu support"
+        help="add KernelSU support"
     )
     return parser.parse_args(args)
 
 
 def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
-    if args.build_module == "kernel":
-        KernelBuilder(
-            codename = args.codename,
-            rom = args.rom,
-            clean = args.clean_kernel,
-            ksu = args.ksu,
-        ).run()
-    elif args.build_module == "assets":
-        AssetCollector(
-            codename = args.codename,
-            rom = args.rom,
-            chroot = args.chroot,
-            clean = args.clean_assets,
-            rom_only = args.rom_only,
-            extra_assets = args.extra_assets,
-            ksu = args.ksu,
-        ).run()
-    elif args.build_module == "bundle":
-        BundleCreator(
-            codename = args.codename,
-            rom = args.rom,
-            package_type = args.package_type,
-            ksu = args.ksu,
-        ).run()
+    match args.build_module:
+        case "kernel":
+            KernelBuilder(
+                codename = args.codename,
+                rom = args.rom,
+                clean = args.clean_kernel,
+                ksu = args.ksu,
+            ).run()
+        case "assets":
+            AssetCollector(
+                codename = args.codename,
+                rom = args.rom,
+                chroot = args.chroot,
+                clean = args.clean_assets,
+                rom_only = args.rom_only,
+                extra_assets = args.extra_assets,
+                ksu = args.ksu,
+            ).run()
+        case "bundle":
+            BundleCreator(
+                codename = args.codename,
+                rom = args.rom,
+                package_type = args.package_type,
+                ksu = args.ksu,
+            ).run()
 
 
 if __name__ == "__main__":

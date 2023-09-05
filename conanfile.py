@@ -22,10 +22,10 @@ class S0nhConan(ConanFile):
         cmd = "python3 wrapper kernel local {0} {1} &&"\
               "python3 wrapper assets local {0} {1} {2} --clean"\
               .format(
-                self.options.rom,
-                self.options.codename,
-                self.options.chroot
-                )
+                  self.options.rom,
+                  self.options.codename,
+                  self.options.chroot
+              )
         print(f"[cmd] {cmd}")
         self.run(cmd)
 

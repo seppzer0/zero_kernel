@@ -5,17 +5,21 @@ import itertools
 from typing import List
 from pathlib import Path
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-import wrapper.tools.fileoperations as fo
+import tools.cleaning as cm
+import tools.messages as msg
+import tools.commands as ccmd
+import tools.fileoperations as fo
 
-from wrapper.models.kernel import KernelBuilder
-from wrapper.models.assets import AssetCollector
+from models.kernel import KernelBuilder
+from models.assets import AssetCollector
+
+from configs import Config as cfg
 
 
 class BundleCreator:
     """Bundle kernel + asset artifacts."""
+
+    _root: Path = cfg.DIR_ROOT
 
     def __init__(
             self,
@@ -29,61 +33,62 @@ class BundleCreator:
         self._package_type = package_type
         self._ksu = ksu
 
-    @property
-    def _workdir(self) -> Path:
-        return Path(os.getenv("ROOTPATH"))
-
     def run(self) -> None:
-        os.chdir(self._workdir)
+        os.chdir(self._root)
         # get either a "kernel+ROM" or "kernel+assets=Conan" or "kernel+assets" bundle
-        if self._package_type in ("slim", "full"):
-            self._build_kernel(self._rom)
-            self._collect_assets(self._rom, "minimal")
-            # make a unified "release-*" directory with both .zips
-            reldir_generic = f"release-{self._package_type}"
-            kdir = "kernel"
-            adir = "assets"
-            # clean up
-            if reldir_generic in os.listdir():
-                contents = Path(reldir_generic).glob("*")
-                for f in contents:
-                    os.remove(f)
-            else:
-                os.mkdir(reldir_generic)
-            # copy kernel
-            kfn = "".join(os.listdir(kdir))
-            shutil.copy(
-                self._workdir / kdir / kfn,
-                self._workdir / reldir_generic / kfn
-            )
-            # copy the assets
-            for afn in os.listdir(adir):
+        match self._package_type:
+            case "slim" | "full":
+                self._build_kernel(self._rom)
+                self._collect_assets(self._rom, "minimal")
+                # make a unified "bundle" directory with both .zips
+                bdir = cfg.DIR_BUNDLE
+                kdir = cfg.DIR_KERNEL
+                adir = cfg.DIR_ASSETS
+                # clean up
+                if bdir in os.listdir():
+                    contents = Path(bdir).glob("*")
+                    for f in contents:
+                        os.remove(f)
+                else:
+                    os.mkdir(bdir)
+                # copy kernel
+                kfn = "".join(os.listdir(kdir))
                 shutil.copy(
-                    self._workdir / adir / afn,
-                    self._workdir / reldir_generic / afn
+                    self._root / kdir / kfn,
+                    self._root / bdir / kfn
                 )
-        elif self._package_type == "conan":
-            # form Conan reference
-            name = "s0nh"
-            version = os.getenv("KVERSION")
-            user = self._codename
-            channel = "stable" if ccmd.launch("git branch --show-current", get_output=True) == "main" else "testing"
-            reference = f"{name}/{version}@{user}/{channel}"
-            # form option sets
-            chroot = ("minimal", "full")
-            option_sets = list(itertools.product([self._rom], chroot))
-            # build and upload Conan packages
-            for opset in option_sets:
-                self._build_kernel(opset[0])
-                self._build_kernel(opset[0], True)
-                self._conan_sources()
-                self._collect_assets(opset[0], opset[1])
-                self._conan_package(opset, reference)
-            # upload packages
-            if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
-                self._conan_upload(reference)
+                # copy the assets
+                for afn in os.listdir(adir):
+                    shutil.copy(
+                        self._root / adir / afn,
+                        self._root / bdir / afn
+                    )
+            case "conan":
+                # form Conan reference
+                name = "s0nh"
+                version = os.getenv("KVERSION")
+                user = self._codename
+                channel = ""
+                if ccmd.launch("git branch --show-current", get_output=True) == "main":
+                    channel = "stable"
+                else:
+                    channel = "testing"
+                reference = f"{name}/{version}@{user}/{channel}"
+                # form option sets
+                chroot = ("minimal", "full")
+                option_sets = list(itertools.product([self._rom], chroot))
+                # build and upload Conan packages
+                for opset in option_sets:
+                    self._build_kernel(opset[0])
+                    self._build_kernel(opset[0], True)
+                    self._conan_sources()
+                    self._collect_assets(opset[0], opset[1])
+                    self._conan_package(opset, reference)
+                # upload packages
+                if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
+                    self._conan_upload(reference)
         # navigate back to root directory
-        os.chdir(self._workdir)
+        os.chdir(self._root)
 
     def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         """Build the kernel.
@@ -91,7 +96,7 @@ class BundleCreator:
         :param rom_name: Name of the ROM.
         :param clean_only: Append an argument to just clean the kernel directory.
         """
-        if not Path("kernel").is_dir() or clean_only is True:
+        if not Path(cfg.DIR_KERNEL).is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self._codename,
                 rom = rom_name,
@@ -121,20 +126,20 @@ class BundleCreator:
 
     def _conan_sources(self) -> None:
         """Prepare sources for rebuildable Conan packages."""
-        sourcedir = self._workdir / "source"
+        sourcedir = self._root / "source"
         print("\n", end="")
         msg.note("Copying sources for Conan packaging..")
-        cm.remove(str(sourcedir), allow_errors=True)
+        cm.remove(str(sourcedir))
         fo.ucopy(
-            self._workdir,
+            self._root,
             sourcedir,
             (
                 "__pycache__",
                 ".vscode",
                 "source",
-                "kernel",
+                cfg.DIR_KERNEL,
                 "localversion",
-                "assets",
+                cfg.DIR_ASSETS,
                 "conanfile.py",
             )
         )

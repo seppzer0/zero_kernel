@@ -4,17 +4,18 @@ import shutil
 from pathlib import Path
 from typing import List, Union
 
-import wrapper.tools.commands as ccmd
+import tools.commands as ccmd
+
+from configs import Config as cfg
 
 
-def remove(elements: Union[str, Path, List[Path]], allow_errors: bool = False) -> None:
-    """An ultimate alternative to 'rm -rf'.
+def remove(elements: Union[str, Path, List[Path]]) -> None:
+    """An ultimate Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
     Because of such specific as directories starting with a "." (e.g., .github).
 
     :param elements: Files and/or directories to remove.
-    :param allow_errors: Don't exit on errors.
     """
     # if a given argument is a string --> convert it into a one-element list
     if isinstance(elements, str) or isinstance(elements, Path):
@@ -54,21 +55,22 @@ def root(extra: List[str] = []) -> None:
     :param extra: Extra elements to be removed.
     """
     trsh = [
+        cfg.DIR_KERNEL,
+        cfg.DIR_ASSETS,
+        cfg.DIR_BUNDLE,
         "android_*",
         "clang*",
         "AnyKernel3",
         "rtl8812au",
         "source",
-        "kernel",
         "localversion",
-        "assets",
-        "release-*",
         "KernelSU",
+        "multi_slim",
     ]
     # add extra elements to clean up from root directory
     if extra:
         for e in extra:
-            trsh.append(Path(os.getenv("ROOTPATH"), e))
+            trsh.append(Path(cfg.DIR_ROOT, e))
     # clean
-    remove(trsh, allow_errors=True)
+    remove(trsh)
     ccmd.launch("py3clean .")

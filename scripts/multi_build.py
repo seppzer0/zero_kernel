@@ -77,10 +77,11 @@ for count, argset in enumerate(argsets, 1):
     subprocess.run(cmd.strip(), shell=True, check=True)
     # copy artifacts into the shared directory
     out = ""
-    if argset["module"] == "bundle":
-        out = f"release-{size}"
-    elif argset["module"] == "kernel":
-        out = "kernel"
-    elif argset["module"] == "assets":
-        out = "assets"
+    match argset["module"]:
+        case "bundle":
+            out = "bundle"
+        case "kernel":
+            out = "kernel"
+        case "assets":
+            out = "assets"
     ucopy(Path(out), Path(dir_shared))
