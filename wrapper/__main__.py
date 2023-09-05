@@ -264,9 +264,7 @@ def main(args: argparse.Namespace) -> None:
     for key, value in arguments.items():
         if key in params:
             passed_params[key] = value
-    del arguments
-    del params
-    # validate settings (==arguments)
+    # validate arguments
     validate_settings(config=passed_params)
     # setup output stream
     if args.command and args.outlog:
