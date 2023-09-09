@@ -25,11 +25,14 @@ RUN \
 COPY . $WDIR
 WORKDIR $WDIR
 
-# install pip packages
+# configure Python environment
 RUN python3 -m pip install pip --upgrade && \
     python3 -m pip install poetry && \
     python3 -m poetry config virtualenvs.create false && \
     python3 -m poetry install --no-root
+
+# install shared tools from tools.json
+RUN python3 $WDIR/wrapper/bridge.py --tools
 
 # launch app
 CMD [ "/bin/bash" ]

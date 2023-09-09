@@ -2,10 +2,9 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import List
 
 
-def ucopy(src: Path, dst: Path, exceptions: List[str] = []) -> None:
+def ucopy(src: Path, dst: Path, exceptions: list[str] = []) -> None:
     """A universal method to copy files into desired destinations.
 
     :param src: Source path.

@@ -1,6 +1,5 @@
 import os
 import shutil
-from typing import List
 from pathlib import Path
 
 import tools.messages as msg
@@ -75,7 +74,7 @@ class ContainerEngine:
         return cmd
 
     @property
-    def _container_options(self) -> List[str]:
+    def _container_options(self) -> list[str]:
         """Form a list of Docker options to pass."""
         # declare a base of options
         options = [
@@ -106,7 +105,7 @@ class ContainerEngine:
                     )
                 )
             case "bundle":
-                match self._dir_assets:
+                match self._package_type:
                     case "slim" | "full":
                         options.append(
                             '-v {}/{}:{}/{}'.format(
@@ -140,22 +139,35 @@ class ContainerEngine:
             case "bundle":
                 if self._package_type in ("slim", "full"):
                     # mount directory with release artifacts
-                    bdir = cfg.DIR_BUNDLE
+                    bdir = Path(cfg.DIR_BUNDLE)
                     shutil.rmtree(bdir, ignore_errors=True)
                     os.mkdir(bdir)
 
-    def run(self) -> None:
+    def _build(self) -> None:
+        """Build the Docker/Podman image."""
+        print("\n")
+        alias = self._buildenv.capitalize()
+        msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
-        # force enable Docker Buildkit to create Docker image
-        if self._buildenv == "docker":
-            os.environ["DOCKER_BUILDKIT"] = "1"
-        cmd = "{} build . -f {} -t {} --load".format(
-            self._buildenv,
-            self._wdir_local / 'Dockerfile',
-            self._name_image
-        )
-        ccmd.launch(cmd)
-        # form the final command
+        # do so only if it is not present in local cache
+        if self._name_image not in ccmd.launch("docker images --format '{{.Repository}}'", get_output=True):
+            # force enable Docker Buildkit to create Docker image
+            if self._buildenv == "docker":
+                os.environ["DOCKER_BUILDKIT"] = "1"
+            cmd = "{} build . -f {} -t {} --load".format(
+                self._buildenv,
+                self._wdir_local / 'Dockerfile',
+                self._name_image
+            )
+            ccmd.launch(cmd)
+            msg.done("Done!")
+        else:
+            msg.note(f"{alias} image is already present, skipping the build.")
+        print("\n")
+
+    def run(self) -> None:
+        self._build()
+        # form the "run" final command
         cmd = '{} run {} {} /bin/bash -c "{}"'.format(
             self._buildenv,
             " ".join(self._container_options),

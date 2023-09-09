@@ -4,7 +4,8 @@
 
 - [x] add monitor mode support for internal Wi-Fi chipset (with Wi-Fi packet injection);
 - [ ] add DM-Verity and Force Encrypt disabler;
-- [x] add KernelSU support.
+- [x] add KernelSU support;
+- [ ] add DriveDroid(-like) support.
 
 ## Build process features
 
@@ -48,4 +49,6 @@
 - [ ] add a dataclass for wrapper's arguments;
 - [x] add PA ROM support;
 - [ ] add a GH workflow for checking PRs;
-- [x] decompose `run()` method in `ContainerEngine`.
+- [x] decompose `run()` method in `ContainerEngine`;
+- [x] skip building Docker/Podman image if it's already present in local cache.
+- [x] for containerized build, download the contents of manifests during image build.

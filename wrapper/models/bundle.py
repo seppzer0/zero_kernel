@@ -2,7 +2,6 @@ import os
 import json
 import shutil
 import itertools
-from typing import List
 from pathlib import Path
 
 import tools.cleaning as cm
@@ -134,12 +133,12 @@ class BundleCreator:
             self._root,
             sourcedir,
             (
+                cfg.DIR_KERNEL,
+                cfg.DIR_ASSETS,
                 "__pycache__",
                 ".vscode",
                 "source",
-                cfg.DIR_KERNEL,
                 "localversion",
-                cfg.DIR_ASSETS,
                 "conanfile.py",
             )
         )
@@ -155,7 +154,7 @@ class BundleCreator:
             json_data = json.load(f)
         return json_data
 
-    def _conan_package(self, options: List[str], reference: str) -> None:
+    def _conan_package(self, options: list[str], reference: str) -> None:
         """Create the Conan package.
 
         :param options: Conan options.

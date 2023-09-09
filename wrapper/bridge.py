@@ -7,6 +7,8 @@ from models.bundle import BundleCreator
 from models.kernel import KernelBuilder
 from models.assets import AssetCollector
 
+from utils import Resources as rcs
+
 
 def parse_args() -> argparse.Namespace:
     """Parse arguments."""
@@ -15,20 +17,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--build-module",
         dest="build_module",
-        required=True,
         help="select module",
         choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
         "--codename",
-        dest="codename",
-        required=True,
         help="select device codename"
     )
     parser.add_argument(
         "--rom",
         dest="rom",
-        required=True,
         help="select a ROM for the build"
     )
     parser.add_argument(
@@ -68,9 +66,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--ksu",
-        action="store_true",
-        dest="ksu",
-        help="add KernelSU support"
+        help="add KernelSU support",
+        action="store_true"
+    )
+    parser.add_argument(
+        "--tools",
+        help="only setup the shared tools in the environment",
+        action="store_true"
     )
     return parser.parse_args(args)
 
@@ -102,6 +104,11 @@ def main(args: argparse.Namespace) -> None:
                 package_type = args.package_type,
                 ksu = args.ksu,
             ).run()
+        case _:
+            # if no module was selected, then the shared tools are installed
+            tconf = rcs()
+            tconf.path_gen()
+            tconf.download()
 
 
 if __name__ == "__main__":

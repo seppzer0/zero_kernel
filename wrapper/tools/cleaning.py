@@ -1,15 +1,15 @@
 import os
 import glob
 import shutil
+from typing import Union
 from pathlib import Path
-from typing import List, Union
 
 import tools.commands as ccmd
 
 from configs import Config as cfg
 
 
-def remove(elements: Union[str, Path, List[Path]]) -> None:
+def remove(elements: Union[str, Path, list[Path]]) -> None:
     """An ultimate Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
@@ -47,7 +47,7 @@ def git(directory: Path) -> None:
     os.chdir(goback)
 
 
-def root(extra: List[str] = []) -> None:
+def root(extra: list[str] = []) -> None:
     """Fully clean the root directory.
 
     .vscode is not cleaned, __pycache__ --> via py3clean
