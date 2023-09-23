@@ -58,6 +58,8 @@ class ContainerEngine:
             "--rom-only": self._rom_only,
             "--extra-assets": self._extra_assets,
             "--ksu": self._ksu,
+            "--clean-kernel": self._clean_kernel,
+            "--clean-assets": self._clean_assets,
         }
         # extend with arguments in mind
         for arg, value in arguments.items():

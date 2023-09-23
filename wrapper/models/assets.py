@@ -135,13 +135,14 @@ class AssetCollector:
             os.mkdir(self._dir_assets)
         else:
             if len(os.listdir(self._dir_assets)) != 0:
-                msg.note(f"Found an existing \"{self._dir_assets.name}\" folder, clean it?")
-                ans = input("[Y/n]: ").lower() if not self._clean else "y"
+                cmsg = f'[ ? ] Found an existing "{self._dir_assets.name}" folder, clean it? [Y/n]: '
+                ans = input(cmsg).lower() if not self._clean else "y"
                 match ans:
                     case "y":
                         msg.note("Cleaning 'assets' directory..")
-                        cm.remove(str(self._dir_assets))
-                        os.mkdir(self._dir_assets)
+                        os.chdir(self._dir_assets)
+                        cm.remove("./*")
+                        os.chdir(self._root)
                         msg.done("Done!")
                     case "n":
                         msg.cancel("Cancelling asset download.")

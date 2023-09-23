@@ -64,7 +64,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser_kernel.add_argument(
         "-c", "--clean",
-        dest="clean",
+        dest="clean_kernel",
         action="store_true",
         help="don't build anything, just clean the environment"
     )
@@ -131,7 +131,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser_assets.add_argument(
         "--clean",
-        dest="clean",
+        dest="clean_assets",
         action="store_true",
         help="autoclean 'assets' folder if it exists"
     )
@@ -283,7 +283,7 @@ def main(args: argparse.Namespace) -> None:
                 KernelBuilder(
                     codename = args.codename,
                     rom = args.rom,
-                    clean = args.clean,
+                    clean = args.clean_kernel,
                     ksu = args.ksu,
                 ).run()
             case "assets":
@@ -291,7 +291,7 @@ def main(args: argparse.Namespace) -> None:
                     codename = args.codename,
                     rom = args.rom,
                     chroot = args.chroot,
-                    clean = args.clean,
+                    clean = args.clean_assets,
                     rom_only = args.rom_only,
                     extra_assets = args.extra_assets,
                     ksu = args.ksu,
