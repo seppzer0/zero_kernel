@@ -50,5 +50,6 @@
 - [x] add PA ROM support;
 - [ ] add a GH workflow for checking PRs;
 - [x] decompose `run()` method in `ContainerEngine`;
-- [x] skip building Docker/Podman image if it's already present in local cache.
-- [x] for containerized build, download the contents of manifests during image build.
+- [x] skip building Docker/Podman image if it's already present in local cache;
+- [x] for containerized build, download the contents of manifests during image build;
+- [ ] add system app debloater.

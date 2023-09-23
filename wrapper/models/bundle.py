@@ -38,7 +38,8 @@ class BundleCreator:
         match self._package_type:
             case "slim" | "full":
                 self._build_kernel(self._rom)
-                self._collect_assets(self._rom, "minimal")
+                # "full" chroot is hardcoded here
+                self._collect_assets(self._rom, "full")
                 # make a unified "bundle" directory with both .zips
                 bdir = cfg.DIR_BUNDLE
                 kdir = cfg.DIR_KERNEL

@@ -36,7 +36,7 @@
         "type": "git",
         "path": "KernelSU",
         "url": "https://github.com/tiann/KernelSU",
-        "branch": "v0.6.7",
+        "branch": "v0.6.8",
         "commit": ""
     }
 }

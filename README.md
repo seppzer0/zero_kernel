@@ -4,7 +4,7 @@
 
 **This kernel is made for educational purposes only.**
 
-**I am not responsible for anything that may happen to your device by installing any custom ROMs and/or kernels.**
+**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs and/or kernels.**
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
@@ -14,8 +14,9 @@
   - [**Disclaimer**](#disclaimer)
   - [**Contents**](#contents)
   - [**Kernel Features**](#kernel-features)
-  - [**Supported ROMs**](#supported-roms)
-  - [**Supported devices**](#supported-devices)
+  - [**Supported ROMs and devices**](#supported-roms-and-devices)
+      - [**ROMs**](#roms)
+      - [**Devices**](#devices)
   - [**Usage**](#usage)
     - [**Prerequisites**](#prerequisites)
     - [**Kernel**](#kernel)
@@ -33,12 +34,14 @@ The kernel has the following features:
 - packet injection support for internal Wi-Fi chipset;
 - KernelSU support.
 
-## **Supported ROMs**
+## **Supported ROMs and devices**
+
+#### **ROMs**
 
 - LineageOS;
-- ParanoidAndroid* (partially, some of the features do not work).
+- ParanoidAndroid.
 
-## **Supported devices**
+#### **Devices**
 
 - OnePlus 5;
 - OnePlus 5T.
@@ -95,12 +98,12 @@ For more options you can refer to the help message below.
 $ python3 wrapper kernel --help
 usage: wrapper kernel [-h] [-c] [--clean-image]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,aospa} codename
+                      {local,docker,podman} {los,pa} codename
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {los,aospa}           select a ROM for the build
+  {los,pa}              select a ROM for the build
   codename              select device codename
 
 optional arguments:
@@ -124,13 +127,13 @@ $ python3 wrapper assets --help
 usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only]
                       [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,aospa} codename
+                      {local,docker,podman} {los,pa} codename
                       {full,minimal}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {los,aospa}           select a ROM for the build
+  {los,pa}              select a ROM for the build
   codename              select device codename
   {full,minimal}        select Kali chroot type
 
@@ -171,13 +174,13 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 $ python3 wrapper bundle --help
 usage: wrapper bundle [-h] [--conan-upload] [--clean-image]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,aospa} codename
+                      {local,docker,podman} {los,pa} codename
                       {conan,slim,full}
 
 positional arguments:
   {local,docker,podman}
                         select build environment
-  {los,aospa}           select a ROM for the build
+  {los,pa}              select a ROM for the build
   codename              select device codename
   {conan,slim,full}     select package type of the bundle
 

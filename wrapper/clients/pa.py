@@ -15,10 +15,7 @@ class ParanoidAndroidApi:
 
     @property
     def _codename_pa(self) -> str:
-        """Custom codename-to-device mapper for PA API specifically.
-        
-        For some reason this is required only for OnePlus devices.
-        """
+        """Custom codename-to-device mapper for PA API specifically."""
         name_dict = {
             "dumpling": "oneplus5t",
             "cheeseburger": "oneplus5",

@@ -7,7 +7,7 @@ from models.bundle import BundleCreator
 from models.kernel import KernelBuilder
 from models.assets import AssetCollector
 
-from utils import Resources as rcs
+from utils import Resources
 
 
 def parse_args() -> argparse.Namespace:
@@ -106,7 +106,7 @@ def main(args: argparse.Namespace) -> None:
             ).run()
         case _:
             # if no module was selected, then the shared tools are installed
-            tconf = rcs()
+            tconf = Resources()
             tconf.path_gen()
             tconf.download()
 

@@ -6,12 +6,12 @@ import tools.messages as msg
 class LineageOsApi:
     """Limited interaction with Lineage API."""
 
-    _endpoint = "https://download.lineageos.org/api/v1/{}/{}/{}"
+    _endpoint = "https://download.lineageos.org/api/v1/{}/nightly/ro.build.version.incremental"
 
     def __init__(self, codename: str, rom_only: bool) -> None:
         self._codename = codename
         self._rom_only = rom_only
-        self._endpoint = self._endpoint.format(codename, "nightly", "ro.build.version.incremental")
+        self._endpoint = self._endpoint.format(codename)
 
     def run(self) -> str:
         """Get the latest version of LineageOS ROM."""

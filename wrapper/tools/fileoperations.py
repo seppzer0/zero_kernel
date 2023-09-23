@@ -5,6 +5,7 @@ from typing import Tuple
 from pathlib import Path
 
 import tools.messages as msg
+import tools.commands as ccmd
 
 
 def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
@@ -120,3 +121,13 @@ def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
         f.truncate()
         for line in a:
             f.write(line + "\n")
+
+
+def apply_patch(filename: str) -> None:
+    """Apply .patch file.
+    
+    :param filename: Name of the .patch file.
+    """
+    msg.note(f"Applying patch: {filename}")
+    ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {filename}")
+    os.remove(filename)

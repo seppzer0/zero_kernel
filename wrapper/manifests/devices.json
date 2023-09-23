@@ -7,7 +7,7 @@
             "branch": "lineage-20",
             "commit": ""
         },
-        "aospa": {
+        "pa": {
             "type": "git",
             "path": "android_kernel_oneplus_msm8998",
             "url": "https://github.com/AOSPA/android_kernel_oneplus_msm8998",
@@ -23,7 +23,7 @@
             "branch": "lineage-20",
             "commit": ""
         },
-        "aospa": {
+        "pa": {
             "type": "git",
             "path": "android_kernel_oneplus_msm8998",
             "url": "https://github.com/AOSPA/android_kernel_oneplus_msm8998",

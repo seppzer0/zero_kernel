@@ -42,14 +42,33 @@ argsets = (
         "size": "slim"
     },
     {
+        "module": "bundle",
+        "rom": "pa",
+        "codename": "dumpling",
+        "ksu": "false",
+        "size": "slim"
+    },
+    {
         "module": "kernel",
         "rom": "los",
         "codename": "dumpling",
         "ksu": "true"
     },
     {
+        "module": "kernel",
+        "rom": "pa",
+        "codename": "dumpling",
+        "ksu": "true"
+    },
+    {
         "module": "assets",
         "rom": "los",
+        "codename": "cheeseburger",
+        "ksu": "true"
+    },
+    {
+        "module": "assets",
+        "rom": "pa",
         "codename": "cheeseburger",
         "ksu": "true"
     },

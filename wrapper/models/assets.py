@@ -62,12 +62,21 @@ class AssetCollector:
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
-                    project="Ruan625Br/FileManagerSphere",
+                    project="klausw/hackerskeyboard",
                     assetdir=self._dir_assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
-                    project="klausw/hackerskeyboard",
+                    project="seppzer0/Disable_Dm-Verity_ForceEncrypt",
+                    assetdir=self._dir_assets
+                ).run(),
+                GitHubApi(
+                    project="ukanth/afwall",
+                    assetdir=self._dir_assets,
+                    file_filter=".apk"
+                ).run(),
+                GitHubApi(
+                    project="laurent22/joplin-android",
                     assetdir=self._dir_assets,
                     file_filter=".apk"
                 ).run(),
@@ -77,6 +86,8 @@ class AssetCollector:
                 "https://store.nethunter.com/NetHunterTerminal.apk",
                 "https://eu.dl.twrp.me/cheeseburger_dumpling/twrp-3.7.0_12-1-cheeseburger_dumpling.img",
                 "https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self._chroot),
+                "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
+                "https://f-droid.org/F-Droid.apk",
             ]
             # read extra assets from JSON file
             if self._extra_assets:

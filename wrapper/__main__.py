@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    choices_rom = ("los", "aospa")
+    choices_rom = ("los", "pa")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
     default_loglvl = "normal"

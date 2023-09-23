@@ -11,8 +11,8 @@ from configs import Config as cfg
 class ContainerEngine:
     """Use containers (Docker/Podman) for the build."""
 
-    _name_image: str = "s0nh-docker-image"
-    _name_container: str = "s0nh-docker-container"
+    _name_image: str = "s0nh-image"
+    _name_container: str = "s0nh-container"
     _dir_init: Path = Path.cwd()
     _dir_kernel: Path = Path(cfg.DIR_KERNEL)
     _dir_assets: Path = Path(cfg.DIR_ASSETS)

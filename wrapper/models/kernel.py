@@ -10,7 +10,7 @@ import tools.fileoperations as fo
 
 from configs import Config as cfg
 
-from utils import Resources as rcs
+from utils import Resources
 
 
 class KernelBuilder:
@@ -23,7 +23,7 @@ class KernelBuilder:
         self._rom = rom
         self._clean = clean
         self._ksu = ksu
-        self._rcs = rcs(codename=codename, rom=rom)
+        self._rcs = Resources(codename=codename, rom=rom)
 
     def run(self) -> None:
         msg.banner("s0nh Kernel Builder")
@@ -212,7 +212,7 @@ class KernelBuilder:
             ("struct mdss_util_intf *mdss_get_util_intf()",)
         }
         # PA needs this, LineageOS does not
-        if self._rom == "aospa":
+        if self._rom == "pa":
             extra_data = {
                 self._rcs.paths[self._codename]["path"] /\
                 "drivers" /\
@@ -423,9 +423,7 @@ class KernelBuilder:
         )
         os.chdir(self._rcs.paths[self._codename]["path"])
         for pf in Path.cwd().glob("*.patch"):
-            msg.note(f"Applying patch: {pf}")
-            ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {pf}")
-            os.remove(pf)
+            fo.apply_patch(pf)
         os.chdir(goback)
         # add configs into defconfig
         defconfig = self._rcs.paths[self._codename]["path"] /\
@@ -449,18 +447,33 @@ class KernelBuilder:
             f.write("\n".join(extra_configs))
             f.write("\n")
 
+    def _patch_qcald(self) -> None:
+        """Patch QCACLD-3.0 defconfig to add support for monitor mode.
+
+        Currently, this is required only for ParanoidAndroid.
+        """
+        qdefconfig = self._rcs.paths[self._codename]["path"] /\
+                     "drivers" /\
+                     "staging" /\
+                     "qcacld-3.0" /\
+                     "configs" /\
+                     "default_defconfig"
+        og_lines = ("CONFIG_FEATURE_MONITOR_MODE_SUPPORT := n",)
+        nw_lines = ("CONFIG_FEATURE_MONITOR_MODE_SUPPORT := y",)
+        fo.replace_lines(qdefconfig, og_lines, nw_lines)
+
     def _patch_kernel(self) -> None:
-        """Patch kernel sources."""
+        """Patch kernel sources.
+
+        Here only unrelated to KernelSU patches are applied.
+        For applying KernelSU changes to kernel source see "patch_ksu()".
+        """
         # -Wstrict-prototypes patch to build with Clang 15+
         clang_cmd = f'{self._rcs.paths["clang"]["path"] / "bin" / "clang"} --version'
         clang_ver = ccmd.launch(clang_cmd, get_output=True).split("clang version ")[1].split(".")[0]
         if int(clang_ver) >= 15:
             self._patch_strict_prototypes()
-        # apply .patch files;
-        # here, patch for KernelSU is ignored;
-        #
-        # technically it *is* a patch for a *kernel*, but is also applied
-        # optionally elsewhere.
+        # apply .patch files
         fo.ucopy(
             self._root / "wrapper" / "modifications" / self._ucodename / cfg.DIR_KERNEL,
             self._rcs.paths[self._codename]["path"],
@@ -469,9 +482,7 @@ class KernelBuilder:
         os.chdir(self._rcs.paths[self._codename]["path"])
         for pf in Path.cwd().glob("*.patch"):
             if "kernelsu" not in str(pf):
-                msg.note(f"Applying patch: {pf}")
-                ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {pf}")
-                os.remove(pf)
+                fo.apply_patch(pf)
         # additionally, add support for CONFIG_MAC80211 kernel option
         data = ""
         files = ("tx.c", "mlme.c")
@@ -480,6 +491,9 @@ class KernelBuilder:
                 data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
             with open(Path("net", "mac80211", fn), "w") as f:
                 f.write(data)
+        # for ParanoidAndroid -- patch QCACLD-3.0
+        if self._rom == "pa":
+            self._patch_qcald()
         os.chdir(self._root)
 
     def _patch_all(self) -> None:
