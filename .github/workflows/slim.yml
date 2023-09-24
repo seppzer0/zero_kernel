@@ -62,7 +62,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           draft: true
-          tag_name: ${{ steps.tagname.outputs.tagname }}
+          tag: ${{ steps.tagname.outputs.tagname }}
           prerelease: ${{ env.IS_PRERELEASE }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: "multi-slim/*.zip"
+          artifacts: "multi-slim/*.zip"
