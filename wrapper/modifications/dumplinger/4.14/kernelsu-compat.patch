@@ -1,0 +1,57 @@
+diff --git a/drivers/kernelsu/core_hook.c b/drivers/kernelsu/core_hook.c
+index ee28fee..6521032 100644
+--- a/drivers/kernelsu/core_hook.c
++++ b/drivers/kernelsu/core_hook.c
+@@ -375,7 +375,7 @@ static int ksu_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 	return -ENOSYS;
+ }
+ // kernel 4.4 and 4.9
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if 1
+ static int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
+ 			      unsigned perm)
+ {
+@@ -400,7 +400,7 @@ static int ksu_inode_rename(struct inode *old_inode, struct dentry *old_dentry,
+ 	LSM_HOOK_INIT(task_prctl, ksu_task_prctl),
+ 	LSM_HOOK_INIT(inode_rename, ksu_inode_rename),
+ 	LSM_HOOK_INIT(task_fix_setuid, ksu_task_fix_setuid),
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if 1
+ 	LSM_HOOK_INIT(key_permission, ksu_key_permission)
+ #endif
+ };
+diff --git a/drivers/kernelsu/kernel_compat.c b/drivers/kernelsu/kernel_compat.c
+index 339650f..4121a20 100644
+--- a/drivers/kernelsu/kernel_compat.c
++++ b/drivers/kernelsu/kernel_compat.c
+@@ -12,7 +12,7 @@
+ #endif
+ #include "klog.h" // IWYU pragma: keep
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if 1
+ #include "linux/key.h"
+ #include "linux/errno.h"
+ struct key *init_session_keyring = NULL;
+@@ -80,7 +80,7 @@ void ksu_android_ns_fs_check()
+ 
+ struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if 1
+ 	if (init_session_keyring != NULL && !current_cred()->session_keyring &&
+ 	    (current->flags & PF_WQ_WORKER)) {
+ 		pr_info("installing init session keyring for older kernel\n");
+diff --git a/drivers/kernelsu/kernel_compat.h b/drivers/kernelsu/kernel_compat.h
+index 8daa404..540ff61 100644
+--- a/drivers/kernelsu/kernel_compat.h
++++ b/drivers/kernelsu/kernel_compat.h
+@@ -9,7 +9,7 @@ extern long ksu_strncpy_from_user_nofault(char *dst,
+ 					  const void __user *unsafe_addr,
+ 					  long count);
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#if 1
+ extern struct key *init_session_keyring;
+ #endif
+ 

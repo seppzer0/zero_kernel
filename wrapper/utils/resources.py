@@ -74,8 +74,10 @@ class Resources:
                     branch = self.paths[e]["branch"]
                     commit = self.paths[e]["commit"]
                     cmd = f"git clone -b {branch} --depth 1 {url} {path}"
-                    # KernelSU defines it's version based on *full* commit history
-                    if e.lower() == "kernelsu":
+                    # full commit history is required in two instances:
+                    # - for KernelSU -- to define it's version based on *full* commit history;
+                    # - for commit checkout -- to checkout a specific commit in the history.
+                    if e.lower() == "kernelsu" or commit:
                         cmd = cmd.replace(" --depth 1", "")
                     if not path.is_dir():
                         ccmd.launch(cmd)

@@ -34,29 +34,41 @@ def ucopy(src: Path, dst: Path, exceptions: list[str] = []) -> None:
 apath = Path(Path(__file__).absolute().parents[1])
 # those with "bundle" module usage are primarily tested builds
 argsets = (
+    #{
+    #    "module": "bundle",
+    #    "rom": "los",
+    #    "codename": "dumpling",
+    #    "ksu": "false",
+    #    "size": "slim"
+    #},
+    #{
+    #    "module": "bundle",
+    #    "rom": "pa",
+    #    "codename": "dumpling",
+    #    "ksu": "false",
+    #    "size": "slim"
+    #},
+    #{
+    #    "module": "kernel",
+    #    "rom": "los",
+    #    "codename": "dumpling",
+    #    "ksu": "true"
+    #},
+    #{
+    #    "module": "kernel",
+    #    "rom": "pa",
+    #    "codename": "dumpling",
+    #    "ksu": "true"
+    #},
     {
-        "module": "bundle",
-        "rom": "los",
+        "module": "kernel",
+        "rom": "x",
         "codename": "dumpling",
-        "ksu": "false",
-        "size": "slim"
-    },
-    {
-        "module": "bundle",
-        "rom": "pa",
-        "codename": "dumpling",
-        "ksu": "false",
-        "size": "slim"
+        "ksu": "false"
     },
     {
         "module": "kernel",
-        "rom": "los",
-        "codename": "dumpling",
-        "ksu": "true"
-    },
-    {
-        "module": "kernel",
-        "rom": "pa",
+        "rom": "x",
         "codename": "dumpling",
         "ksu": "true"
     },

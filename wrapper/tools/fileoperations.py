@@ -44,7 +44,7 @@ def download(url: str) -> None:
     print(f"      URL: {url}")
     try:
         # URL for TWRP is weird, have to adjust the query
-        if "twrp" in url:
+        if "twrp" in url.lower():
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
                 with open(fn, 'wb') as f:

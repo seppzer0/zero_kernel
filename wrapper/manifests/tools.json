@@ -25,7 +25,7 @@
         "path": "rtl8812au",
         "url": "https://github.com/aircrack-ng/rtl8812au",
         "branch": "v5.6.4.2",
-        "commit": ""
+        "commit": "04f600e"
     },
     "clang": {
         "type": "generic",
@@ -36,7 +36,7 @@
         "type": "git",
         "path": "KernelSU",
         "url": "https://github.com/tiann/KernelSU",
-        "branch": "v0.6.8",
+        "branch": "v0.7.0",
         "commit": ""
     }
 }

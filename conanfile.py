@@ -2,15 +2,15 @@ from conans import ConanFile
 
 
 class S0nhConan(ConanFile):
-    name = "s0nh"
-    version = "0.3.2"
+    name = "zero"
+    version = "0.3.3"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     description = "An Android kernel w/ Kali NetHunter support."
-    topics = ("s0nh_kernel", "kali-nethunter")
+    topics = ("zero_kernel", "kali-nethunter")
     settings = None
     options = {
-                "rom": ("los, pa"),
+                "rom": ("los", "pa", "x"),
                 "chroot": ("minimal", "full"),
                 "codename": ("dumpling", "cheeseburger")
               }

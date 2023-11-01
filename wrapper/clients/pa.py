@@ -15,7 +15,7 @@ class ParanoidAndroidApi:
 
     @property
     def _codename_pa(self) -> str:
-        """Custom codename-to-device mapper for PA API specifically."""
+        """Custom codename-to-device mapper for PA API."""
         name_dict = {
             "dumpling": "oneplus5t",
             "cheeseburger": "oneplus5",

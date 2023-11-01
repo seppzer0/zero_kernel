@@ -52,4 +52,6 @@
 - [x] decompose `run()` method in `ContainerEngine`;
 - [x] skip building Docker/Podman image if it's already present in local cache;
 - [x] for containerized build, download the contents of manifests during image build;
-- [ ] add system app debloater.
+- [ ] add system app debloater;
+- [ ] add a new argument respobsible for Linux kernel version selection;
+- [ ] add 4.14 Linux kernel version builds.

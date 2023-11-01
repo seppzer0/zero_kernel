@@ -37,7 +37,7 @@ class AssetCollector:
         self._ksu = ksu
 
     def run(self) -> None:
-        msg.banner("s0nh Asset Collector")
+        msg.banner("zero asset collector")
         os.chdir(self._root)
         self._check()
         os.chdir(self._dir_assets)
@@ -48,11 +48,12 @@ class AssetCollector:
             rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
         else:
             rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
-        # process the ROM-only download
+        # process the "ROM-only" download
         if self._rom_only:
             fo.download(rom_collector_dto.run())
             print("\n", end="")
             msg.done("ROM-only asset collection complete!")
+        # process the non-"RON-only" download
         else:
             assets = [
                 rom_collector_dto.run(),
@@ -62,13 +63,18 @@ class AssetCollector:
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
+                    project="seppzer0/Disable_Dm-Verity_ForceEncrypt",
+                    assetdir=self._dir_assets
+                ).run(),
+                GitHubApi(
                     project="klausw/hackerskeyboard",
                     assetdir=self._dir_assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
-                    project="seppzer0/Disable_Dm-Verity_ForceEncrypt",
-                    assetdir=self._dir_assets
+                    project="aleksey-saenko/TTLChanger",
+                    assetdir=self._dir_assets,
+                    file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="ukanth/afwall",
@@ -76,7 +82,12 @@ class AssetCollector:
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
-                    project="laurent22/joplin-android",
+                    project="emanuele-f/PCAPdroid",
+                    assetdir=self._dir_assets,
+                    file_filter=".apk"
+                ).run(),
+                GitHubApi(
+                    project="nfcgate/nfcgate",
                     assetdir=self._dir_assets,
                     file_filter=".apk"
                 ).run(),
@@ -130,7 +141,7 @@ class AssetCollector:
     def _check(self) -> None:
         """Initiate some checks before execution."""
         os.chdir(self._root)
-        # directory validation
+        # directory check
         if not self._dir_assets.is_dir():
             os.mkdir(self._dir_assets)
         else:

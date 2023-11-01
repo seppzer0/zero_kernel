@@ -34,7 +34,7 @@ class BundleCreator:
 
     def run(self) -> None:
         os.chdir(self._root)
-        # get either a "kernel+ROM" or "kernel+assets=Conan" or "kernel+assets" bundle
+        # determine the bundle type and process it
         match self._package_type:
             case "slim" | "full":
                 self._build_kernel(self._rom)
@@ -65,7 +65,7 @@ class BundleCreator:
                     )
             case "conan":
                 # form Conan reference
-                name = "s0nh"
+                name = "zero_kernel"
                 version = os.getenv("KVERSION")
                 user = self._codename
                 channel = ""
@@ -178,7 +178,7 @@ class BundleCreator:
         """
         # configure Conan client and upload packages
         url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
-        alias = "s0nh-conan"
+        alias = "zero-kernel-conan"
         cmd = f"conan remote add {alias} {url} && "\
               f"conan user -p {os.getenv('CONAN_PASSWORD')} -r {alias} {os.getenv('CONAN_LOGIN_USERNAME')} && "\
               f"conan upload -f {reference} -r {alias}"

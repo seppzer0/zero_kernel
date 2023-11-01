@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     # show the 'help' message if no arguments supplied
     args = None if sys.argv[1:] else ["-h"]
     # parser and subparsers
-    parser_parent = argparse.ArgumentParser(description="A custom wrapper for the s0nh kernel.")
+    parser_parent = argparse.ArgumentParser(description="A custom wrapper for the zero kernel.")
     subparsers = parser_parent.add_subparsers(dest="command")
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    choices_rom = ("los", "pa")
+    choices_rom = ("los", "pa", "x")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
     default_loglvl = "normal"

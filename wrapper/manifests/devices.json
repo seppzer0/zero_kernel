@@ -13,6 +13,13 @@
             "url": "https://github.com/AOSPA/android_kernel_oneplus_msm8998",
             "branch": "topaz",
             "commit": ""
+        },
+        "x": {
+            "type": "git",
+            "path": "x_kernel_oneplus_msm8998",
+            "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
+            "branch": "base",
+            "commit": ""
         }
     },
     "cheeseburger": {
@@ -28,6 +35,13 @@
             "path": "android_kernel_oneplus_msm8998",
             "url": "https://github.com/AOSPA/android_kernel_oneplus_msm8998",
             "branch": "topaz",
+            "commit": ""
+        },
+        "x": {
+            "type": "git",
+            "path": "x_kernel_oneplus_msm8998",
+            "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
+            "branch": "base",
             "commit": ""
         }
     }

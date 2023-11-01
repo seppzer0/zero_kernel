@@ -11,13 +11,13 @@ from configs import Config as cfg
 class ContainerEngine:
     """Use containers (Docker/Podman) for the build."""
 
-    _name_image: str = "s0nh-image"
-    _name_container: str = "s0nh-container"
+    _name_image: str = "zero-kernel-image"
+    _name_container: str = "zero-kernel-container"
     _dir_init: Path = Path.cwd()
     _dir_kernel: Path = Path(cfg.DIR_KERNEL)
     _dir_assets: Path = Path(cfg.DIR_ASSETS)
     _dir_bundle: Path = Path(cfg.DIR_BUNDLE)
-    _wdir_docker: Path = Path("/", "s0nh_build")
+    _wdir_docker: Path = Path("/", "zero_build")
     _wdir_local: Path = cfg.DIR_ROOT
 
     def __init__(self, config: dict) -> None:
@@ -61,13 +61,13 @@ class ContainerEngine:
             "--clean-kernel": self._clean_kernel,
             "--clean-assets": self._clean_assets,
         }
-        # extend with arguments in mind
+        # extend the command with given arguments
         for arg, value in arguments.items():
             if value not in (None, False, True):
                 cmd += f" {arg}={value}"
             elif value in (True,):
                 cmd += f" {arg}"
-        # extend with packaging option in mind
+        # extend the command with the selected packaging option
         if self._build_module == "bundle":
             if self._package_type in ("slim", "full"):
                 cmd += f" && chmod 777 -R {Path(self._wdir_docker, self._dir_bundle)}"
@@ -77,8 +77,8 @@ class ContainerEngine:
 
     @property
     def _container_options(self) -> list[str]:
-        """Form a list of Docker options to pass."""
-        # declare a base of options
+        """Form the list of Docker options."""
+        # declare the base
         options = [
             "-i",
             "--rm",
@@ -151,9 +151,9 @@ class ContainerEngine:
         alias = self._buildenv.capitalize()
         msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
-        # do so only if it is not present in local cache
+        # build only if it is not present in local cache
         if self._name_image not in ccmd.launch("docker images --format '{{.Repository}}'", get_output=True):
-            # force enable Docker Buildkit to create Docker image
+            # force enable Docker Buildkit
             if self._buildenv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
             cmd = "{} build . -f {} -t {} --load".format(
@@ -169,14 +169,14 @@ class ContainerEngine:
 
     def run(self) -> None:
         self._build()
-        # form the "run" final command
+        # form the final "docker run" command
         cmd = '{} run {} {} /bin/bash -c "{}"'.format(
             self._buildenv,
             " ".join(self._container_options),
             self._name_image,
             self._wrapper_cmd
         )
-        # prepare directories if required
+        # prepare directories
         self._create_dirs()
         ccmd.launch(cmd)
         # navigate to root directory and clean image from host machine

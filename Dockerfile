@@ -1,7 +1,7 @@
-FROM python:3.11-slim-bookworm as base
+FROM python:3.12-slim-bookworm as base
 
 # variable store
-ARG WDIR="/s0nh_build"
+ARG WDIR="/zero_build"
 ENV CONAN_UPLOAD_CUSTOM 0
 
 # install basic packages
@@ -19,7 +19,9 @@ RUN \
         make \
         zip \
         bc \
-        libgpgme-dev
+        libgpgme-dev \
+        bison \
+        flex
 
 # place sources from host to container
 COPY . $WDIR

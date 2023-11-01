@@ -36,7 +36,7 @@ class GitHubApi:
         except Exception:
             pass
         try:
-            # get direct download URL and optionally filter it by the given file filter
+            # get direct download URL and optionally filter it with the given parameter
             data = response["assets"]
             browser_download_urls = []
             for elem in data:
@@ -52,7 +52,7 @@ class GitHubApi:
             else:
                 data = "".join(browser_download_urls)
         except Exception:
-            # if not available via API -- use "git clone"
+            # if not available via API -- use regular "git clone"
             rdir = Path(self._assetdir, self._direct_url.rsplit("/", 1)[1])
             msg.note(f"Non-API GitHub resolution for {self._project}")
             cm.remove(rdir)

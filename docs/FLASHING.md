@@ -27,7 +27,7 @@ Listed below files are required:
 - DM-Verity and Force Encrypt disabler;
 - Kali NetHunter + Kali NetHunter Terminal apps;
 - Kali NetHunter Chroot (you can do this later, but it would be easier to download this beforehand);
-- `nhpatch.sh` script from this repo (fixes NetHunter permissions for Android 12+).
+- ~~`nhpatch.sh` script from this repo (fixes NetHunter permissions for Android 12+)~~ with recent NetHunter app versions, `nhpatch.sh` usage is no longer required.
 
 Currently, all of the mentioned assets can be collected via the `assets` subcommand in the wrapper (use `full` option).
 
@@ -63,9 +63,7 @@ Before doing anything, please ensure that you have:
 - install Magisk apk, open it and do what the pop-up says (finish root installation, which will automatically reboot your device; if you don't see the pop-up, close the Magisk app and open it again);
 - once booted back into OS, open Magisk app again and proceed with finishing the installation (when prompted with "Additional Setup", select the default `Patch vbmeta in boot image` in `Options` and `Direct install` in `Method` submenus);
 - install NetHunter + NetHunter Terminal apps;
-- open NetHunter app and grant all the permissions (at some point you will see an error indicating that some permissions are not granted; that's normal, the next step will fix that);
-- in NetHunter Terminal app open `AndroidSu` shell, navigate through your storage and launch the `nhpatch.sh`;
-- open NetHunter app (permissions should be fixed now);
+- open NetHunter app (if seeing a Busybox-related error, press "OK" and re-open the app);
 - navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
 - in NetHunter Terminal app open `Kali` shell (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
 
@@ -74,8 +72,10 @@ Before doing anything, please ensure that you have:
 - install KernelSU Manager app, open it and verify that the `Superuser` tab works properly (should show the `Shell` item);
 - install NetHunter and NetHunter Terminal apps, but do not open them yet;
 - open KernelSU Manager app, grant SU permissions to both NetHunter and NetHunter Terminal apps via `Superuser` tab;
-- in NetHunter Terminal app open `AndroidSu` shell, navigate through your storage and launch the `nhpatch.sh`;
-- open the NetHunter app;
-- when seeing the Busybox-related error, ignore it and re-open the app;
+- open the NetHunter app (if seeing a Busybox-related error, press "OK" and re-open the app);
 - navigate to the `Kali Chroot Manager` submenu and install the chroot (if you downloaded it beforehand, use the "restore" option);
 - in NetHunter Terminal app open `Kali` shell (if it opens properly, then congratulations, you have a working Kali NetHunter on your device).
+
+#### For x_kernel-based kernel + ParanoidAndroid users
+
+This is a small side-note for using x_kernel-based build with ParanoidAndroid ROM. When booting into OS, you will see a message that `There is an internal problem with this device. Please call manufacturer.`. This warning is essentially similar to the unlocked bootloader message and is completely harmless. Press "OK" and proceed.

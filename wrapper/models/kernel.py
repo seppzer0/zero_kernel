@@ -26,7 +26,7 @@ class KernelBuilder:
         self._rcs = Resources(codename=codename, rom=rom)
 
     def run(self) -> None:
-        msg.banner("s0nh Kernel Builder")
+        msg.banner("zero kernel builder")
         os.chdir(self._root)
         msg.note("Setting up tools and links..")
         # manage build resources
@@ -41,11 +41,27 @@ class KernelBuilder:
         with open("localversion", "w") as f:
             f.write("~NetHunter-seppzer0")
         msg.done("Done! Tools are configured!")
+        # prepare defconfig if required
+        if self._linux_kernel_version == "4.14" and self._rom == "pa":
+            fo.ucopy(
+                self._rcs.paths[self._codename]["path"] /\
+                "arch" /\
+                "arm64" /\
+                "configs" /\
+                "vendor" /\
+                self._defconfig,
+
+                self._rcs.paths[self._codename]["path"] /\
+                "arch" /\
+                "arm64" /\
+                "configs" /\
+                self._defconfig,                
+            )
         # apply various patches
         self._patch_all()
         # build and package
         self._build()
-        self._form_release(f"{os.getenv('KNAME', 's0nh')}-{self._ucodename}")
+        self._form_release()
 
     @property
     def _ucodename(self) -> str:
@@ -58,8 +74,17 @@ class KernelBuilder:
 
     @property
     def _defconfig(self) -> str:
-        """Determine defconfig file name based on ROM."""
-        return "lineage_oneplus5_defconfig" if self._rom == "los" else "paranoid_defconfig"
+        """Determine defconfig file name.
+
+        Depending on Linux kernel version (4.4 or 4.14)
+        the location for PA's defconfig is different.
+        """
+        defconfigs = {
+            "los": "lineage_oneplus5_defconfig",
+            "pa": "paranoid_defconfig",
+            "x": "oneplus5_defconfig"
+        }
+        return defconfigs[self._rom]
 
     def _clean_build(self) -> None:
         """Clean environment from potential artifacts."""
@@ -141,14 +166,6 @@ class KernelBuilder:
             "drivers" /\
             "soc" /\
             "qcom" /\
-            "qdsp6v2" /\
-            "voice_svc.c":
-            ("void msm_bus_rpm_set_mt_mask()",),
-
-            self._rcs.paths[self._codename]["path"] /\
-            "drivers" /\
-            "soc" /\
-            "qcom" /\
             "msm_bus" /\
             "msm_bus_rpm_smd.c":
             ("static int voice_svc_dummy_reg()",),
@@ -160,14 +177,6 @@ class KernelBuilder:
             "msm_bus" /\
             "msm_bus_rpm_smd.c":
             ("void msm_bus_rpm_set_mt_mask()",),
-
-            self._rcs.paths[self._codename]["path"] /\
-            "drivers" /\
-            "soc" /\
-            "qcom" /\
-            "qdsp6v2" /\
-            "voice_svc.c":
-            ("static int voice_svc_dummy_reg()",),
 
             self._rcs.paths[self._codename]["path"] /\
             "drivers" /\
@@ -191,12 +200,6 @@ class KernelBuilder:
 
             self._rcs.paths[self._codename]["path"] /\
             "drivers" /\
-            "thermal" /\
-            "msm_thermal-dev.c":
-            ("int msm_thermal_ioctl_init()", "void msm_thermal_ioctl_cleanup()",),
-
-            self._rcs.paths[self._codename]["path"] /\
-            "drivers" /\
             "video" /\
             "fbdev" /\
             "msm" /\
@@ -211,9 +214,27 @@ class KernelBuilder:
             "mdss_util.c":
             ("struct mdss_util_intf *mdss_get_util_intf()",)
         }
+        # the following files are not present in 4.14
+        if self._linux_kernel_version != "4.14":
+            extra_non_414 = {
+                self._rcs.paths[self._codename]["path"] /\
+                "drivers" /\
+                "soc" /\
+                "qcom" /\
+                "qdsp6v2" /\
+                "voice_svc.c":
+                ("void msm_bus_rpm_set_mt_mask()", "static int voice_svc_dummy_reg()"),
+
+                self._rcs.paths[self._codename]["path"] /\
+                "drivers" /\
+                "thermal" /\
+                "msm_thermal-dev.c":
+                ("int msm_thermal_ioctl_init()", "void msm_thermal_ioctl_cleanup()",),
+            }
+            data.update(extra_non_414)
         # PA needs this, LineageOS does not
         if self._rom == "pa":
-            extra_data = {
+            extra_pa = {
                 self._rcs.paths[self._codename]["path"] /\
                 "drivers" /\
                 "staging" /\
@@ -232,7 +253,7 @@ class KernelBuilder:
                 "wlan_cfg.c":
                 ("struct wlan_cfg_dp_soc_ctxt *wlan_cfg_soc_attach()",),
             }
-            data.update(extra_data)
+            data.update(extra_pa)
         # start the patching process
         contents = ""
         for fname, funcnames in data.items():
@@ -260,55 +281,45 @@ class KernelBuilder:
 
     def _patch_rtl8812au_source_mod_v5642(self) -> None:
         """Modifications specific to v5.6.4.2 driver version."""
-        # modifying Makefile
-        og_lines = (
-            "#EXTRA_CFLAGS += -Wno-parentheses-equality",
-            "#EXTRA_CFLAGS += -Wno-pointer-bool-conversion",
-            "$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules",
-            "CONFIG_PLATFORM_I386_PC = y",
-            "CONFIG_PLATFORM_ANDROID_ARM64 = n"
-        )
-        nw_lines = (
-            "EXTRA_CFLAGS += -Wno-parentheses-equality",
-            "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-parentheses-equality\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack",
-            '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules',
-            "CONFIG_PLATFORM_I386_PC = n",
-            "CONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
-        )
+        # Makefile
         fo.replace_lines(
             Path("Makefile").absolute(),
-            og_lines,
-            nw_lines
+            (
+                "#EXTRA_CFLAGS += -Wno-parentheses-equality",
+                "#EXTRA_CFLAGS += -Wno-pointer-bool-conversion",
+                "$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules",
+                "CONFIG_PLATFORM_I386_PC = y",
+                "CONFIG_PLATFORM_ANDROID_ARM64 = n",
+            ),
+            (
+                "EXTRA_CFLAGS += -Wno-parentheses-equality",
+                "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack\nEXTRA_CFLAGS += -Wno-unused-variable",
+                '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules',
+                "CONFIG_PLATFORM_I386_PC = n",
+                "CONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
+            )
         )
-        # same with ioctl_cfg80211.h
-        og_lines = (
-            "#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))",
-        )
-        nw_lines = (
-            "#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))",
-        )
+        # ioctl_cfg80211.h
         fo.replace_lines(
             Path("os_dep", "linux", "ioctl_cfg80211.h").absolute(),
-            og_lines,
-            nw_lines
+            ("#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))",),
+            ("#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))",)
         )
-        # ...and same with ioctl_cfg80211.c
-        og_lines = (
-            "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_SHORT_PREAMBLE;",
-            "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_SHORT_SLOT_TIME;",
-            "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_CTS_PROT;",
-            "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_DTIM_PERIOD;",
-        )
-        nw_lines = (
-            "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_PREAMBLE;",
-            "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME;",
-            "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_CTS_PROT;",
-            "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_DTIM_PERIOD;",
-        )
+        # ioctl_cfg80211.c
         fo.replace_lines(
             Path("os_dep", "linux", "ioctl_cfg80211.c").absolute(),
-            og_lines,
-            nw_lines
+            (
+                "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_SHORT_PREAMBLE;",
+                "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_SHORT_SLOT_TIME;",
+                "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_CTS_PROT;",
+                "sinfo->bss_param.flags |= STATION_INFO_BSS_PARAM_DTIM_PERIOD;",
+            ),
+            (
+                "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_PREAMBLE;",
+                "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME;",
+                "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_CTS_PROT;",
+                "sinfo->bss_param.flags |= NL80211_STA_BSS_PARAM_DTIM_PERIOD;",
+            )
         )
 
     def _patch_rtl8812au(self) -> None:
@@ -316,7 +327,7 @@ class KernelBuilder:
         
         NOTE: .patch files are unreliable in this case, have to replace lines manually
         """
-        # copy RTL8812AU sources into kernel path
+        # copy RTL8812AU sources into kernel sources
         msg.note("Adding RTL8812AU drivers into the kernel..")
         fo.ucopy(
             self._rcs.paths["rtl8812au"]["path"],
@@ -327,7 +338,7 @@ class KernelBuilder:
             "realtek" /\
             "rtl8812au"
         )
-        # modify sources depending on tested driver versions
+        # modify sources depending on driver version
         os.chdir(
             self._rcs.paths[self._codename]["path"] /\
             "drivers" /\
@@ -387,11 +398,11 @@ class KernelBuilder:
         .git data. And having .git data in kernel sources is not ideal.
         """
         msg.note("Adding KernelSU into the kernel..")
-        # extract KSU_GIT_VERSION env var manually
+        # extract KSU_GIT_VERSION environment variable manually
         goback = Path.cwd()
         os.chdir(self._rcs.paths["KernelSU"]["path"])
         os.environ["KSU_GIT_VERSION"] = str(
-            # formula is retrieved from KernelSU's Makefile itself
+            # official formula documented in KernelSU's Makefile
             10000 + int(ccmd.launch("git rev-list --count HEAD", get_output=True)) + 200
         )
         os.chdir(goback)
@@ -403,7 +414,7 @@ class KernelBuilder:
                   "Kconfig"
         # include into the build process via symlink
         os.symlink(
-            self._rcs.paths["KernelSU"]["path"] / cfg.DIR_KERNEL,
+            self._rcs.paths["KernelSU"]["path"] / "kernel",
             self._rcs.paths[self._codename]["path"] /\
             "drivers" /\
             "kernelsu"
@@ -416,14 +427,13 @@ class KernelBuilder:
             "endmenu",
             "source \"drivers/kernelsu/Kconfig\""
         )
-        # update KernelSU source via .patch file
+        # apply related patch
         fo.ucopy(
-            self._root / "wrapper" / "modifications" / self._ucodename / cfg.DIR_KERNEL / "kernelsu-compat.patch",
+            self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
             self._rcs.paths[self._codename]["path"]
         )
         os.chdir(self._rcs.paths[self._codename]["path"])
-        for pf in Path.cwd().glob("*.patch"):
-            fo.apply_patch(pf)
+        fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
         # add configs into defconfig
         defconfig = self._rcs.paths[self._codename]["path"] /\
@@ -447,20 +457,34 @@ class KernelBuilder:
             f.write("\n".join(extra_configs))
             f.write("\n")
 
-    def _patch_qcald(self) -> None:
+    def _patch_qcacld(self) -> None:
         """Patch QCACLD-3.0 defconfig to add support for monitor mode.
 
         Currently, this is required only for ParanoidAndroid.
         """
-        qdefconfig = self._rcs.paths[self._codename]["path"] /\
-                     "drivers" /\
-                     "staging" /\
-                     "qcacld-3.0" /\
-                     "configs" /\
-                     "default_defconfig"
-        og_lines = ("CONFIG_FEATURE_MONITOR_MODE_SUPPORT := n",)
-        nw_lines = ("CONFIG_FEATURE_MONITOR_MODE_SUPPORT := y",)
-        fo.replace_lines(qdefconfig, og_lines, nw_lines)
+        goback = Path.cwd()
+        fo.ucopy(
+            self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "qcacld_pa.patch",
+            self._rcs.paths[self._codename]["path"]
+        )
+        os.chdir(self._rcs.paths[self._codename]["path"])
+        fo.apply_patch("qcacld_pa.patch")
+        os.chdir(goback)
+
+    def _patch_ioctl(self) -> None:
+        """Patch IOCTL buffer allocation."""
+        ioctl = self._rcs.paths[self._codename]["path"] /\
+                "drivers" /\
+                "platform" /\
+                "msm" /\
+                "ipa" /\
+                "ipa_v3" /\
+                "ipa.c"
+        fo.replace_lines(
+            ioctl.absolute(),
+            ("	u8 header[128] = { 0 };",),
+            ("	u8 header[512] = { 0 };",),
+        )
 
     def _patch_kernel(self) -> None:
         """Patch kernel sources.
@@ -475,15 +499,14 @@ class KernelBuilder:
             self._patch_strict_prototypes()
         # apply .patch files
         fo.ucopy(
-            self._root / "wrapper" / "modifications" / self._ucodename / cfg.DIR_KERNEL,
+            self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version,
             self._rcs.paths[self._codename]["path"],
-            ("kernelsu-compat.patch",)
+            ("kernelsu-compat.patch", "qcacld_pa.patch")
         )
         os.chdir(self._rcs.paths[self._codename]["path"])
         for pf in Path.cwd().glob("*.patch"):
-            if "kernelsu" not in str(pf):
-                fo.apply_patch(pf)
-        # additionally, add support for CONFIG_MAC80211 kernel option
+            fo.apply_patch(pf)
+        # add support for CONFIG_MAC80211 kernel option
         data = ""
         files = ("tx.c", "mlme.c")
         for fn in files:
@@ -491,13 +514,15 @@ class KernelBuilder:
                 data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
             with open(Path("net", "mac80211", fn), "w") as f:
                 f.write(data)
-        # for ParanoidAndroid -- patch QCACLD-3.0
+        # some patches only for ParanoidAndroid
         if self._rom == "pa":
-            self._patch_qcald()
+            if self._linux_kernel_version == "4.4":
+                self._patch_qcacld()
+            self._patch_ioctl()
         os.chdir(self._root)
 
     def _patch_all(self) -> None:
-        """Apply various patches."""
+        """Apply all patches."""
         self._patch_anykernel3()
         self._patch_kernel()
         # optionally include KernelSU support
@@ -552,11 +577,26 @@ class KernelBuilder:
         secs %= 60
         msg.done("Done! Time spent for the build: %02d:%02d:%02d" % (hours, mins, secs))
 
-    def _form_release(self, name: str) -> None:
-        """Pack build artifacts into a .zip archive.
+    @property
+    def _linux_kernel_version(self) -> str:
+        """Extract Linux kernel version number from sources."""
+        data = ""
+        version = []
+        with open(self._rcs.paths[self._codename]["path"] / "Makefile") as f:
+            data = f.read()
+        params = ("VERSION", "PATCHLEVEL")
+        # find the required lines in a single data run-through
+        for line in data.splitlines():
+            for p in params:
+                if line.split(" =")[0] == p:
+                    version.append(line.split(f"{p} = ")[1])
+            # stop the loop when all values are found
+            if len(version) == len(params):
+                break
+        return ".".join(version)
 
-        :param name: The name of the archive.
-        """
+    def _form_release(self) -> None:
+        """Pack build artifacts into a .zip archive."""
         print("\n", end="")
         msg.note("Forming final ZIP file..")
         fo.ucopy(
@@ -569,13 +609,12 @@ class KernelBuilder:
             self._rcs.paths["AnyKernel3"]["path"] / "Image.gz-dtb"
         )
         # define kernel versions: Linux and internal
-        with open(self._rcs.paths[self._codename]["path"] / "Makefile") as f:
-            head = [next(f) for x in range(3)]
-        ver_base = ".".join([i.split("= ")[1].splitlines()[0] for i in head])
+        ver_base = self._linux_kernel_version
         ver_int = os.getenv("KVERSION")
         # form the final ZIP file
-        pretag = f"{name}-{self._rom}-ksu" if self._ksu else f"{name}-{self._rom}"
-        full_name = f"{pretag}-{ver_base}-{ver_int}"
+        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._rom}"
+        name_midd = f"{name_base}-ksu" if self._ksu else name_base
+        full_name = f"{name_midd}-{ver_base}-{ver_int}"
         kdir = self._root / cfg.DIR_KERNEL
         if not kdir.is_dir():
             os.mkdir(kdir)
