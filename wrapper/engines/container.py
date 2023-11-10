@@ -37,6 +37,7 @@ class ContainerEngine:
 
     @property
     def _dir_bundle_conan(self) -> Path:
+        """Determine path to Conan's local cache."""
         res = ""
         if os.getenv("CONAN_USER_HOME"):
             res =  Path(os.getenv("CONAN_USER_HOME"))
@@ -152,7 +153,8 @@ class ContainerEngine:
         msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
         # build only if it is not present in local cache
-        if self._name_image not in ccmd.launch("docker images --format '{{.Repository}}'", get_output=True):
+        #if self._name_image not in ccmd.launch(f"{self._buildenv} image list --format '{{.Repository}}'", get_output=True):
+        if 1 == 1:
             # force enable Docker Buildkit
             if self._buildenv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
@@ -169,7 +171,7 @@ class ContainerEngine:
 
     def run(self) -> None:
         self._build()
-        # form the final "docker run" command
+        # form the final "docker/podman run" command
         cmd = '{} run {} {} /bin/bash -c "{}"'.format(
             self._buildenv,
             " ".join(self._container_options),

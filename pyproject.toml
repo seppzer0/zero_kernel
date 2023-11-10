@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "zero-kernel-builder"
 version = "0.3.3"
-description = ""
+description = "An Android kernel with Kali NetHunter functionality."
 authors = ["seppzer0"]
 packages = [{include = "wrapper"}]
 

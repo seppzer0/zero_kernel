@@ -34,7 +34,7 @@ The kernel has the following features:
 - Kali NetHunter support;
 - RTL8812/21AU + RTL8814AU + RTL8187 Wi-Fi drivers;
 - packet injection support for internal Wi-Fi chipset;
-- KernelSU support.
+- optional KernelSU support.
 
 ## Supported ROMs and devices
 
@@ -91,7 +91,7 @@ optional arguments:
 To run this tool in a `local` environment, you will need:
 
 - a Debian-based Linux distribution (other types of distros are untested);
-- packages installed via apt: `libssl-dev`, `wget`, `git`, `make`, `gcc`, `zip`.
+- a few [packages](Dockerfile#L15) installed in your system.
 
 You will also need a few Python packages. To install them, use:
 

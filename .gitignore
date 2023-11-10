@@ -5,11 +5,11 @@
 
 # git subrepos (==submodules)
 /android_*
+/*_kernel_*
 /clang*
 /rtl8812au
 /AnyKernel3
 /KernelSU
-/*_kernel_*
 
 # misc local artifacts
 /*.log
@@ -18,4 +18,4 @@
 /source
 /bundle
 /localversion
-/multi-slim
+/multi-build

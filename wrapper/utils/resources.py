@@ -100,9 +100,4 @@ class Resources:
         for elem in self.paths:
             p = self.paths[elem]["path"]
             pathenv = str(f"{p}/bin/")
-            # special rules for "android_prebuilts_build-tools"
-            if p.name == "android_prebuilts_build-tools":
-                os.environ["PATH"] += os.pathsep + pathenv.replace("/bin/:", "/linux-86/bin/:")
-                os.environ["PATH"] += os.pathsep + pathenv.replace("/bin/:", "/path/linux-86/:")
-            else:
-                os.environ["PATH"] += os.pathsep + pathenv
+            os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH")

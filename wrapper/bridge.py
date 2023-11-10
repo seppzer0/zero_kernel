@@ -105,7 +105,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case _:
-            # if no module was selected, then the shared tools are installed
+            # if no module was selected, then shared tools are installed
             tconf = Resources()
             tconf.path_gen()
             tconf.download()

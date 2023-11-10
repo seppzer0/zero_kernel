@@ -4,6 +4,7 @@
 
 # git subrepos (==submodules)
 android_*
+*_kernel_*
 clang*
 rtl8812au
 AnyKernel3

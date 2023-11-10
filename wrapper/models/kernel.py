@@ -536,20 +536,21 @@ class KernelBuilder:
         print("\n", end="")
         msg.note("Launching the build..")
         os.chdir(self._rcs.paths[self._codename]["path"])
-        # launch "make" with the number of all available processing units
+        # launch "make"
         punits = ccmd.launch("nproc --all", get_output=True)
         cmd1 = "make -j{} O=out {} "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
-               "HOSTCC=clang "\
-               "HOSTCXX=clang+"\
+               "LLVM=1"\
                 .format(punits, self._defconfig)
         cmd2 = "make -j{} O=out "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
-               "CROSS_COMPILE=aarch64-linux-android- "\
+               "CROSS_COMPILE=llvm- "\
                "CROSS_COMPILE_ARM32=arm-linux-androideabi- "\
                "CLANG_TRIPLE=aarch64-linux-gnu- "\
+               "LLVM=1 "\
+               "LLVM_IAS=1 "\
                "HOSTCC=clang "\
                "HOSTCXX=clang++ "\
                "CC=clang "\
@@ -557,8 +558,6 @@ class KernelBuilder:
                "AR=llvm-ar "\
                "NM=llvm-nm "\
                "AS=llvm-as "\
-               "LLVM=1 "\
-               "LLVM_IAS=1 "\
                "OBJCOPY=llvm-objcopy "\
                "OBJDUMP=llvm-objdump "\
                "STRIP=llvm-strip"\

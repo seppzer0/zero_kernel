@@ -1,4 +1,4 @@
-name: Slim Release
+name: Release
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Build and assemble
         run: |
           python3 -m pip install poetry
@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
-          path: "multi-slim"
+          path: "multi-build"
           retention-days: 1
   release:
     runs-on: ubuntu-latest
@@ -53,18 +53,19 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
-          path: "multi-slim"
+          path: "multi-build"
       - name: Get current version
         id: version
         run: echo "version=$(python3 scripts/get_version.py)" >> $GITHUB_OUTPUT
       - name: Form a tag name
         id: tagname
-        run: echo "tagname=v${{ steps.version.outputs.version }}.${{ github.run_number }}" >> $GITHUB_OUTPUT
+        run: echo "tagname=v${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
       - name: Release
         uses: ncipollo/release-action@v1
         with:
           draft: true
+          skipIfReleaseExists: true
           tag: ${{ steps.tagname.outputs.tagname }}
           prerelease: ${{ env.IS_PRERELEASE }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "multi-slim/*.zip"
+          artifacts: "multi-build/*.zip"
