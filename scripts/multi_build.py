@@ -16,12 +16,11 @@ def parse_args() -> None:
     return parser.parse_args()
 
 
-def ucopy(src: Path, dst: Path) -> None:
-    """A universal method to copy files into desired destinations.
+def rmove(src: Path, dst: Path) -> None:
+    """Recusrively move files from one directory to another.
 
     :param src: Source path.
     :param dst: Destination path.
-    :param exceptions: Elements that will not be removed.
     """
     # for a directory (it's contents)
     if src.is_dir():
@@ -33,13 +32,10 @@ def ucopy(src: Path, dst: Path) -> None:
             if e != src:
                 src_e = Path(src, e)
                 dst_e = Path(dst, e)
-                if src_e.is_dir():
-                    shutil.copytree(src_e, dst_e)
-                elif src_e.is_file():
-                    shutil.copy(src_e, dst_e)
+                shutil.move(src_e, dst_e)
     # for a single file
     elif src.is_file():
-        shutil.copy(src, dst)
+        shutil.move(src, dst)
 
 
 def main(args: argparse.Namespace) -> None:
@@ -100,7 +96,7 @@ def main(args: argparse.Namespace) -> None:
                 out = "kernel"
             case "assets":
                 out = "assets"
-        ucopy(Path(out), Path(dir_shared))
+        rmove(Path(out), Path(dir_shared))
 
 
 if __name__ == "__main__":
