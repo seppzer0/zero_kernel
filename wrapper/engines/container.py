@@ -153,7 +153,9 @@ class ContainerEngine:
         msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
         # build only if it is not present in local cache
-        if self._name_image not in ccmd.launch(f"{self._buildenv} image list --format '{{.Repository}}'", get_output=True):
+        # TODO: find a way to remove this slug for the command to work in GitLab CI/CD (Docker-in-Docker)
+        #if self._name_image not in ccmd.launch(f"{self._buildenv} image list --format '{{.Repository}}'", get_output=True):
+        if "slug" == "slug":
             # force enable Docker Buildkit
             if self._buildenv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
