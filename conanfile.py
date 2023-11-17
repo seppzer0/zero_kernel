@@ -6,7 +6,7 @@ class S0nhConan(ConanFile):
     version = "0.3.3"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
-    description = "An Android kernel w/ Kali NetHunter support."
+    description = "An Android kernel with Kali NetHunter functionality."
     topics = ("zero_kernel", "kali-nethunter")
     settings = None
     options = {

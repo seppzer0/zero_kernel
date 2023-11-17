@@ -1,18 +1,12 @@
-# zero_kernel — an Android kernel w/ Kali NetHunter support
+# zero_kernel
 
-## **Disclaimer**
-
-**This kernel is made for educational purposes only.**
-
-**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs and/or kernels.**
-
-**Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
+An Android kernel with Kali NetHunter functionality.
 
 ## Contents
 
-- [zero\_kernel — an Android kernel w/ Kali NetHunter support](#zero_kernel--an-android-kernel-w-kali-nethunter-support)
-  - [**Disclaimer**](#disclaimer)
+- [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
+  - [**Disclaimer**](#disclaimer)
   - [Kernel Features](#kernel-features)
   - [Supported ROMs and devices](#supported-roms-and-devices)
       - [ROMs](#roms)
@@ -26,6 +20,14 @@
   - [Examples](#examples)
   - [Credits](#credits)
   - [See also](#see-also)
+
+## **Disclaimer**
+
+**This kernel is made for educational purposes only.**
+
+**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs and/or kernels.**
+
+**Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
 ## Kernel Features
 

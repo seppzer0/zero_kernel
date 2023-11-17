@@ -23,7 +23,7 @@ Listed below files are required:
 - compiled kernel, obviously;
 - ROM;
 - Magisk or KernelSU;
-- TWRP, the official 3.7.0 version (supports operations with encrypted partitions);
+- TWRP, the unofficial 3.7.0 version (supports operations with encrypted and dynamic partitions);
 - DM-Verity and Force Encrypt disabler;
 - Kali NetHunter + Kali NetHunter Terminal apps;
 - Kali NetHunter Chroot (you can do this later, but it would be easier to download this beforehand);

@@ -95,7 +95,7 @@ class AssetCollector:
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
                 "https://store.nethunter.com/NetHunterTerminal.apk",
-                "https://eu.dl.twrp.me/cheeseburger_dumpling/twrp-3.7.0_12-1-cheeseburger_dumpling.img",
+                "https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download",
                 "https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self._chroot),
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",

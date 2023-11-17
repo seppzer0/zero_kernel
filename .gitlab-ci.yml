@@ -22,7 +22,7 @@ job-build:
     - python3 scripts/multi_build.py
   artifacts:
     paths:
-      - "multi-build/"
+      - "multi-build/zero-*.zip"
     when: on_success
     expire_in: never
   rules:

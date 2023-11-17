@@ -11,6 +11,9 @@ conan = "~1"
 argparse = "*"
 requests = "*"
 bandit = "*"
+pathlib = "*"
+dataclasses = "*"
+typing = "*"
 
 
 [build-system]

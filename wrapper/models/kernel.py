@@ -77,12 +77,12 @@ class KernelBuilder:
         """Determine defconfig file name.
 
         Depending on Linux kernel version (4.4 or 4.14)
-        the location for PA's defconfig is different.
+        the location for defconfig file may vary.
         """
         defconfigs = {
             "los": "lineage_oneplus5_defconfig",
-            "pa": "paranoid_defconfig",
-            "x": "oneplus5_defconfig"
+            "pa": "defconfig" if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
+            "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
         }
         return defconfigs[self._rom]
 
@@ -541,7 +541,8 @@ class KernelBuilder:
         cmd1 = "make -j{} O=out {} "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
-               "LLVM=1"\
+               "LLVM=1" \
+               "LLVM_IAS=1"\
                 .format(punits, self._defconfig)
         cmd2 = "make -j{} O=out "\
                "ARCH=arm64 "\
