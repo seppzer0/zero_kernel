@@ -40,7 +40,7 @@ class ContainerEngine:
         """Determine path to Conan's local cache."""
         res = ""
         if os.getenv("CONAN_USER_HOME"):
-            res =  Path(os.getenv("CONAN_USER_HOME"))
+            res = Path(os.getenv("CONAN_USER_HOME"))
         else:
             res = Path(os.getenv("HOME"), ".conan")
         return res
