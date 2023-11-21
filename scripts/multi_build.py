@@ -76,7 +76,7 @@ def main(args: argparse.Namespace) -> None:
         # create artifact holder directory
         if dir_shared not in os.listdir():
             os.mkdir(dir_shared)
-        # extract individual values
+        # define values individually
         module = argset["module"]
         buildenv = f"--buildenv {args.env}"
         rom = f'--rom {argset["rom"]}'
