@@ -1,12 +1,12 @@
 FROM python:3.12-slim-bookworm AS base
 
 # variable store
-ARG WDIR="/zero_build"
+ARG WDIR=/zero_build
 ENV CONAN_UPLOAD_CUSTOM 0
 
 # place sources from host to container
-COPY . $WDIR
-WORKDIR $WDIR
+COPY . ${WDIR}
+WORKDIR ${WDIR}
 
 # install basic packages
 RUN \
@@ -41,7 +41,7 @@ RUN python3 -m pip install pip --upgrade && \
 # This significantly reduces the total build time, as each time we make a build call for a device,
 # only device-specific kernel source is being downloaded into the container.
 #
-RUN python3 $WDIR/wrapper/bridge.py --tools
+RUN python3 ${WDIR}/wrapper/bridge.py --tools
 
 # launch app
 CMD [ "/bin/bash" ]
