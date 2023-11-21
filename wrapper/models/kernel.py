@@ -414,14 +414,14 @@ class KernelBuilder:
             "endmenu",
             "source \"drivers/kernelsu/Kconfig\""
         )
-        # apply related patch
-        if self._linux_kernel_version == "4.4":
-            fo.ucopy(
-                self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
-                self._rcs.paths[self._codename]["path"]
-            )
-            os.chdir(self._rcs.paths[self._codename]["path"])
-            fo.apply_patch("kernelsu-compat.patch")
+        # either patch kernel or KernelSU sources, depending on Linux kernel version
+        target_dir = self._root / "KernelSU" if self._linux_kernel_version == "4.14" else self._rcs.paths[self._codename]["path"]
+        fo.ucopy(
+            self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
+            target_dir
+        )
+        os.chdir(target_dir)
+        fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
         # add configs into defconfig
         defconfig = self._rcs.paths[self._codename]["path"] /\
