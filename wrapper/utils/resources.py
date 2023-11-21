@@ -2,6 +2,7 @@ import os
 import json
 import tarfile
 from pathlib import Path
+from typing import Optional
 
 import tools.cleaning as cm
 import tools.messages as msg
@@ -17,8 +18,14 @@ class Resources:
     _root: Path = cfg.DIR_ROOT
     paths: list[str] = []
 
-    def __init__(self, codename: str = "", rom: str = "") -> None:
+    def __init__(
+            self,
+            codename: Optional[str] = "",
+            lversion: Optional[str] = "",
+            rom: Optional[str] = ""
+        ) -> None:
         self._codename = codename
+        self._lversion = lversion
         self._rom = rom
 
     def path_gen(self) -> dict[str]:
@@ -35,7 +42,7 @@ class Resources:
             with open(self._root / "wrapper" / "manifests" / "devices.json") as f:
                 data = json.load(f)
                 # load data only on the required device
-                device = {self._codename: data[self._codename][self._rom]}
+                device = {self._codename: data[self._codename][self._lversion][self._rom]}
             # join tools and devices manifests
             self.paths = {**tools, **device}
         else:

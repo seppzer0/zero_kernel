@@ -11,7 +11,14 @@ from utils import Resources
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse arguments."""
+    """Parse arguments.
+    
+    Arguments here are NOT required because this script has dual use:
+    1) launch one of the modules: kernel, assets, bundle;
+    2) install shared tools from tools.json.
+
+    Making arguments required would force to specify all of them from both cases.
+    """
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
@@ -26,8 +33,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--rom",
-        dest="rom",
         help="select a ROM for the build"
+    )
+    parser.add_argument(
+        "--linux-version",
+        dest="lversion",
+        help="select Linux kernel version"
     )
     parser.add_argument(
         "--chroot",
@@ -84,6 +95,7 @@ def main(args: argparse.Namespace) -> None:
             KernelBuilder(
                 codename = args.codename,
                 rom = args.rom,
+                lversion = args.lversion,
                 clean = args.clean_kernel,
                 ksu = args.ksu,
             ).run()
@@ -101,6 +113,7 @@ def main(args: argparse.Namespace) -> None:
             BundleCreator(
                 codename = args.codename,
                 rom = args.rom,
+                lversion = args.lversion,
                 package_type = args.package_type,
                 ksu = args.ksu,
             ).run()

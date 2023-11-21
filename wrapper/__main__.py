@@ -46,21 +46,31 @@ def parse_args() -> argparse.Namespace:
     choices_rom = ("los", "pa", "x")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
+    help_lversion = "select Linux kernel version"
     default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv,
     )
     parser_kernel.add_argument(
-        "rom",
+        "--rom",
+        required=True,
         help=help_rom,
         choices=choices_rom
     )
     parser_kernel.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
+    )
+    parser_kernel.add_argument(
+        "--linux-version",
+        dest="lversion",
+        required=True,
+        help=help_lversion
     )
     parser_kernel.add_argument(
         "-c", "--clean",
@@ -94,21 +104,25 @@ def parse_args() -> argparse.Namespace:
     )
     # assets
     parser_assets.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv
     )
     parser_assets.add_argument(
-        "rom",
+        "--rom",
+        required=True,
         help=help_rom,
         choices=choices_rom
     )
     parser_assets.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
     )
     parser_assets.add_argument(
-        "chroot",
+        "--chroot",
+        required=True,
         choices=("full", "minimal"),
         help="select Kali chroot type"
     )
@@ -155,21 +169,32 @@ def parse_args() -> argparse.Namespace:
     )
     # bundle
     parser_bundle.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv
     )
     parser_bundle.add_argument(
-        "rom",
+        "--rom",
+        required=True,
         help=help_rom,
         choices=choices_rom
     )
     parser_bundle.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
     )
     parser_bundle.add_argument(
-        "package_type",
+        "--linux-version",
+        dest="lversion",
+        required=True,
+        help=help_lversion
+    )
+    parser_bundle.add_argument(
+        "--package-type",
+        required=True,
+        dest="package_type",
         choices=("conan", "slim", "full"),
         help="select package type of the bundle"
     )
@@ -250,6 +275,7 @@ def main(args: argparse.Namespace) -> None:
         "buildenv",
         "codename",
         "rom",
+        "lversion",
         "clean_image",
         "chroot",
         "package_type",
@@ -283,6 +309,7 @@ def main(args: argparse.Namespace) -> None:
                 KernelBuilder(
                     codename = args.codename,
                     rom = args.rom,
+                    lversion = args.lversion,
                     clean = args.clean_kernel,
                     ksu = args.ksu,
                 ).run()
@@ -300,6 +327,7 @@ def main(args: argparse.Namespace) -> None:
                 BundleCreator(
                     codename = args.codename,
                     rom = args.rom,
+                    lversion = args.lversion,
                     package_type = args.package_type,
                     ksu = args.ksu,
                 ).run()

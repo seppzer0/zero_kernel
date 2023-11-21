@@ -24,6 +24,7 @@ class BundleCreator:
             self,
             codename: str,
             rom: str,
+            lversion: str,
             package_type: str,
             ksu: bool
         ) -> None:
@@ -100,6 +101,7 @@ class BundleCreator:
             KernelBuilder(
                 codename = self._codename,
                 rom = rom_name,
+                lversion = self._lversion,
                 clean = clean_only,
                 ksu = self._ksu,
             ).run()

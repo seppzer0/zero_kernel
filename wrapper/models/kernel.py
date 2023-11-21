@@ -18,12 +18,13 @@ class KernelBuilder:
 
     _root: Path = cfg.DIR_ROOT
 
-    def __init__(self, codename: str, rom: str, clean: bool, ksu: bool) -> None:
+    def __init__(self, codename: str, rom: str, lversion: str, clean: bool, ksu: bool) -> None:
         self._codename = codename
         self._rom = rom
+        self._lversion = lversion
         self._clean = clean
         self._ksu = ksu
-        self._rcs = Resources(codename=codename, rom=rom)
+        self._rcs = Resources(codename=codename, rom=rom, lversion=lversion)
 
     def run(self) -> None:
         msg.banner("zero kernel builder")
@@ -81,7 +82,7 @@ class KernelBuilder:
         """
         defconfigs = {
             "los": "lineage_oneplus5_defconfig",
-            "pa": "defconfig" if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
+            "pa": "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
         }
         return defconfigs[self._rom]
@@ -552,17 +553,12 @@ class KernelBuilder:
                "CLANG_TRIPLE=aarch64-linux-gnu- "\
                "LLVM=1 "\
                "LLVM_IAS=1 "\
-               "HOSTCC=clang "\
-               "HOSTCXX=clang++ "\
-               "CC=clang "\
                "CXX=clang++ "\
-               "AR=llvm-ar "\
-               "NM=llvm-nm "\
                "AS=llvm-as "\
-               "OBJCOPY=llvm-objcopy "\
-               "OBJDUMP=llvm-objdump "\
-               "STRIP=llvm-strip"\
                 .format(punits)
+        # for PA's 4.14, extend the make command with additional variables
+        if self._rom == "pa" and self._linux_kernel_version == "4.14":
+            cmd2 = f"{cmd2} LEX=flex YACC=bison"
         # launch and time the build process
         time_start = time.time()
         ccmd.launch(cmd1)

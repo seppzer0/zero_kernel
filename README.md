@@ -8,9 +8,7 @@ An Android kernel with Kali NetHunter functionality.
   - [Contents](#contents)
   - [**Disclaimer**](#disclaimer)
   - [Kernel Features](#kernel-features)
-  - [Supported ROMs and devices](#supported-roms-and-devices)
-      - [ROMs](#roms)
-      - [Devices](#devices)
+  - [Supported ROMs](#supported-roms)
   - [Important Note](#important-note)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
@@ -38,20 +36,21 @@ The kernel has the following features:
 - packet injection support for internal Wi-Fi chipset;
 - optional KernelSU support.
 
-## Supported ROMs and devices
+## Supported ROMs
 
-#### ROMs
+For OnePlus 5/T devices:
 
-- LineageOS;
-- ParanoidAndroid;
-- x_kernel supported (universal)*.
+- 4.4 Linux kernel version:
+  - LineageOS;
+  - ParanoidAndroid;
+  - x_kernel supported (universal)*.
+- 4.14 Linux kernel version:
+  - ParanoidAndroid (unofficial & testing);
+  - x-ft_kernel supported (universal)**.
 
 \* -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
 
-#### Devices
-
-- OnePlus 5;
-- OnePlus 5T.
+\** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
 ## Important Note
 
@@ -224,6 +223,7 @@ Here are some examples of commands:
 ## Credits
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
+- [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
 - [kali-nethunter-kernel](https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel): official kernel patches from Kali NetHunter project.
 
 ## See also
