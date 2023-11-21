@@ -408,20 +408,20 @@ class KernelBuilder:
             "kernelsu"
         )
         with open(makefile, "a") as f:
-            # TODO: maybe parametrize the "obj-y" with "obj-$(CONFIG_KSU)"
-            f.write("obj-y		+= kernelsu/\n")
+            f.write("obj-$(CONFIG_KSU)		+= kernelsu/\n")
         fo.insert_before_line(
             kconfig,
             "endmenu",
             "source \"drivers/kernelsu/Kconfig\""
         )
         # apply related patch
-        fo.ucopy(
-            self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
-            self._rcs.paths[self._codename]["path"]
-        )
-        os.chdir(self._rcs.paths[self._codename]["path"])
-        fo.apply_patch("kernelsu-compat.patch")
+        if self._linux_kernel_version == "4.4":
+            fo.ucopy(
+                self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
+                self._rcs.paths[self._codename]["path"]
+            )
+            os.chdir(self._rcs.paths[self._codename]["path"])
+            fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
         # add configs into defconfig
         defconfig = self._rcs.paths[self._codename]["path"] /\
