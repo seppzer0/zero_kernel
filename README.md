@@ -216,7 +216,7 @@ Here are some examples of commands:
 - **(Recommended)** Build kernel and collect ROM via Docker:
   - `python3 wrapper bundle --buildenv=docker --rom=los --codename=dumpling --linux-version=4.4 --package-type=slim`;
 - Build kernel locally:
-  - `python3 wrapper kernel --buildenv=local --rom=los  --codename=dumpling --linux-version=4.4`;
+  - `python3 wrapper kernel --buildenv=local --rom=los --codename=dumpling --linux-version=4.4`;
 - Collect all the assets locally:
   - `python3 wrapper assets --buildenv=local --rom=los --codename=dumpling --package-type=full`.
 
