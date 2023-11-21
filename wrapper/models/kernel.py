@@ -42,22 +42,9 @@ class KernelBuilder:
         with open("localversion", "w") as f:
             f.write("~NetHunter-seppzer0")
         msg.done("Done! Tools are configured!")
-        # prepare defconfig if required
-        if self._linux_kernel_version == "4.14" and self._rom == "pa":
-            fo.ucopy(
-                self._rcs.paths[self._codename]["path"] /\
-                "arch" /\
-                "arm64" /\
-                "configs" /\
-                "vendor" /\
-                self._defconfig,
-
-                self._rcs.paths[self._codename]["path"] /\
-                "arch" /\
-                "arm64" /\
-                "configs" /\
-                self._defconfig,                
-            )
+        # validate the specified Linux kernel version
+        if self._lversion != self._linux_kernel_version:
+            msg.error("Linux kernel version in sources is different what was specified in arguments")
         # apply various patches
         self._patch_all()
         # build and package
@@ -82,7 +69,7 @@ class KernelBuilder:
         """
         defconfigs = {
             "los": "lineage_oneplus5_defconfig",
-            "pa": "paranoid_defconfig",
+            "pa": Path("vendor", "paranoid_defconfig") if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
         }
         return defconfigs[self._rom]
@@ -610,13 +597,13 @@ class KernelBuilder:
         # form the final ZIP file
         name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._rom}"
         name_midd = f"{name_base}-ksu" if self._ksu else name_base
-        full_name = f"{name_midd}-{ver_base}-{ver_int}"
+        name_full = f"{name_midd}-{ver_base}-{ver_int}"
         kdir = self._root / cfg.DIR_KERNEL
         if not kdir.is_dir():
             os.mkdir(kdir)
         os.chdir(self._rcs.paths["AnyKernel3"]["path"])
         # this is not the best solution, but is the easiest
-        cmd = f"zip -r9 {kdir / full_name}.zip . -x *.git* *README* *LICENSE* *placeholder"
+        cmd = f"zip -r9 {kdir / name_full}.zip . -x *.git* *README* *LICENSE* *placeholder"
         ccmd.launch(cmd)
         os.chdir(self._root)
         msg.done("Done!")
