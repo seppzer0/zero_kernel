@@ -46,25 +46,27 @@ def main(args: argparse.Namespace) -> None:
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "ksu": "false"
+            "lversion": "4.4",
+            "ksu": False
         },
         {
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "ksu": "true"
+            "lversion": "4.4",
+            "ksu": True
         },
         {
             "module": "assets",
             "rom": "los",
             "codename": "cheeseburger",
-            "ksu": "true"
+            "ksu": True
         },
         {
             "module": "assets",
             "rom": "pa",
             "codename": "cheeseburger",
-            "ksu": "true"
+            "ksu": True
         },
     )
     os.chdir(apath)
@@ -76,15 +78,17 @@ def main(args: argparse.Namespace) -> None:
             os.mkdir(dir_shared)
         # extract individual values
         module = argset["module"]
-        rom = argset["rom"]
-        codename = argset["codename"]
-        ksu = "--ksu" if argset["ksu"] == "true" else ""
-        size = argset["size"] if argset["module"] == "bundle" else ""
+        buildenv = f"--buildenv {args.env}"
+        rom = f'--rom {argset["rom"]}'
+        codename = f'--codename {argset["codename"]}'
+        lversion = f'--linux-version {argset["lversion"]}' if argset["module"] in ("kernel", "bundle") else ""
+        ksu = "--ksu" if argset["ksu"] else ""
+        size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
         extra = "minimal --rom-only --clean" if argset["module"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {args.env} {rom} {codename} {size} {ksu} {clean} {extra}"
+        cmd = f"python3 wrapper {module} {buildenv} {rom} {codename} {lversion} {size} {ksu} {clean} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
