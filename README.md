@@ -110,18 +110,19 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
+usage: wrapper kernel [-h] --buildenv {local,docker,podman} --rom {los,pa,x}
+                      --codename CODENAME --linux-version LVERSION [-c]
+                      [--clean-image] [--log-level {normal,verbose,quiet}]
+                      [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
+  --buildenv {local,docker,podman}
+                        select build environment
+  --rom {los,pa,x}      select a ROM for the build
+  --codename CODENAME   select device codename
+  --linux-version LVERSION
+                        select Linux kernel version
   -c, --clean           don't build anything, just clean the environment
   --clean-image         remove Docker/Podman image from the host machine after
                         build
@@ -138,20 +139,20 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only]
+usage: wrapper assets [-h] --buildenv {local,docker,podman} --rom {los,pa,x}
+                      --codename CODENAME --chroot {full,minimal}
+                      [--extra-assets EXTRA_ASSETS] [--rom-only]
                       [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename {full,minimal}
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
-  {full,minimal}        select Kali chroot type
 
 options:
   -h, --help            show this help message and exit
+  --buildenv {local,docker,podman}
+                        select build environment
+  --rom {los,pa,x}      select a ROM for the build
+  --codename CODENAME   select device codename
+  --chroot {full,minimal}
+                        select Kali chroot type
   --extra-assets EXTRA_ASSETS
                         select a JSON file with extra assets
   --rom-only            download only the ROM as an asset
@@ -185,20 +186,22 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-upload] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename
-                      {conan,slim,full}
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
-  {conan,slim,full}     select package type of the bundle
+usage: wrapper bundle [-h] --buildenv {local,docker,podman} --rom {los,pa,x}
+                      --codename CODENAME --linux-version LVERSION
+                      --package-type {conan,slim,full} [--conan-upload]
+                      [--clean-image] [--log-level {normal,verbose,quiet}]
+                      [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
+  --buildenv {local,docker,podman}
+                        select build environment
+  --rom {los,pa,x}      select a ROM for the build
+  --codename CODENAME   select device codename
+  --linux-version LVERSION
+                        select Linux kernel version
+  --package-type {conan,slim,full}
+                        select package type of the bundle
   --conan-upload        upload Conan packages to remote
   --clean-image         remove Docker/Podman image from the host machine after
                         build
@@ -214,11 +217,11 @@ options:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle docker los dumpling slim`;
+  - `python3 wrapper bundle --buildenv=docker --rom=los --codename=dumpling --linux-version=4.4 --package-type=slim`;
 - Build kernel locally:
-  - `python3 wrapper kernel local los dumpling`;
+  - `python3 wrapper kernel --buildenv=local --rom=los  --codename=dumpling --linux-version=4.4`;
 - Collect all the assets locally:
-  - `python3 wrapper assets local los dumpling full`.
+  - `python3 wrapper assets --buildenv=local --rom=los --codename=dumpling --package-type=full`.
 
 ## Credits
 
