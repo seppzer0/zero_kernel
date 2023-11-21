@@ -41,7 +41,7 @@ class Resources:
         if self._codename and self._rom:
             with open(self._root / "wrapper" / "manifests" / "devices.json") as f:
                 data = json.load(f)
-                # load data only on the required device
+                # load data only for the required codename + linux kernel version combination
                 device = {self._codename: data[self._codename][self._lversion][self._rom]}
             # join tools and devices manifests
             self.paths = {**tools, **device}
