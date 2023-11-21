@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm as base
+FROM python:3.12-slim-bookworm AS base
 
 # variable store
 ARG WDIR="/zero_build"
