@@ -49,7 +49,7 @@ class KernelBuilder:
         self._patch_all()
         # build and package
         self._build()
-        self._form_release()
+        self._create_zip()
 
     @property
     def _ucodename(self) -> str:
@@ -578,7 +578,7 @@ class KernelBuilder:
                 break
         return ".".join(version)
 
-    def _form_release(self) -> None:
+    def _create_zip(self) -> None:
         """Pack build artifacts into a .zip archive."""
         print("\n", end="")
         msg.note("Forming final ZIP file..")
