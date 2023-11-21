@@ -25,13 +25,11 @@ class AssetCollector:
         chroot: str,
         clean: bool,
         rom_only: bool,
-        extra_assets: Optional[bool] = False,
         ksu: Optional[bool] = False
     ) -> None:
         self._codename = codename
         self._rom = rom
         self._chroot = chroot
-        self._extra_assets = extra_assets
         self._clean = clean
         self._rom_only = rom_only
         self._ksu = ksu
@@ -100,31 +98,6 @@ class AssetCollector:
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",
             ]
-            # read extra assets from JSON file
-            if self._extra_assets:
-                extra_json = Path(self._root, self._extra_assets)
-                if extra_json.is_file():
-                    print("\n", end="")
-                    msg.note("Applying extra assets..")
-                    with open(extra_json) as f:
-                        data = json.load(f)
-                        # validate the input JSON
-                        rootkeys = ("github", "local", "other")
-                        if not all(le in data.keys() for le in rootkeys):
-                            msg.error(
-                                "Incorrect JSON syntax detected."
-                                "Allowed keys: 'github', 'local', 'other' ."
-                            )
-                        # append extra asset data
-                        for k in rootkeys:
-                            if data[k]:
-                                for e in data[k]:
-                                    if k == "github":
-                                        assets.append(GitHubApi(e))
-                                    else:
-                                        assets.append(e)
-                    msg.done("Extra assets added!")
-                    print("\n", end="")
             # collect all the specified assets into single directory
             nhpatch = "nhpatch.sh"
             fo.ucopy(

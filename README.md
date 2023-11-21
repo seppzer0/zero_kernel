@@ -140,8 +140,7 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 ```help
 $ python3 wrapper assets --help
 usage: wrapper assets [-h] --buildenv {local,docker,podman} --rom {los,pa,x}
-                      --codename CODENAME --chroot {full,minimal}
-                      [--extra-assets EXTRA_ASSETS] [--rom-only]
+                      --codename CODENAME --chroot {full,minimal} [--rom-only]
                       [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
 
@@ -153,8 +152,6 @@ options:
   --codename CODENAME   select device codename
   --chroot {full,minimal}
                         select Kali chroot type
-  --extra-assets EXTRA_ASSETS
-                        select a JSON file with extra assets
   --rom-only            download only the ROM as an asset
   --clean-image         remove Docker/Podman image from the host machine after
                         build

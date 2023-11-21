@@ -70,12 +70,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
-        "--extra-assets",
-        dest="extra_assets",
-        help="choose to download extra assets",
-        action="store_true"
-    )
-    parser.add_argument(
         "--ksu",
         help="add KernelSU support",
         action="store_true"
@@ -106,7 +100,6 @@ def main(args: argparse.Namespace) -> None:
                 chroot = args.chroot,
                 clean = args.clean_assets,
                 rom_only = args.rom_only,
-                extra_assets = args.extra_assets,
                 ksu = args.ksu,
             ).run()
         case "bundle":

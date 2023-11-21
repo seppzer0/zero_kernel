@@ -31,7 +31,6 @@ class ContainerEngine:
         self._clean_kernel = config.get("clean_kernel", False)
         self._clean_assets = config.get("clean_assets", False)
         self._rom_only = config.get("rom_only", False)
-        self._extra_assets = config.get("extra_assets", False)
         self._conan_upload = config.get("conan_upload", False)
         self._ksu = config.get("ksu", False)
 
@@ -57,7 +56,6 @@ class ContainerEngine:
             "--chroot": self._chroot,
             "--package-type": self._package_type,
             "--rom-only": self._rom_only,
-            "--extra-assets": self._extra_assets,
             "--ksu": self._ksu,
             "--clean-kernel": self._clean_kernel,
             "--clean-assets": self._clean_assets,

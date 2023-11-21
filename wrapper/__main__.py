@@ -126,11 +126,7 @@ def parse_args() -> argparse.Namespace:
         choices=("full", "minimal"),
         help="select Kali chroot type"
     )
-    parser_assets.add_argument(
-        "--extra-assets",
-        dest="extra_assets",
-        help="select a JSON file with extra assets"
-    )
+
     parser_assets.add_argument(
         "--rom-only",
         dest="rom_only",
@@ -282,7 +278,6 @@ def main(args: argparse.Namespace) -> None:
         "clean_kernel",
         "clean_assets",
         "rom_only",
-        "extra_assets",
         "conan_upload",
         "ksu",
     }
@@ -320,7 +315,6 @@ def main(args: argparse.Namespace) -> None:
                     chroot = args.chroot,
                     clean = args.clean_assets,
                     rom_only = args.rom_only,
-                    extra_assets = args.extra_assets,
                     ksu = args.ksu,
                 ).run()
             case "bundle":
