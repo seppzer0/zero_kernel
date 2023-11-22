@@ -1,3 +1,17 @@
+From 2c7cce67cf03361c22a07f13575eece82ef47517 Mon Sep 17 00:00:00 2001
+From: Roberto Sartori <roberto.sartori.android@gmail.com>
+Date: Sat, 26 Aug 2023 17:11:36 +0200
+Subject: [PATCH] Init session keyring also on 4.14
+
+Patch provided by user 'rhjdvsgsgks' on github.
+
+Signed-off-by: Roberto Sartori <roberto.sartori.android@gmail.com>
+---
+ kernel/core_hook.c     | 6 +++---
+ kernel/kernel_compat.c | 4 ++--
+ kernel/kernel_compat.h | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
 diff --git a/kernel/core_hook.c b/kernel/core_hook.c
 index c6ac7d66db21..75259f7df282 100644
 --- a/kernel/core_hook.c

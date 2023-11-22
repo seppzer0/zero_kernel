@@ -80,6 +80,7 @@ class KernelBuilder:
         msg.note("Cleaning the build environment..")
         cm.git(self._rcs.paths[self._codename]["path"])
         cm.git(self._rcs.paths["AnyKernel3"]["path"])
+        cm.git(self._rcs.paths["KernelSU"]["path"])
         for fn in os.listdir():
             if fn == "localversion" or fn.endswith(".zip"):
                 cm.remove(fn)
