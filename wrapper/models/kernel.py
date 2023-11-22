@@ -541,7 +541,7 @@ class KernelBuilder:
                "LLVM=1 "\
                "LLVM_IAS=1 "\
                "CXX=clang++ "\
-               "AS=llvm-as "\
+               "AS=llvm-as"\
                 .format(punits)
         # for PA's 4.14, extend the make command with additional variables
         if self._rom == "pa" and self._linux_kernel_version == "4.14":
