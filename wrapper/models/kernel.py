@@ -543,7 +543,7 @@ class KernelBuilder:
                "CXX=clang++ "\
                "AS=llvm-as"\
                 .format(punits)
-        # for PA's 4.14, extend the make command with additional variables
+        # for PA's 4.14, extend the "make" command with additional variables
         if self._rom == "pa" and self._linux_kernel_version == "4.14":
             cmd2 = f"{cmd2} LEX=flex YACC=bison"
         # launch and time the build process

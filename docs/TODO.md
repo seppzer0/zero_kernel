@@ -52,5 +52,5 @@
 - [x] skip building Docker/Podman image if it's already present in local cache;
 - [x] for containerized build, download the contents of manifests during image build;
 - [ ] add system app debloater;
-- [x] add a new argument respobsible for Linux kernel version selection;
+- [x] add a new argument responsible for Linux kernel version selection;
 - [x] add 4.14 Linux kernel version builds.
