@@ -24,7 +24,7 @@ class ContainerEngine:
         self._buildenv = config.get("buildenv")
         self._build_module = config.get("build_module")
         self._codename = config.get("codename")
-        self._rom = config.get("rom")
+        self._base = config.get("base")
         self._chroot = config.get("chroot", None)
         self._package_type = config.get("package_type", None)
         self._clean_image = config.get("clean_image", False)
@@ -52,7 +52,7 @@ class ContainerEngine:
         arguments = {
             "--build-module": self._build_module,
             "--codename": self._codename,
-            "--rom": self._rom,
+            "--base": self._base,
             "--chroot": self._chroot,
             "--package-type": self._package_type,
             "--rom-only": self._rom_only,

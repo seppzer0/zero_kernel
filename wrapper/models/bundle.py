@@ -23,13 +23,14 @@ class BundleCreator:
     def __init__(
             self,
             codename: str,
-            rom: str,
-            lversion: str,
+            base: str,
+            lkv: str,
             package_type: str,
             ksu: bool
         ) -> None:
         self._codename = codename
-        self._rom = rom
+        self._base = base
+        self._lkv = lkv
         self._package_type = package_type
         self._ksu = ksu
 
@@ -38,9 +39,9 @@ class BundleCreator:
         # determine the bundle type and process it
         match self._package_type:
             case "slim" | "full":
-                self._build_kernel(self._rom)
+                self._build_kernel(self._base)
                 # "full" chroot is hardcoded here
-                self._collect_assets(self._rom, "full")
+                self._collect_assets(self._base, "full")
                 # make a unified "bundle" directory with both .zips
                 bdir = cfg.DIR_BUNDLE
                 kdir = cfg.DIR_KERNEL
@@ -77,7 +78,7 @@ class BundleCreator:
                 reference = f"{name}/{version}@{user}/{channel}"
                 # form option sets
                 chroot = ("minimal", "full")
-                option_sets = list(itertools.product([self._rom], chroot))
+                option_sets = list(itertools.product([self._base], chroot))
                 # build and upload Conan packages
                 for opset in option_sets:
                     self._build_kernel(opset[0])
@@ -100,8 +101,8 @@ class BundleCreator:
         if not Path(cfg.DIR_KERNEL).is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self._codename,
-                rom = rom_name,
-                lversion = self._lversion,
+                base = rom_name,
+                lkv = self._lkv,
                 clean = clean_only,
                 ksu = self._ksu,
             ).run()
@@ -119,7 +120,7 @@ class BundleCreator:
         """
         AssetCollector(
             codename = self._codename,
-            rom = rom_name,
+            base = rom_name,
             chroot = chroot,
             clean = True,
             rom_only = self._rom_only_flag,

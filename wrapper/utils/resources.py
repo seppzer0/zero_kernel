@@ -21,12 +21,12 @@ class Resources:
     def __init__(
             self,
             codename: Optional[str] = "",
-            lversion: Optional[str] = "",
-            rom: Optional[str] = ""
+            lkv: Optional[str] = "",
+            base: Optional[str] = ""
         ) -> None:
         self._codename = codename
-        self._lversion = lversion
-        self._rom = rom
+        self._lkv = lkv
+        self._base = base
 
     def path_gen(self) -> dict[str]:
         """Generate paths from JSON data."""
@@ -38,11 +38,15 @@ class Resources:
         with open(self._root / "wrapper" / "manifests" / "tools.json") as f:
             tools = json.load(f)
         # codename and ROM are undefined only when the Docker/Podman image is being prepared
-        if self._codename and self._rom:
+        if self._codename and self._base:
             with open(self._root / "wrapper" / "manifests" / "devices.json") as f:
                 data = json.load(f)
                 # load data only for the required codename + linux kernel version combination
-                device = {self._codename: data[self._codename][self._lversion][self._rom]}
+                try:
+                    data[self._codename][self._lkv][self._base]
+                except Exception:
+                    msg.error("Arguments were specified for an unsupported build, exiting..")
+                device = {self._codename: data[self._codename][self._lkv][self._base]}
             # join tools and devices manifests
             self.paths = {**tools, **device}
         else:

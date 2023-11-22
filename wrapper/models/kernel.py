@@ -18,13 +18,13 @@ class KernelBuilder:
 
     _root: Path = cfg.DIR_ROOT
 
-    def __init__(self, codename: str, rom: str, lversion: str, clean: bool, ksu: bool) -> None:
+    def __init__(self, codename: str, base: str, lkv: str, clean: bool, ksu: bool) -> None:
         self._codename = codename
-        self._rom = rom
-        self._lversion = lversion
+        self._base = base
+        self._lkv = lkv
         self._clean = clean
         self._ksu = ksu
-        self._rcs = Resources(codename=codename, rom=rom, lversion=lversion)
+        self._rcs = Resources(codename=codename, base=base, lkv=lkv)
 
     def run(self) -> None:
         msg.banner("zero kernel builder")
@@ -43,7 +43,7 @@ class KernelBuilder:
             f.write("~NetHunter-seppzer0")
         msg.done("Done! Tools are configured!")
         # validate the specified Linux kernel version
-        if self._lversion != self._linux_kernel_version:
+        if self._lkv != self._linux_kernel_version:
             msg.error("Linux kernel version in sources is different what was specified in arguments")
         # apply various patches
         self._patch_all()
@@ -72,7 +72,7 @@ class KernelBuilder:
             "pa": Path("vendor", "paranoid_defconfig") if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
         }
-        return defconfigs[self._rom]
+        return defconfigs[self._base]
 
     def _clean_build(self) -> None:
         """Clean environment from potential artifacts."""
@@ -222,7 +222,7 @@ class KernelBuilder:
             }
             data.update(extra_non_414)
         # PA needs this, LineageOS does not
-        if self._rom == "pa":
+        if self._base == "pa":
             extra_pa = {
                 self._rcs.paths[self._codename]["path"] /\
                 "drivers" /\
@@ -504,7 +504,7 @@ class KernelBuilder:
             with open(Path("net", "mac80211", fn), "w") as f:
                 f.write(data)
         # some patches only for ParanoidAndroid
-        if self._rom == "pa":
+        if self._base == "pa":
             if self._linux_kernel_version == "4.4":
                 self._patch_qcacld()
             self._patch_ioctl()
@@ -545,7 +545,7 @@ class KernelBuilder:
                "AS=llvm-as"\
                 .format(punits)
         # for PA's 4.14, extend the "make" command with additional variables
-        if self._rom == "pa" and self._linux_kernel_version == "4.14":
+        if self._base == "pa" and self._linux_kernel_version == "4.14":
             cmd2 = f"{cmd2} LEX=flex YACC=bison"
         # launch and time the build process
         time_start = time.time()
@@ -596,7 +596,7 @@ class KernelBuilder:
         ver_base = self._linux_kernel_version
         ver_int = os.getenv("KVERSION")
         # form the final ZIP file
-        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._rom}"
+        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._base}"
         name_midd = f"{name_base}-ksu" if self._ksu else name_base
         name_full = f"{name_midd}-{ver_base}-{ver_int}"
         kdir = self._root / cfg.DIR_KERNEL

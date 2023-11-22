@@ -37,6 +37,13 @@
                 "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
                 "branch": "develop-pelt",
                 "commit": ""
+            },
+            "aosp": {
+                "type": "git",
+                "path": "4.14-kernel-oneplus-msm8998",
+                "url": "https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998                ",
+                "branch": "4.14.314/msm8998_oneplus",
+                "commit": ""
             }
         }
     },
@@ -77,6 +84,13 @@
                 "path": "x-ft_kernel_oneplus_msm8998",
                 "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
                 "branch": "develop-pelt",
+                "commit": ""
+            },
+            "aosp": {
+                "type": "git",
+                "path": "4.14-kernel-oneplus-msm8998",
+                "url": "https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998                ",
+                "branch": "4.14.314/msm8998_oneplus",
                 "commit": ""
             }
         }

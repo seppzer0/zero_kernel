@@ -36,17 +36,17 @@ def parse_args() -> argparse.Namespace:
         help="clean the root directory"
     )
     # common argument attributes for subparsers
-    help_rom = "select a ROM for the build"
+    help_base = "select a kernel base for the build"
     help_codename = "select device codename"
     help_buildenv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    choices_rom = ("los", "pa", "x")
+    choices_base = ("los", "pa", "x", "aosp")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
-    help_lversion = "select Linux kernel version"
+    help_lkv = "select Linux Kernel Version"
     default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
@@ -56,10 +56,10 @@ def parse_args() -> argparse.Namespace:
         help=help_buildenv,
     )
     parser_kernel.add_argument(
-        "--rom",
+        "--base",
         required=True,
-        help=help_rom,
-        choices=choices_rom
+        help=help_base,
+        choices=choices_base
     )
     parser_kernel.add_argument(
         "--codename",
@@ -67,10 +67,9 @@ def parse_args() -> argparse.Namespace:
         help=help_codename
     )
     parser_kernel.add_argument(
-        "--linux-version",
-        dest="lversion",
+        "--lkv",
         required=True,
-        help=help_lversion
+        help=help_lkv
     )
     parser_kernel.add_argument(
         "-c", "--clean",
@@ -110,10 +109,10 @@ def parse_args() -> argparse.Namespace:
         help=help_buildenv
     )
     parser_assets.add_argument(
-        "--rom",
+        "--base",
         required=True,
-        help=help_rom,
-        choices=choices_rom
+        help=help_base,
+        choices=choices_base
     )
     parser_assets.add_argument(
         "--codename",
@@ -171,10 +170,10 @@ def parse_args() -> argparse.Namespace:
         help=help_buildenv
     )
     parser_bundle.add_argument(
-        "--rom",
+        "--base",
         required=True,
-        help=help_rom,
-        choices=choices_rom
+        help=help_base,
+        choices=choices_base
     )
     parser_bundle.add_argument(
         "--codename",
@@ -182,10 +181,9 @@ def parse_args() -> argparse.Namespace:
         help=help_codename
     )
     parser_bundle.add_argument(
-        "--linux-version",
-        dest="lversion",
+        "--lkv",
         required=True,
-        help=help_lversion
+        help=help_lkv
     )
     parser_bundle.add_argument(
         "--package-type",
@@ -271,7 +269,7 @@ def main(args: argparse.Namespace) -> None:
         "buildenv",
         "codename",
         "rom",
-        "lversion",
+        "lkv",
         "clean_image",
         "chroot",
         "package_type",
@@ -303,15 +301,15 @@ def main(args: argparse.Namespace) -> None:
             case "kernel":
                 KernelBuilder(
                     codename = args.codename,
-                    rom = args.rom,
-                    lversion = args.lversion,
+                    base = args.base,
+                    lkv = args.lkv,
                     clean = args.clean_kernel,
                     ksu = args.ksu,
                 ).run()
             case "assets":
                 AssetCollector(
                     codename = args.codename,
-                    rom = args.rom,
+                    base = args.base,
                     chroot = args.chroot,
                     clean = args.clean_assets,
                     rom_only = args.rom_only,
@@ -320,8 +318,8 @@ def main(args: argparse.Namespace) -> None:
             case "bundle":
                 BundleCreator(
                     codename = args.codename,
-                    rom = args.rom,
-                    lversion = args.lversion,
+                    base = args.base,
+                    lkv = args.lkv,
                     package_type = args.package_type,
                     ksu = args.ksu,
                 ).run()

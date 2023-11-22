@@ -46,14 +46,14 @@ def main(args: argparse.Namespace) -> None:
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "lversion": "4.4",
+            "lkv": "4.4",
             "ksu": False
         },
         {
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "lversion": "4.4",
+            "lkv": "4.4",
             "ksu": True
         },
         {
@@ -79,16 +79,16 @@ def main(args: argparse.Namespace) -> None:
         # define values individually
         module = argset["module"]
         buildenv = f"--buildenv {args.env}"
-        rom = f'--rom {argset["rom"]}'
+        base = f'--base {argset["rom"]}'
         codename = f'--codename {argset["codename"]}'
-        lversion = f'--linux-version {argset["lversion"]}' if argset["module"] in ("kernel", "bundle") else ""
+        lkv = f'--lkv {argset["lkv"]}' if argset["module"] in ("kernel", "bundle") else ""
         ksu = "--ksu" if argset["ksu"] else ""
         size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
         extra = "minimal --rom-only --clean" if argset["module"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {buildenv} {rom} {codename} {lversion} {size} {ksu} {clean} {extra}"
+        cmd = f"python3 wrapper {module} {buildenv} {base} {codename} {lkv} {size} {ksu} {clean} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory

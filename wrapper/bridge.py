@@ -32,12 +32,11 @@ def parse_args() -> argparse.Namespace:
         help="select device codename"
     )
     parser.add_argument(
-        "--rom",
-        help="select a ROM for the build"
+        "--base",
+        help="select a kernel base for the build"
     )
     parser.add_argument(
-        "--linux-version",
-        dest="lversion",
+        "--lkv",
         help="select Linux kernel version"
     )
     parser.add_argument(
@@ -88,15 +87,15 @@ def main(args: argparse.Namespace) -> None:
         case "kernel":
             KernelBuilder(
                 codename = args.codename,
-                rom = args.rom,
-                lversion = args.lversion,
+                base = args.base,
+                lkv = args.lkv,
                 clean = args.clean_kernel,
                 ksu = args.ksu,
             ).run()
         case "assets":
             AssetCollector(
                 codename = args.codename,
-                rom = args.rom,
+                base = args.base,
                 chroot = args.chroot,
                 clean = args.clean_assets,
                 rom_only = args.rom_only,
@@ -105,8 +104,8 @@ def main(args: argparse.Namespace) -> None:
         case "bundle":
             BundleCreator(
                 codename = args.codename,
-                rom = args.rom,
-                lversion = args.lversion,
+                base = args.base,
+                lkv = args.lkv,
                 package_type = args.package_type,
                 ksu = args.ksu,
             ).run()
