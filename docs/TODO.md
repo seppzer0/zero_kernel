@@ -39,19 +39,18 @@
 - [ ] use `pydantic`;
 - [x] add a FAQ page;
 - [ ] add wiki;
-- [ ] refactor Docker/Podman command formation;
+- [x] refactor Docker/Podman command formation;
 - [ ] refactor logging mechanism;
 - [x] fix Podman usage (.dockerignore);
 - [ ] dedicate kernel source patchers as separate modules (LineageOS, AOSP, AOSPA etc);
 - [x] add a separate method for multiline patching in files;
-- [ ] check Alpine Linux as a base for Docker/Podman images;
 - [ ] make kernel building and assets collection processes asynchronous when launching the `bundle` option;
-- [ ] add a dataclass for wrapper's arguments;
+- [x] add a dataclass for wrapper's arguments;
 - [x] add PA ROM support;
 - [ ] add a GH workflow for checking PRs;
 - [x] decompose `run()` method in `ContainerEngine`;
 - [x] skip building Docker/Podman image if it's already present in local cache;
 - [x] for containerized build, download the contents of manifests during image build;
 - [ ] add system app debloater;
-- [ ] add a new argument respobsible for Linux kernel version selection;
-- [ ] add 4.14 Linux kernel version builds.
+- [x] add a new argument respobsible for Linux kernel version selection;
+- [x] add 4.14 Linux kernel version builds.
