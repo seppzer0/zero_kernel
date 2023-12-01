@@ -57,6 +57,27 @@ def main(args: argparse.Namespace) -> None:
             "ksu": True
         },
         {
+            "module": "kernel",
+            "rom": "pa",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": True
+        },
+        {
+            "module": "kernel",
+            "rom": "x",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": True
+        },
+        {
+            "module": "kernel",
+            "rom": "x",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": False
+        },
+        {
             "module": "assets",
             "rom": "los",
             "codename": "cheeseburger",
