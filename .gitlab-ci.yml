@@ -25,7 +25,6 @@ job-build:
     when: on_success
     expire_in: never
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - when: manual
 
 job-tag:
@@ -43,4 +42,4 @@ job-tag:
     - git remote add origin https://${USERNAME}:${PASSWORD}@gitlab.com/${CI_PROJECT_PATH}
     - if [ $(git tag | grep "$TAGNAME") ]; then echo "[ * ] Tag already exists, skipping.."; else git tag $TAGNAME && git push origin $TAGNAME; fi
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - when: manual
