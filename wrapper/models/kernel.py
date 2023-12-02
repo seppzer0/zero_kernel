@@ -18,12 +18,13 @@ class KernelBuilder:
 
     _root: Path = cfg.DIR_ROOT
 
-    def __init__(self, codename: str, rom: str, clean: bool, ksu: bool) -> None:
+    def __init__(self, codename: str, base: str, lkv: str, clean: bool, ksu: bool) -> None:
         self._codename = codename
-        self._rom = rom
+        self._base = base
+        self._lkv = lkv
         self._clean = clean
         self._ksu = ksu
-        self._rcs = Resources(codename=codename, rom=rom)
+        self._rcs = Resources(codename=codename, base=base, lkv=lkv)
 
     def run(self) -> None:
         msg.banner("zero kernel builder")
@@ -41,27 +42,14 @@ class KernelBuilder:
         with open("localversion", "w") as f:
             f.write("~NetHunter-seppzer0")
         msg.done("Done! Tools are configured!")
-        # prepare defconfig if required
-        if self._linux_kernel_version == "4.14" and self._rom == "pa":
-            fo.ucopy(
-                self._rcs.paths[self._codename]["path"] /\
-                "arch" /\
-                "arm64" /\
-                "configs" /\
-                "vendor" /\
-                self._defconfig,
-
-                self._rcs.paths[self._codename]["path"] /\
-                "arch" /\
-                "arm64" /\
-                "configs" /\
-                self._defconfig,                
-            )
+        # validate the specified Linux kernel version
+        if self._lkv != self._linux_kernel_version:
+            msg.error("Linux kernel version in sources is different what was specified in arguments")
         # apply various patches
         self._patch_all()
         # build and package
         self._build()
-        self._form_release()
+        self._create_zip()
 
     @property
     def _ucodename(self) -> str:
@@ -81,10 +69,10 @@ class KernelBuilder:
         """
         defconfigs = {
             "los": "lineage_oneplus5_defconfig",
-            "pa": "defconfig" if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
+            "pa": Path("vendor", "paranoid_defconfig") if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
         }
-        return defconfigs[self._rom]
+        return defconfigs[self._base]
 
     def _clean_build(self) -> None:
         """Clean environment from potential artifacts."""
@@ -92,6 +80,7 @@ class KernelBuilder:
         msg.note("Cleaning the build environment..")
         cm.git(self._rcs.paths[self._codename]["path"])
         cm.git(self._rcs.paths["AnyKernel3"]["path"])
+        cm.git(self._rcs.paths["KernelSU"]["path"])
         for fn in os.listdir():
             if fn == "localversion" or fn.endswith(".zip"):
                 cm.remove(fn)
@@ -233,7 +222,7 @@ class KernelBuilder:
             }
             data.update(extra_non_414)
         # PA needs this, LineageOS does not
-        if self._rom == "pa":
+        if self._base == "pa":
             extra_pa = {
                 self._rcs.paths[self._codename]["path"] /\
                 "drivers" /\
@@ -420,19 +409,19 @@ class KernelBuilder:
             "kernelsu"
         )
         with open(makefile, "a") as f:
-            # TODO: maybe parametrize the "obj-y" with "obj-$(CONFIG_KSU)"
-            f.write("obj-y		+= kernelsu/\n")
+            f.write("obj-$(CONFIG_KSU)		+= kernelsu/\n")
         fo.insert_before_line(
             kconfig,
             "endmenu",
             "source \"drivers/kernelsu/Kconfig\""
         )
-        # apply related patch
+        # either patch kernel or KernelSU sources, depending on Linux kernel version
+        target_dir = self._root / "KernelSU" if self._linux_kernel_version == "4.14" else self._rcs.paths[self._codename]["path"]
         fo.ucopy(
             self._root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
-            self._rcs.paths[self._codename]["path"]
+            target_dir
         )
-        os.chdir(self._rcs.paths[self._codename]["path"])
+        os.chdir(target_dir)
         fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
         # add configs into defconfig
@@ -515,7 +504,7 @@ class KernelBuilder:
             with open(Path("net", "mac80211", fn), "w") as f:
                 f.write(data)
         # some patches only for ParanoidAndroid
-        if self._rom == "pa":
+        if self._base == "pa":
             if self._linux_kernel_version == "4.4":
                 self._patch_qcacld()
             self._patch_ioctl()
@@ -552,17 +541,12 @@ class KernelBuilder:
                "CLANG_TRIPLE=aarch64-linux-gnu- "\
                "LLVM=1 "\
                "LLVM_IAS=1 "\
-               "HOSTCC=clang "\
-               "HOSTCXX=clang++ "\
-               "CC=clang "\
                "CXX=clang++ "\
-               "AR=llvm-ar "\
-               "NM=llvm-nm "\
-               "AS=llvm-as "\
-               "OBJCOPY=llvm-objcopy "\
-               "OBJDUMP=llvm-objdump "\
-               "STRIP=llvm-strip"\
+               "AS=llvm-as"\
                 .format(punits)
+        # for PA's 4.14, extend the "make" command with additional variables
+        if self._base == "pa" and self._linux_kernel_version == "4.14":
+            cmd2 = f"{cmd2} LEX=flex YACC=bison"
         # launch and time the build process
         time_start = time.time()
         ccmd.launch(cmd1)
@@ -595,7 +579,7 @@ class KernelBuilder:
                 break
         return ".".join(version)
 
-    def _form_release(self) -> None:
+    def _create_zip(self) -> None:
         """Pack build artifacts into a .zip archive."""
         print("\n", end="")
         msg.note("Forming final ZIP file..")
@@ -612,15 +596,15 @@ class KernelBuilder:
         ver_base = self._linux_kernel_version
         ver_int = os.getenv("KVERSION")
         # form the final ZIP file
-        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._rom}"
+        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._base}"
         name_midd = f"{name_base}-ksu" if self._ksu else name_base
-        full_name = f"{name_midd}-{ver_base}-{ver_int}"
+        name_full = f"{name_midd}-{ver_base}-{ver_int}"
         kdir = self._root / cfg.DIR_KERNEL
         if not kdir.is_dir():
             os.mkdir(kdir)
         os.chdir(self._rcs.paths["AnyKernel3"]["path"])
         # this is not the best solution, but is the easiest
-        cmd = f"zip -r9 {kdir / full_name}.zip . -x *.git* *README* *LICENSE* *placeholder"
+        cmd = f"zip -r9 {kdir / name_full}.zip . -x *.git* *README* *LICENSE* *placeholder"
         ccmd.launch(cmd)
         os.chdir(self._root)
         msg.done("Done!")

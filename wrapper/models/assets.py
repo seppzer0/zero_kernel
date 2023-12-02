@@ -1,5 +1,4 @@
 import os
-import json
 from pathlib import Path
 from typing import Optional
 
@@ -21,17 +20,15 @@ class AssetCollector:
     def __init__(
         self,
         codename: str,
-        rom: str,
+        base: str,
         chroot: str,
         clean: bool,
         rom_only: bool,
-        extra_assets: Optional[bool] = False,
         ksu: Optional[bool] = False
     ) -> None:
         self._codename = codename
-        self._rom = rom
+        self._base = base
         self._chroot = chroot
-        self._extra_assets = extra_assets
         self._clean = clean
         self._rom_only = rom_only
         self._ksu = ksu
@@ -44,19 +41,22 @@ class AssetCollector:
         # determine which SU manager and ROM are required
         su_manager = "tiann/KernelSU" if self._ksu else "topjohnwu/Magisk"
         rom_collector_dto = ""
-        if self._rom == "los":
-            rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
-        else:
-            rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
-        # process the "ROM-only" download
-        if self._rom_only:
+        match self._base:
+            case "los":
+                rom_collector_dto = LineageOsApi(self._codename, self._rom_only)
+            case "pa":
+                rom_collector_dto = ParanoidAndroidApi(self._codename, self._rom_only)
+            case "x" | "aosp":
+                msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
+        # process the "ROM-only" download for non-universal kernel bases
+        if self._rom_only and self._base not in ("x", "aosp"):
             fo.download(rom_collector_dto.run())
             print("\n", end="")
             msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
         else:
             assets = [
-                rom_collector_dto.run(),
+                # files from GitHub projects
                 GitHubApi(
                     project=su_manager,
                     assetdir=self._dir_assets,
@@ -91,6 +91,7 @@ class AssetCollector:
                     assetdir=self._dir_assets,
                     file_filter=".apk"
                 ).run(),
+                # files from direct URLs
                 "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
                 "https://store.nethunter.com/NetHunterStore.apk",
@@ -100,31 +101,9 @@ class AssetCollector:
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",
             ]
-            # read extra assets from JSON file
-            if self._extra_assets:
-                extra_json = Path(self._root, self._extra_assets)
-                if extra_json.is_file():
-                    print("\n", end="")
-                    msg.note("Applying extra assets..")
-                    with open(extra_json) as f:
-                        data = json.load(f)
-                        # validate the input JSON
-                        rootkeys = ("github", "local", "other")
-                        if not all(le in data.keys() for le in rootkeys):
-                            msg.error(
-                                "Incorrect JSON syntax detected."
-                                "Allowed keys: 'github', 'local', 'other' ."
-                            )
-                        # append extra asset data
-                        for k in rootkeys:
-                            if data[k]:
-                                for e in data[k]:
-                                    if k == "github":
-                                        assets.append(GitHubApi(e))
-                                    else:
-                                        assets.append(e)
-                    msg.done("Extra assets added!")
-                    print("\n", end="")
+            # finally, add ROM into assets list if kernel base is not universal
+            if self._base not in ("x", "aosp"):
+                assets.append(rom_collector_dto.run())
             # collect all the specified assets into single directory
             nhpatch = "nhpatch.sh"
             fo.ucopy(

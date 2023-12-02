@@ -24,14 +24,13 @@ class ContainerEngine:
         self._buildenv = config.get("buildenv")
         self._build_module = config.get("build_module")
         self._codename = config.get("codename")
-        self._rom = config.get("rom")
+        self._base = config.get("base")
         self._chroot = config.get("chroot", None)
         self._package_type = config.get("package_type", None)
         self._clean_image = config.get("clean_image", False)
         self._clean_kernel = config.get("clean_kernel", False)
         self._clean_assets = config.get("clean_assets", False)
         self._rom_only = config.get("rom_only", False)
-        self._extra_assets = config.get("extra_assets", False)
         self._conan_upload = config.get("conan_upload", False)
         self._ksu = config.get("ksu", False)
 
@@ -40,7 +39,7 @@ class ContainerEngine:
         """Determine path to Conan's local cache."""
         res = ""
         if os.getenv("CONAN_USER_HOME"):
-            res =  Path(os.getenv("CONAN_USER_HOME"))
+            res = Path(os.getenv("CONAN_USER_HOME"))
         else:
             res = Path(os.getenv("HOME"), ".conan")
         return res
@@ -53,11 +52,10 @@ class ContainerEngine:
         arguments = {
             "--build-module": self._build_module,
             "--codename": self._codename,
-            "--rom": self._rom,
+            "--base": self._base,
             "--chroot": self._chroot,
             "--package-type": self._package_type,
             "--rom-only": self._rom_only,
-            "--extra-assets": self._extra_assets,
             "--ksu": self._ksu,
             "--clean-kernel": self._clean_kernel,
             "--clean-assets": self._clean_assets,

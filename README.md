@@ -8,9 +8,7 @@ An Android kernel with Kali NetHunter functionality.
   - [Contents](#contents)
   - [**Disclaimer**](#disclaimer)
   - [Kernel Features](#kernel-features)
-  - [Supported ROMs and devices](#supported-roms-and-devices)
-      - [ROMs](#roms)
-      - [Devices](#devices)
+  - [Supported ROMs](#supported-roms)
   - [Important Note](#important-note)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
@@ -38,20 +36,21 @@ The kernel has the following features:
 - packet injection support for internal Wi-Fi chipset;
 - optional KernelSU support.
 
-## Supported ROMs and devices
+## Supported ROMs
 
-#### ROMs
+For OnePlus 5/T devices:
 
-- LineageOS;
-- ParanoidAndroid;
-- x_kernel supported (universal)*.
+- 4.4 Linux kernel version:
+  - LineageOS;
+  - ParanoidAndroid;
+  - x_kernel supported (universal)*.
+- 4.14 Linux kernel version:
+  - ParanoidAndroid (unofficial & testing);
+  - x-ft_kernel supported (universal)**.
 
 \* -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
 
-#### Devices
-
-- OnePlus 5;
-- OnePlus 5T.
+\** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
 ## Important Note
 
@@ -111,18 +110,19 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] [-c] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
+usage: wrapper kernel [-h] --buildenv {local,docker,podman} --base
+                      {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
+                      [--clean-image] [--log-level {normal,verbose,quiet}]
+                      [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
+  --buildenv {local,docker,podman}
+                        select build environment
+  --base {los,pa,x,aosp}
+                        select a kernel base for the build
+  --codename CODENAME   select device codename
+  --lkv LKV             select Linux Kernel Version
   -c, --clean           don't build anything, just clean the environment
   --clean-image         remove Docker/Podman image from the host machine after
                         build
@@ -139,22 +139,20 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] [--extra-assets EXTRA_ASSETS] [--rom-only]
-                      [--clean-image] [--clean]
+usage: wrapper assets [-h] --buildenv {local,docker,podman} --base
+                      {los,pa,x,aosp} --codename CODENAME --chroot
+                      {full,minimal} [--rom-only] [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename {full,minimal}
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
-  {full,minimal}        select Kali chroot type
 
 options:
   -h, --help            show this help message and exit
-  --extra-assets EXTRA_ASSETS
-                        select a JSON file with extra assets
+  --buildenv {local,docker,podman}
+                        select build environment
+  --base {los,pa,x,aosp}
+                        select a kernel base for the build
+  --codename CODENAME   select device codename
+  --chroot {full,minimal}
+                        select Kali chroot type
   --rom-only            download only the ROM as an asset
   --clean-image         remove Docker/Podman image from the host machine after
                         build
@@ -186,20 +184,22 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] [--conan-upload] [--clean-image]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
-                      {local,docker,podman} {los,pa,x} codename
-                      {conan,slim,full}
-
-positional arguments:
-  {local,docker,podman}
-                        select build environment
-  {los,pa,x}            select a ROM for the build
-  codename              select device codename
-  {conan,slim,full}     select package type of the bundle
+usage: wrapper bundle [-h] --buildenv {local,docker,podman} --base
+                      {los,pa,x,aosp} --codename CODENAME --lkv LKV
+                      --package-type {conan,slim,full} [--conan-upload]
+                      [--clean-image] [--log-level {normal,verbose,quiet}]
+                      [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
+  --buildenv {local,docker,podman}
+                        select build environment
+  --base {los,pa,x,aosp}
+                        select a kernel base for the build
+  --codename CODENAME   select device codename
+  --lkv LKV             select Linux Kernel Version
+  --package-type {conan,slim,full}
+                        select package type of the bundle
   --conan-upload        upload Conan packages to remote
   --clean-image         remove Docker/Podman image from the host machine after
                         build
@@ -215,15 +215,17 @@ options:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle docker los dumpling slim`;
+  - `python3 wrapper bundle --buildenv=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
 - Build kernel locally:
-  - `python3 wrapper kernel local los dumpling`;
+  - `python3 wrapper kernel --buildenv=local --base=los --codename=dumpling --lkv=4.4`;
 - Collect all the assets locally:
-  - `python3 wrapper assets local los dumpling full`.
+  - `python3 wrapper assets --buildenv=local --base=los --codename=dumpling --package-type=full`.
 
 ## Credits
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
+- [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
+- [4.14-kernel-oneplus-msm8998](https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998): a base of 4.14 kernels for OnePlus 5/T, with KernelSU patches;
 - [kali-nethunter-kernel](https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel): official kernel patches from Kali NetHunter project.
 
 ## See also

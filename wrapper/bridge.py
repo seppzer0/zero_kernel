@@ -11,7 +11,14 @@ from utils import Resources
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse arguments."""
+    """Parse arguments.
+    
+    Arguments here are NOT required because this script has dual use:
+    1) launch one of the modules: kernel, assets, bundle;
+    2) install shared tools from tools.json.
+
+    Making arguments required would force to specify all of them from both cases.
+    """
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
@@ -25,9 +32,12 @@ def parse_args() -> argparse.Namespace:
         help="select device codename"
     )
     parser.add_argument(
-        "--rom",
-        dest="rom",
-        help="select a ROM for the build"
+        "--base",
+        help="select a kernel base for the build"
+    )
+    parser.add_argument(
+        "--lkv",
+        help="select Linux kernel version"
     )
     parser.add_argument(
         "--chroot",
@@ -59,12 +69,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
-        "--extra-assets",
-        dest="extra_assets",
-        help="choose to download extra assets",
-        action="store_true"
-    )
-    parser.add_argument(
         "--ksu",
         help="add KernelSU support",
         action="store_true"
@@ -83,24 +87,25 @@ def main(args: argparse.Namespace) -> None:
         case "kernel":
             KernelBuilder(
                 codename = args.codename,
-                rom = args.rom,
+                base = args.base,
+                lkv = args.lkv,
                 clean = args.clean_kernel,
                 ksu = args.ksu,
             ).run()
         case "assets":
             AssetCollector(
                 codename = args.codename,
-                rom = args.rom,
+                base = args.base,
                 chroot = args.chroot,
                 clean = args.clean_assets,
                 rom_only = args.rom_only,
-                extra_assets = args.extra_assets,
                 ksu = args.ksu,
             ).run()
         case "bundle":
             BundleCreator(
                 codename = args.codename,
-                rom = args.rom,
+                base = args.base,
+                lkv = args.lkv,
                 package_type = args.package_type,
                 ksu = args.ksu,
             ).run()

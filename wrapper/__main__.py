@@ -36,31 +36,40 @@ def parse_args() -> argparse.Namespace:
         help="clean the root directory"
     )
     # common argument attributes for subparsers
-    help_rom = "select a ROM for the build"
+    help_base = "select a kernel base for the build"
     help_codename = "select device codename"
     help_buildenv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
     choices_buildenv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
-    choices_rom = ("los", "pa", "x")
+    choices_base = ("los", "pa", "x", "aosp")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
+    help_lkv = "select Linux Kernel Version"
     default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv,
     )
     parser_kernel.add_argument(
-        "rom",
-        help=help_rom,
-        choices=choices_rom
+        "--base",
+        required=True,
+        help=help_base,
+        choices=choices_base
     )
     parser_kernel.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
+    )
+    parser_kernel.add_argument(
+        "--lkv",
+        required=True,
+        help=help_lkv
     )
     parser_kernel.add_argument(
         "-c", "--clean",
@@ -94,29 +103,29 @@ def parse_args() -> argparse.Namespace:
     )
     # assets
     parser_assets.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv
     )
     parser_assets.add_argument(
-        "rom",
-        help=help_rom,
-        choices=choices_rom
+        "--base",
+        required=True,
+        help=help_base,
+        choices=choices_base
     )
     parser_assets.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
     )
     parser_assets.add_argument(
-        "chroot",
+        "--chroot",
+        required=True,
         choices=("full", "minimal"),
         help="select Kali chroot type"
     )
-    parser_assets.add_argument(
-        "--extra-assets",
-        dest="extra_assets",
-        help="select a JSON file with extra assets"
-    )
+
     parser_assets.add_argument(
         "--rom-only",
         dest="rom_only",
@@ -155,21 +164,31 @@ def parse_args() -> argparse.Namespace:
     )
     # bundle
     parser_bundle.add_argument(
-        "buildenv",
+        "--buildenv",
+        required=True,
         choices=choices_buildenv,
         help=help_buildenv
     )
     parser_bundle.add_argument(
-        "rom",
-        help=help_rom,
-        choices=choices_rom
+        "--base",
+        required=True,
+        help=help_base,
+        choices=choices_base
     )
     parser_bundle.add_argument(
-        "codename",
+        "--codename",
+        required=True,
         help=help_codename
     )
     parser_bundle.add_argument(
-        "package_type",
+        "--lkv",
+        required=True,
+        help=help_lkv
+    )
+    parser_bundle.add_argument(
+        "--package-type",
+        required=True,
+        dest="package_type",
         choices=("conan", "slim", "full"),
         help="select package type of the bundle"
     )
@@ -250,13 +269,13 @@ def main(args: argparse.Namespace) -> None:
         "buildenv",
         "codename",
         "rom",
+        "lkv",
         "clean_image",
         "chroot",
         "package_type",
         "clean_kernel",
         "clean_assets",
         "rom_only",
-        "extra_assets",
         "conan_upload",
         "ksu",
     }
@@ -282,24 +301,25 @@ def main(args: argparse.Namespace) -> None:
             case "kernel":
                 KernelBuilder(
                     codename = args.codename,
-                    rom = args.rom,
+                    base = args.base,
+                    lkv = args.lkv,
                     clean = args.clean_kernel,
                     ksu = args.ksu,
                 ).run()
             case "assets":
                 AssetCollector(
                     codename = args.codename,
-                    rom = args.rom,
+                    base = args.base,
                     chroot = args.chroot,
                     clean = args.clean_assets,
                     rom_only = args.rom_only,
-                    extra_assets = args.extra_assets,
                     ksu = args.ksu,
                 ).run()
             case "bundle":
                 BundleCreator(
                     codename = args.codename,
-                    rom = args.rom,
+                    base = args.base,
+                    lkv = args.lkv,
                     package_type = args.package_type,
                     ksu = args.ksu,
                 ).run()

@@ -1,57 +1,73 @@
-diff --git a/drivers/kernelsu/core_hook.c b/drivers/kernelsu/core_hook.c
-index ee28fee..6521032 100644
---- a/drivers/kernelsu/core_hook.c
-+++ b/drivers/kernelsu/core_hook.c
-@@ -375,7 +375,7 @@ static int ksu_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+From 2c7cce67cf03361c22a07f13575eece82ef47517 Mon Sep 17 00:00:00 2001
+From: Roberto Sartori <roberto.sartori.android@gmail.com>
+Date: Sat, 26 Aug 2023 17:11:36 +0200
+Subject: [PATCH] Init session keyring also on 4.14
+
+Patch provided by user 'rhjdvsgsgks' on github.
+
+Signed-off-by: Roberto Sartori <roberto.sartori.android@gmail.com>
+---
+ kernel/core_hook.c     | 6 +++---
+ kernel/kernel_compat.c | 4 ++--
+ kernel/kernel_compat.h | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/core_hook.c b/kernel/core_hook.c
+index c6ac7d66db21..75259f7df282 100644
+--- a/kernel/core_hook.c
++++ b/kernel/core_hook.c
+@@ -628,8 +628,8 @@ static int ksu_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 	ksu_handle_prctl(option, arg2, arg3, arg4, arg5);
  	return -ENOSYS;
  }
- // kernel 4.4 and 4.9
+-// kernel 4.4 and 4.9
 -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
-+#if 1
++// kernel 4.4, 4.9 and 4.14
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  static int ksu_key_permission(key_ref_t key_ref, const struct cred *cred,
  			      unsigned perm)
  {
-@@ -400,7 +400,7 @@ static int ksu_inode_rename(struct inode *old_inode, struct dentry *old_dentry,
+@@ -661,7 +661,7 @@ static struct security_hook_list ksu_hooks[] = {
  	LSM_HOOK_INIT(task_prctl, ksu_task_prctl),
  	LSM_HOOK_INIT(inode_rename, ksu_inode_rename),
  	LSM_HOOK_INIT(task_fix_setuid, ksu_task_fix_setuid),
 -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
-+#if 1
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  	LSM_HOOK_INIT(key_permission, ksu_key_permission)
  #endif
  };
-diff --git a/drivers/kernelsu/kernel_compat.c b/drivers/kernelsu/kernel_compat.c
-index 339650f..4121a20 100644
---- a/drivers/kernelsu/kernel_compat.c
-+++ b/drivers/kernelsu/kernel_compat.c
+diff --git a/kernel/kernel_compat.c b/kernel/kernel_compat.c
+index 3e216657e637..c542c6b38c67 100644
+--- a/kernel/kernel_compat.c
++++ b/kernel/kernel_compat.c
 @@ -12,7 +12,7 @@
  #endif
  #include "klog.h" // IWYU pragma: keep
  
 -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
-+#if 1
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  #include "linux/key.h"
  #include "linux/errno.h"
- struct key *init_session_keyring = NULL;
-@@ -80,7 +80,7 @@ void ksu_android_ns_fs_check()
+ #include "linux/cred.h"
+@@ -81,7 +81,7 @@ void ksu_android_ns_fs_check()
  
  struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
  {
 -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
-+#if 1
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  	if (init_session_keyring != NULL && !current_cred()->session_keyring &&
  	    (current->flags & PF_WQ_WORKER)) {
  		pr_info("installing init session keyring for older kernel\n");
-diff --git a/drivers/kernelsu/kernel_compat.h b/drivers/kernelsu/kernel_compat.h
-index 8daa404..540ff61 100644
---- a/drivers/kernelsu/kernel_compat.h
-+++ b/drivers/kernelsu/kernel_compat.h
+diff --git a/kernel/kernel_compat.h b/kernel/kernel_compat.h
+index f97080d41eae..abcde7f1b5d0 100644
+--- a/kernel/kernel_compat.h
++++ b/kernel/kernel_compat.h
 @@ -9,7 +9,7 @@ extern long ksu_strncpy_from_user_nofault(char *dst,
  					  const void __user *unsafe_addr,
  					  long count);
  
 -#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
-+#if 1
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  extern struct key *init_session_keyring;
  #endif
  

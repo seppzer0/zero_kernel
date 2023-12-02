@@ -3,14 +3,14 @@ from conans import ConanFile
 
 class S0nhConan(ConanFile):
     name = "zero"
-    version = "0.3.3"
+    version = "0.4.0"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     description = "An Android kernel with Kali NetHunter functionality."
     topics = ("zero_kernel", "kali-nethunter")
     settings = None
     options = {
-                "rom": ("los", "pa", "x"),
+                "rom": ("los", "pa", "x", "aosp"),
                 "chroot": ("minimal", "full"),
                 "codename": ("dumpling", "cheeseburger")
               }

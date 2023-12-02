@@ -46,25 +46,48 @@ def main(args: argparse.Namespace) -> None:
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "ksu": "false"
+            "lkv": "4.4",
+            "ksu": False
         },
         {
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
-            "ksu": "true"
+            "lkv": "4.4",
+            "ksu": True
+        },
+        {
+            "module": "kernel",
+            "rom": "pa",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": True
+        },
+        {
+            "module": "kernel",
+            "rom": "x",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": True
+        },
+        {
+            "module": "kernel",
+            "rom": "x",
+            "codename": "dumpling",
+            "lkv": "4.14",
+            "ksu": False
         },
         {
             "module": "assets",
             "rom": "los",
             "codename": "cheeseburger",
-            "ksu": "true"
+            "ksu": True
         },
         {
             "module": "assets",
             "rom": "pa",
             "codename": "cheeseburger",
-            "ksu": "true"
+            "ksu": True
         },
     )
     os.chdir(apath)
@@ -74,17 +97,19 @@ def main(args: argparse.Namespace) -> None:
         # create artifact holder directory
         if dir_shared not in os.listdir():
             os.mkdir(dir_shared)
-        # extract individual values
+        # define values individually
         module = argset["module"]
-        rom = argset["rom"]
-        codename = argset["codename"]
-        ksu = "--ksu" if argset["ksu"] == "true" else ""
-        size = argset["size"] if argset["module"] == "bundle" else ""
+        buildenv = f"--buildenv {args.env}"
+        base = f'--base {argset["rom"]}'
+        codename = f'--codename {argset["codename"]}'
+        lkv = f'--lkv {argset["lkv"]}' if argset["module"] in ("kernel", "bundle") else ""
+        ksu = "--ksu" if argset["ksu"] else ""
+        size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
         extra = "minimal --rom-only --clean" if argset["module"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {args.env} {rom} {codename} {size} {ksu} {clean} {extra}"
+        cmd = f"python3 wrapper {module} {buildenv} {base} {codename} {lkv} {size} {ksu} {clean} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
