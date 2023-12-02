@@ -54,4 +54,5 @@
 - [ ] add system app debloater;
 - [x] add a new argument responsible for Linux kernel version selection;
 - [x] add 4.14 Linux kernel version builds;
-- [ ] decompose `run` methods into separate functions as much as possible.
+- [ ] decompose `run` methods into separate functions as much as possible;
+- [ ] new device support: OP9.
