@@ -17,7 +17,7 @@ def banner(text: str) -> None:
 
 
 def note(text: str) -> None:
-    """A "note" wrapper.
+    """A "note" text wrapper.
 
     :param text: Text to wrap.
     """
@@ -25,7 +25,9 @@ def note(text: str) -> None:
 
 
 def error(text: str, dont_exit: bool = False) -> None:
-    """An "error" wrapper.
+    """An "error" text wrapper.
+
+    Includes system exit with an error code.
 
     :param text: Text to wrap.
     """
@@ -35,7 +37,7 @@ def error(text: str, dont_exit: bool = False) -> None:
 
 
 def cancel(text: str) -> None:
-    """A "cancel" wrapper.
+    """A "cancel" text wrapper.
 
     :param text: Text to wrap.
     """
@@ -44,11 +46,21 @@ def cancel(text: str) -> None:
 
 
 def done(text: str) -> None:
-    """A "done" wrapper.
+    """A "done" text wrapper.
 
     :param text: Text to wrap.
     """
     print(f"[ + ] {text}")
+
+
+def debug(text: str) -> None:
+    """A "debug" text wrapper.
+
+    Intended for debugging sessions.
+
+    :param text: Text to wrap.
+    """
+    print(f"[ DEBUG ] {text}")
 
 
 def outputstream() -> None:

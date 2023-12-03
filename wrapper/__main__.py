@@ -268,7 +268,7 @@ def main(args: argparse.Namespace) -> None:
         "build_module",
         "buildenv",
         "codename",
-        "rom",
+        "base",
         "lkv",
         "clean_image",
         "chroot",

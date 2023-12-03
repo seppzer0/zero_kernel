@@ -8,11 +8,13 @@ ENV CONAN_UPLOAD_CUSTOM 0
 COPY . ${WDIR}
 WORKDIR ${WDIR}
 
-# install basic packages
+# install system packages;
+# NeoVim is added for debugging sessions.
 RUN \
     apt-get update \
     && \
     apt-get install -y \
+        neovim \
         curl \
         git \
         gcc \

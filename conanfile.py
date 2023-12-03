@@ -10,7 +10,7 @@ class S0nhConan(ConanFile):
     topics = ("zero_kernel", "kali-nethunter")
     settings = None
     options = {
-                "rom": ("los", "pa", "x", "aosp"),
+                "base": ("los", "pa", "x", "aosp"),
                 "chroot": ("minimal", "full"),
                 "codename": ("dumpling", "cheeseburger")
               }
