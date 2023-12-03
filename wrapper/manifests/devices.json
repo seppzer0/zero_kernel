@@ -34,7 +34,7 @@
             "x": {
                 "type": "git",
                 "path": "x-ft_kernel_oneplus_msm8998",
-                "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
+                "url": "https://github.com/ederekun/x-ft_kernel_oneplus_msm8998",
                 "branch": "develop-pelt",
                 "commit": ""
             },
@@ -82,7 +82,7 @@
             "x": {
                 "type": "git",
                 "path": "x-ft_kernel_oneplus_msm8998",
-                "url": "https://github.com/ederekun/x_kernel_oneplus_msm8998",
+                "url": "https://github.com/ederekun/x-ft_kernel_oneplus_msm8998",
                 "branch": "develop-pelt",
                 "commit": ""
             },
