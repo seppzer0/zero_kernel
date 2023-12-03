@@ -1,7 +1,7 @@
 from conans import ConanFile
 
 
-class S0nhConan(ConanFile):
+class ZeroConan(ConanFile):
     name = "zero"
     version = "0.4.0"
     author = "seppzer0"
