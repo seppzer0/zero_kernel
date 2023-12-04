@@ -68,13 +68,6 @@ def main(args: argparse.Namespace) -> None:
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.14",
-            "ksu": True
-        },
-        {
-            "module": "kernel",
-            "rom": "x",
-            "codename": "dumpling",
-            "lkv": "4.14",
             "ksu": False
         },
         {
