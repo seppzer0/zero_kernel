@@ -56,7 +56,7 @@ class GitHubApi:
             rdir = Path(self._assetdir, self._direct_url.rsplit("/", 1)[1])
             msg.note(f"Non-API GitHub resolution for {self._project}")
             cm.remove(rdir)
-            ccmd.launch(f"git clone --depth 1 {self._direct_url} {rdir}")
+            ccmd.launch(f"git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {self._direct_url} {rdir}")
             os.chdir(rdir)
             cm.remove(".git*")
             os.chdir(self._assetdir)

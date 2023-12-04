@@ -1,12 +1,11 @@
 stages:
-- build
-- tag
+- build_and_tag
 
 variables:
   GIT_STRATEGY: "clone"
 
 job-build:
-  stage: build
+  stage: build_and_tag
   tags:
     - docker
     - linux
@@ -28,7 +27,7 @@ job-build:
     - when: manual
 
 job-tag:
-  stage: tag
+  stage: build_and_tag
   script:
     - USERNAME=$CUSTOM_CI_USERNAME
     - PASSWORD=$CUSTOM_CI_PASSWORD

@@ -84,7 +84,7 @@ class Resources:
                     # break data into individual vars
                     branch = self.paths[e]["branch"]
                     commit = self.paths[e]["commit"]
-                    cmd = f"git clone -b {branch} --depth 1 {url} {path}"
+                    cmd = f"git clone -b {branch} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {url} {path}"
                     # full commit history is required in two instances:
                     # - for KernelSU -- to define it's version based on *full* commit history;
                     # - for commit checkout -- to checkout a specific commit in the history.

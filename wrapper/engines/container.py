@@ -154,7 +154,7 @@ class ContainerEngine:
         os.chdir(self._wdir_local)
         # build only if it is not present in local cache
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
-        if self._name_image not in ccmd.launch(f"{self._buildenv} images --format '{{.Repository}}'", get_output=True):
+        if self._name_image not in ccmd.launch(f'{self._buildenv} images --format {"{{.Repository}}"}', get_output=True):
             # force enable Docker Buildkit
             if self._buildenv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
