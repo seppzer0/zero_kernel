@@ -121,11 +121,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser_assets.add_argument(
         "--chroot",
-        required=True,
         choices=("full", "minimal"),
         help="select Kali chroot type"
     )
-
     parser_assets.add_argument(
         "--rom-only",
         dest="rom_only",
