@@ -433,8 +433,6 @@ class KernelBuilder:
         with open(defconfig, "a") as f:
             extra_configs = (
                 "CONFIG_KSU=y",
-                "CONFIG_KSU_DEBUG=y",
-                "CONFIG_OVERLAY_FS=y",
                 "CONFIG_MODULES=y",
                 "CONFIG_MODULE_UNLOAD=y",
                 "CONFIG_MODVERSIONS=y",
