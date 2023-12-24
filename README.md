@@ -7,9 +7,10 @@ An Android kernel with Kali NetHunter functionality.
 - [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
   - [**Disclaimer**](#disclaimer)
+  - [Description](#description)
   - [Kernel Features](#kernel-features)
   - [Supported ROMs](#supported-roms)
-  - [Important Note](#important-note)
+  - [ROM Artifacts in Releases](#rom-artifacts-in-releases)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
     - [Kernel](#kernel)
@@ -27,6 +28,14 @@ An Android kernel with Kali NetHunter functionality.
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
+## Description
+
+Technically speaking, the codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from source collection and ending with artifact packaging.
+
+The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) -- a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
+
+The architecture of this wrapper is ~~trying to be~~ as modular as possible, making it a little easier add support for new devices.
+
 ## Kernel Features
 
 The kernel has the following features:
@@ -38,7 +47,7 @@ The kernel has the following features:
 
 ## Supported ROMs
 
-For OnePlus 5/T devices:
+For **OnePlus 5/T** devices:
 
 - 4.4 Linux kernel version:
   - LineageOS;
@@ -52,11 +61,11 @@ For OnePlus 5/T devices:
 
 \** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
-## Important Note
+## ROM Artifacts in Releases
 
 The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
 
-This can be verified with the checksums, which should be identical to the ones presented on the ROM project's official web page.
+This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
 
 You can always download the same ROM file from official sources if you'd like. The mirroring in this repository is done due to the fact that some ROM projects remove their older builds once they become too outdated.
 
@@ -218,7 +227,7 @@ Here are some examples of commands:
   - `python3 wrapper bundle --buildenv=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
 - Build kernel locally:
   - `python3 wrapper kernel --buildenv=local --base=los --codename=dumpling --lkv=4.4`;
-- Collect all the assets locally:
+- Collect all of the assets locally:
   - `python3 wrapper assets --buildenv=local --base=los --codename=dumpling --package-type=full`.
 
 ## Credits
