@@ -593,10 +593,9 @@ class KernelBuilder:
         # define kernel versions: Linux and internal
         ver_base = self._linux_kernel_version
         ver_int = os.getenv("KVERSION")
-        # form the final ZIP file
-        name_base = f"{os.getenv('KNAME', 'zero')}-{self._ucodename}-{self._base}"
-        name_midd = f"{name_base}-ksu" if self._ksu else name_base
-        name_full = f"{name_midd}-{ver_base}-{ver_int}"
+        # create the final ZIP file
+        name_suffix = "-ksu" if self._ksu else ""
+        name_full = f"{os.getenv('KNAME', 'zero')}-{ver_int}-{self._ucodename}-{self._base}-{ver_base}{name_suffix}"
         kdir = self._root / cfg.DIR_KERNEL
         if not kdir.is_dir():
             os.mkdir(kdir)
