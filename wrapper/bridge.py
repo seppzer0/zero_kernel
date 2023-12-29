@@ -110,10 +110,14 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case _:
-            # if no module was selected, then shared tools are installed
-            tconf = Resources()
-            tconf.path_gen()
-            tconf.download()
+            # if no module was selected, then shared tools are (supposed to be) installed
+            if args.tools:
+                tconf = Resources()
+                tconf.path_gen()
+                tconf.download()
+            else:
+                # technically this part of code cannot be reached and is just an extra precaution
+                msg.error("Invalid argument set specified, please review")
 
 
 if __name__ == "__main__":
