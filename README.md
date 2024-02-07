@@ -119,14 +119,14 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] --buildenv {local,docker,podman} --base
+usage: wrapper kernel [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
                       [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -140,6 +140,7 @@ options:
   -o OUTLOG, --output OUTLOG
                         save logs to a file
   --ksu                 add KernelSU support
+
 ```
 
 ### Assets
@@ -148,14 +149,14 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] --buildenv {local,docker,podman} --base
+usage: wrapper assets [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --chroot
                       {full,minimal} [--rom-only] [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -193,7 +194,7 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] --buildenv {local,docker,podman} --base
+usage: wrapper bundle [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV
                       --package-type {conan,slim,full} [--conan-upload]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
@@ -201,7 +202,7 @@ usage: wrapper bundle [-h] --buildenv {local,docker,podman} --base
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -224,11 +225,11 @@ options:
 Here are some examples of commands:
 
 - **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle --buildenv=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
+  - `python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
 - Build kernel locally:
-  - `python3 wrapper kernel --buildenv=local --base=los --codename=dumpling --lkv=4.4`;
+  - `python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4`;
 - Collect all of the assets locally:
-  - `python3 wrapper assets --buildenv=local --base=los --codename=dumpling --package-type=full`.
+  - `python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full`.
 
 ## Credits
 

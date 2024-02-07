@@ -92,7 +92,7 @@ def main(args: argparse.Namespace) -> None:
             os.mkdir(dir_shared)
         # define values individually
         module = argset["module"]
-        buildenv = f"--buildenv {args.env}"
+        benv = f"--build-env {args.env}"
         base = f'--base {argset["rom"]}'
         codename = f'--codename {argset["codename"]}'
         lkv = f'--lkv {argset["lkv"]}' if argset["module"] in ("kernel", "bundle") else ""
@@ -102,7 +102,7 @@ def main(args: argparse.Namespace) -> None:
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {buildenv} {base} {codename} {lkv} {size} {ksu} {clean} {extra}"
+        cmd = f"python3 wrapper {module} {benv} {base} {codename} {lkv} {size} {ksu} {clean} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory

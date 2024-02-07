@@ -21,7 +21,7 @@ class ContainerEngine:
     _wdir_local: Path = cfg.DIR_ROOT
 
     def __init__(self, config: dict) -> None:
-        self._buildenv = config.get("buildenv")
+        self._benv = config.get("benv")
         self._build_module = config.get("build_module")
         self._codename = config.get("codename")
         self._base = config.get("base")
@@ -149,17 +149,17 @@ class ContainerEngine:
     def _build(self) -> None:
         """Build the Docker/Podman image."""
         print("\n")
-        alias = self._buildenv.capitalize()
+        alias = self._benv.capitalize()
         msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
         # build only if it is not present in local cache
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
-        if self._name_image not in ccmd.launch(f'{self._buildenv} images --format {"{{.Repository}}"}', get_output=True):
+        if self._name_image not in ccmd.launch(f'{self._benv} images --format {"{{.Repository}}"}', get_output=True):
             # force enable Docker Buildkit
-            if self._buildenv == "docker":
+            if self._benv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
             cmd = "{} build . -f {} -t {} --load".format(
-                self._buildenv,
+                self._benv,
                 self._wdir_local / 'Dockerfile',
                 self._name_image
             )
@@ -173,7 +173,7 @@ class ContainerEngine:
         self._build()
         # form the final "docker/podman run" command
         cmd = '{} run {} {} /bin/bash -c "{}"'.format(
-            self._buildenv,
+            self._benv,
             " ".join(self._container_options),
             self._name_image,
             self._wrapper_cmd
@@ -184,4 +184,4 @@ class ContainerEngine:
         # navigate to root directory and clean image from host machine
         os.chdir(self._dir_init)
         if self._clean_image:
-            ccmd.launch(f"{self._buildenv} rmi {self._name_image}")
+            ccmd.launch(f"{self._benv} rmi {self._name_image}")
