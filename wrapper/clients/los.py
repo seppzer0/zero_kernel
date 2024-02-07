@@ -1,25 +1,13 @@
-import requests
-
-import tools.messages as msg
+from .template_rom_api import TemplateRomApi
 
 
-class LineageOsApi:
+class LineageOsApi(TemplateRomApi):
     """Limited interaction with Lineage API."""
 
-    _endpoint = "https://download.lineageos.org/api/v1/{}/nightly/ro.build.version.incremental"
+    endpoint: str = "https://download.lineageos.org/api/v1/{}/nightly/ro.build.version.incremental"
+    json_key: str = "response"
+    rom_name: str = "LOS"
 
     def __init__(self, codename: str, rom_only: bool) -> None:
-        self._codename = codename
-        self._rom_only = rom_only
-        self._endpoint = self._endpoint.format(codename)
-
-    def run(self) -> str:
-        """Get the latest version of LineageOS ROM."""
-        data = requests.get(self._endpoint)
-        try:
-            data = data.json()["response"][0]["url"]
-        except Exception:
-            exit_flag = False if self._rom_only else True
-            msg.error(f"Could not connect to LOS API, HTTP status code: {data.status_code}",
-                      dont_exit=exit_flag)
-        return data
+        super().__init__(codename, rom_only)
+        self.endpoint = self.endpoint.format(codename)
