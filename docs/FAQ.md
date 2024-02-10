@@ -31,3 +31,7 @@ Switching `wlan0` to monitor mode disables `wlan1` completely. However, when res
 ## Q: How to TURN ON and OFF monitor mode on external Wi-Fi card?
 
 **A:** For an external card, you would have to use `airmon-ng start <interface>` and `airmon-ng stop <interface>` commands.
+
+## Q: How do I switch from standard partition ROM to retrofit dynamic partition ROM and vice versa?
+
+**A:** Refer to these [instructions](https://gist.github.com/nkeor/d71b7884ee951de669b0d4baeacc58ba).
