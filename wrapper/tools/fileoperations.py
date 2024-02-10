@@ -43,8 +43,8 @@ def download(url: str) -> None:
     msg.note(f"Downloading {fn} ..")
     print(f"      URL: {url}")
     try:
-        # URL for TWRP is weird, have to adjust the query
-        if "twrp" in url.lower():
+        # URLs for Sourceforge are *special*, have to adjust the query
+        if "sourceforge" in url.lower():
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
                 with open(fn, 'wb') as f:
