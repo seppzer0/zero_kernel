@@ -59,9 +59,10 @@ class BundleCreator:
                     self._root / kdir / kfn,
                     self._root / bdir / kfn
                 )
-                # copy the assets
+                # move the assets
                 for afn in os.listdir(adir):
-                    shutil.copy(
+                    # here, because of their size assets are moved and not copied
+                    shutil.move(
                         self._root / adir / afn,
                         self._root / bdir / afn
                     )

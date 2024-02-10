@@ -153,8 +153,11 @@ class ContainerEngine:
         msg.note(f"Building the {alias} image..")
         os.chdir(self._wdir_local)
         # build only if it is not present in local cache
-        # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
-        if self._name_image not in ccmd.launch(f'{self._benv} images --format {"{{.Repository}}"}', get_output=True):
+        # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround;
+        #       also, used command does not work with Podman.
+        img_cache_cmd = f'{self._benv} images --format {"{{.Repository}}"}'
+        img_cache = ccmd.launch(img_cache_cmd, get_output=True) if self._benv == "docker" else ""
+        if self._name_image not in img_cache:
             # force enable Docker Buildkit
             if self._benv == "docker":
                 os.environ["DOCKER_BUILDKIT"] = "1"
