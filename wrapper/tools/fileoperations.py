@@ -43,19 +43,11 @@ def download(url: str) -> None:
     msg.note(f"Downloading {fn} ..")
     print(f"      URL: {url}")
     try:
-        # URLs for Sourceforge are *special*, have to adjust the query
-        if "sourceforge" in url.lower():
-            with requests.get(url, stream=True, headers={"referer": url}) as r:
-                r.raise_for_status()
-                with open(fn, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192): 
-                        f.write(chunk)
-        else:
-            with requests.get(url, stream=True) as r:
-                r.raise_for_status()
-                with open(fn, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192): 
-                        f.write(chunk)
+        with requests.get(url, stream=True, headers={"referer": url}) as r:
+            r.raise_for_status()
+            with open(fn, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192): 
+                    f.write(chunk)
     except Exception:
         msg.error("Download failed.")
     msg.done("Done!")
