@@ -1,13 +1,13 @@
 from conans import ConanFile
 
 
-class ZeroConan(ConanFile):
+class ZeroKernelConan(ConanFile):
     name = "zero"
     version = "0.4.1"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     description = "An Android kernel with Kali NetHunter functionality."
-    topics = ("zero_kernel", "kali-nethunter")
+    topics = ("zero_kernel", "kali-nethunter", "nethunter")
     settings = None
     options = {
                 "base": ("los", "pa", "x", "aosp"),
@@ -19,13 +19,15 @@ class ZeroConan(ConanFile):
         self.copy("*", src="source", dst=".")
 
     def build(self):
-        cmd = "python3 wrapper kernel local {0} {1} &&"\
-              "python3 wrapper assets local {0} {1} {2} --clean"\
-              .format(
-                  self.options.rom,
-                  self.options.codename,
-                  self.options.chroot
-              )
+        shared_args = "--build-env=local --base={} --codename={} --chroot={}"\
+                      .format(
+                        self.options.base,
+                        self.options.codename,
+                        self.options.chroot
+                       )
+        cmd = "python3 wrapper kernel {0} &&"\
+              "python3 wrapper assets {0} --clean"\
+              .format(shared_args)
         print(f"[cmd] {cmd}")
         self.run(cmd)
 
