@@ -17,7 +17,7 @@ class ContainerEngine:
     _dir_kernel: Path = Path(cfg.DIR_KERNEL)
     _dir_assets: Path = Path(cfg.DIR_ASSETS)
     _dir_bundle: Path = Path(cfg.DIR_BUNDLE)
-    _wdir_docker: Path = Path("/", "zero_build")
+    _wdir_container: Path = Path("/", "zero_build")
     _wdir_local: Path = cfg.DIR_ROOT
 
     def __init__(self, config: dict) -> None:
@@ -71,7 +71,7 @@ class ContainerEngine:
         # extend the command with the selected packaging option
         if self._build_module == "bundle":
             if self._package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {Path(self._wdir_docker, self._dir_bundle)}"
+                cmd += f" && chmod 777 -R {Path(self._wdir_container, self._dir_bundle)}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
@@ -85,7 +85,7 @@ class ContainerEngine:
             "--rm",
             "-e KVERSION={}".format(os.getenv("KVERSION")),
             "-e LOGLEVEL={}".format(os.getenv("LOGLEVEL")),
-            "-w {}".format(self._wdir_docker),
+            "-w {}".format(self._wdir_container),
         ]
         # mount directories
         match self._build_module:
@@ -94,7 +94,7 @@ class ContainerEngine:
                     '-v {}/{}:{}/{}'.format(
                         cfg.DIR_ROOT,
                         self._dir_kernel,
-                        self._wdir_docker,
+                        self._wdir_container,
                         self._dir_kernel
                     )
                 )
@@ -103,7 +103,7 @@ class ContainerEngine:
                     '-v {}/{}:{}/{}'.format(
                         cfg.DIR_ROOT,
                         self._dir_assets,
-                        self._wdir_docker,
+                        self._wdir_container,
                         self._dir_assets
                     )
                 )
@@ -114,7 +114,7 @@ class ContainerEngine:
                             '-v {}/{}:{}/{}'.format(
                                 cfg.DIR_ROOT,
                                 self._dir_bundle,
-                                self._wdir_docker,
+                                self._wdir_container,
                                 self._dir_bundle
                             )
                         )
