@@ -26,19 +26,15 @@
 - [x] add proper OS detection for preventing local builds in unsupported systems;
 - [x] add static analysis for the wrapper;
 - [x] add a single-point manifest with main info on the tool;
-- [ ] add release body when creating a release via CI/CD;
-- [ ] add static analysis report to release body;
 - [x] improve documentation;
 - [x] apply OOP paradigm;
 - [ ] add tests (unit/integration/etc);
 - [x] switch to Poetry for dependency management;
 - [ ] create a commit-based lockfile system for reproducible kernel builds;
-- [ ] implement generators;
 - [x] switch to `pathlib`;
 - [ ] switch to `raise` instead of `sys.exit`;
 - [ ] use `pydantic`;
 - [x] add a FAQ page;
-- [ ] add wiki;
 - [x] refactor Docker/Podman command formation;
 - [ ] refactor logging mechanism;
 - [x] fix Podman usage (.dockerignore);
@@ -55,4 +51,5 @@
 - [x] add a new argument responsible for Linux kernel version selection;
 - [x] add 4.14 Linux kernel version builds;
 - [ ] decompose `run` methods into separate functions as much as possible;
-- [ ] new device support: OP9.
+- [ ] new device support: OP9;
+- [ ] add type checks with pyright.
