@@ -4,7 +4,6 @@ from typing import Optional
 
 import tools.cleaning as cm
 import tools.messages as msg
-import tools.commands as ccmd
 import tools.fileoperations as fo
 
 from clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
@@ -113,12 +112,6 @@ class AssetCollector:
             )
             for e in assets:
                 if e:
-                    # Sourceforge URLs are annoying with their redirects,
-                    # have to use their recommended "wget" way
-                    if "sourceforge" in e:
-                        msg.note("Sorceforge URL detected, using wget..")
-                        fn = e.split("/download")[0].split("/")[-1]
-                        ccmd.launch(f"wget -O {fn} {e}")
                     fo.download(e)
             print("\n", end="")
             msg.done("Assets collected!")
