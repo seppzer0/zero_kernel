@@ -21,7 +21,10 @@ class DockerEngine(TemplateContainerEngine):
         os.environ["DOCKER_BUILDKIT"] = "1"
 
     def _check_cache(self) -> bool:
-        """Check local Docker cache for the specified image."""
+        """Check local Docker cache for the specified image.
+        
+        For now, this is done for Docker exclusively.
+        """
         img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
         img_cache = ccmd.launch(img_cache_cmd, get_output=True)
         check = True if self.name_image in img_cache else False

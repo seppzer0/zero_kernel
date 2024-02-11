@@ -152,21 +152,14 @@ class TemplateContainerEngine:
         alias = self.benv.capitalize()
         msg.note(f"Building the {alias} image..")
         os.chdir(self.wdir_local)
-        # build only if it is not present in local cache
-        # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround;
-        #       also, used command does not work with Podman.
-        img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
-        img_cache = ccmd.launch(img_cache_cmd, get_output=True) if self.benv == "docker" else ""
-        if self.name_image not in img_cache:
-            cmd = "{} build . -f {} -t {} --load".format(
-                self.benv,
-                self.wdir_local / 'Dockerfile',
-                self.name_image
-            )
-            ccmd.launch(cmd)
-            msg.done("Done!")
-        else:
-            msg.note(f"{alias} image is already present, skipping the build.")
+        # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
+        cmd = "{} build . -f {} -t {} --load".format(
+            self.benv,
+            self.wdir_local / 'Dockerfile',
+            self.name_image
+        )
+        ccmd.launch(cmd)
+        msg.done("Done!")
         print("\n")
 
     def run(self) -> None:
