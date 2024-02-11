@@ -13,7 +13,8 @@ from models.bundle import BundleCreator
 from models.kernel import KernelBuilder
 from models.assets import AssetCollector
 
-from engines.container import ContainerEngine
+from engines.docker_engine import DockerEngine
+from engines.podman_engine import PodmanEngine
 
 from configs import Config as cfg
 
@@ -294,37 +295,39 @@ def main(args: argparse.Namespace) -> None:
             os.remove(args.outlog)
         os.environ["OSTREAM"] = args.outlog
         msg.outputstream()
-    # containerized build
-    if args.benv in ("docker", "podman"):
-        ContainerEngine(config=passed_params).run()
-    # local build
-    else:
-        match args.command:
-            case "kernel":
-                KernelBuilder(
-                    codename = args.codename,
-                    base = args.base,
-                    lkv = args.lkv,
-                    clean = args.clean_kernel,
-                    ksu = args.ksu,
-                ).run()
-            case "assets":
-                AssetCollector(
-                    codename = args.codename,
-                    base = args.base,
-                    chroot = args.chroot,
-                    clean = args.clean_assets,
-                    rom_only = args.rom_only,
-                    ksu = args.ksu,
-                ).run()
-            case "bundle":
-                BundleCreator(
-                    codename = args.codename,
-                    base = args.base,
-                    lkv = args.lkv,
-                    package_type = args.package_type,
-                    ksu = args.ksu,
-                ).run()
+    # determine the build
+    match args.benv:
+        case "docker":
+            DockerEngine(config=passed_params).run()
+        case "podman":
+            PodmanEngine(config=passed_params).run()
+        case "local":
+            match args.command:
+                case "kernel":
+                    KernelBuilder(
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        clean = args.clean_kernel,
+                        ksu = args.ksu,
+                    ).run()
+                case "assets":
+                    AssetCollector(
+                        codename = args.codename,
+                        base = args.base,
+                        chroot = args.chroot,
+                        clean = args.clean_assets,
+                        rom_only = args.rom_only,
+                        ksu = args.ksu,
+                    ).run()
+                case "bundle":
+                    BundleCreator(
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        package_type = args.package_type,
+                        ksu = args.ksu,
+                    ).run()
 
 
 if __name__ == "__main__":
