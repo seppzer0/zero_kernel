@@ -16,6 +16,7 @@ RUN \
     apt-get install -y \
         neovim \
         curl \
+        wget \
         git \
         gcc \
         g++ \
