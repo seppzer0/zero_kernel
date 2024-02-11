@@ -22,7 +22,7 @@ class DockerEngine(TemplateContainerEngine):
 
     def _check_cache(self) -> bool:
         """Check local Docker cache for the specified image.
-        
+
         For now, this is done for Docker exclusively.
         """
         img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
