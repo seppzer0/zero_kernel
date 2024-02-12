@@ -30,9 +30,9 @@ An Android kernel with Kali NetHunter functionality.
 
 ## Description
 
-Technically speaking, the codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from source collection and ending with artifact packaging.
+Technically speaking, the codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
 
-The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) -- a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
+The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
 
 The architecture of this wrapper is ~~trying to be~~ as modular as possible, making it a little easier to add support for new devices.
 
