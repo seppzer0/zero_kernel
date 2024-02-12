@@ -9,9 +9,9 @@ import tools.cleaning as cm
 import tools.messages as msg
 import tools.commands as ccmd
 
-from models.bundle import BundleCreator
-from models.kernel import KernelBuilder
-from models.assets import AssetCollector
+from models.bundle_creator import BundleCreator
+from models.kernel_builder import KernelBuilder
+from models.assets_collector import AssetsCollector
 
 from engines.docker_engine import DockerEngine
 from engines.podman_engine import PodmanEngine
@@ -312,7 +312,7 @@ def main(args: argparse.Namespace) -> None:
                         ksu = args.ksu,
                     ).run()
                 case "assets":
-                    AssetCollector(
+                    AssetsCollector(
                         codename = args.codename,
                         base = args.base,
                         chroot = args.chroot,

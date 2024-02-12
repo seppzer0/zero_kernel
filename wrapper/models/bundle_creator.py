@@ -9,8 +9,8 @@ import tools.messages as msg
 import tools.commands as ccmd
 import tools.fileoperations as fo
 
-from models.kernel import KernelBuilder
-from models.assets import AssetCollector
+from models.kernel_builder import KernelBuilder
+from models.assets_collector import AssetsCollector
 
 from configs import Config as cfg
 
@@ -119,7 +119,7 @@ class BundleCreator:
         :param rom_name: Name of the ROM.
         :param chroot: Type of chroot.
         """
-        AssetCollector(
+        AssetsCollector(
             codename = self._codename,
             base = rom_name,
             chroot = chroot,
