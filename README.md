@@ -106,10 +106,9 @@ To run this tool in a `local` environment, you will need:
 You will also need a few Python packages. To install them, use:
 
 ```sh
+python3 -m pip install poetry
 python3 -m poetry install --no-root
 ```
-
-To install `poetry`, use `python3 -m pip install poetry`.
 
 ### Kernel
 
