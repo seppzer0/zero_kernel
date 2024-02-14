@@ -223,12 +223,23 @@ options:
 
 Here are some examples of commands:
 
-- **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
-- Build kernel locally:
-  - `python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4`;
-- Collect all of the assets locally:
-  - `python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full`.
+**(Recommended)** Build kernel and collect ROM via Docker:
+
+```sh
+python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+```
+
+Build kernel locally:
+
+```sh
+python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+```
+
+Collect all of the assets locally:
+
+```sh
+python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full
+```
 
 ## Credits
 
