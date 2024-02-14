@@ -14,8 +14,8 @@ def launch(
     A custom subprocess wrapper to launch commands.
 
     :param cmd: A command to launch.
-    :param loglvl: Log level.
     :param get_output: A switch to get the piped output of the command.
+    :param loglvl: Log level.
     """
     # determine stdout and check some of the cases
     cstdout = subprocess.DEVNULL if loglvl == "quiet" else os.getenv("OSTREAM", None)
@@ -33,7 +33,7 @@ def launch(
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
         # return only output if required
         if get_output is True:
-            return result.stdout.decode('utf-8').splitlines()[0]
+            return result.stdout.decode('utf-8').splitlines()
     except Exception:
         msg.error(f"Error executing command: {cmd}")
     # if output stream is a file -- close it

@@ -9,11 +9,12 @@ import tools.cleaning as cm
 import tools.messages as msg
 import tools.commands as ccmd
 
-from models.bundle import BundleCreator
-from models.kernel import KernelBuilder
-from models.assets import AssetCollector
+from models.bundle_creator import BundleCreator
+from models.kernel_builder import KernelBuilder
+from models.assets_collector import AssetsCollector
 
-from engines.container import ContainerEngine
+from engines.docker_engine import DockerEngine
+from engines.podman_engine import PodmanEngine
 
 from configs import Config as cfg
 
@@ -38,10 +39,10 @@ def parse_args() -> argparse.Namespace:
     # common argument attributes for subparsers
     help_base = "select a kernel base for the build"
     help_codename = "select device codename"
-    help_buildenv = "select build environment"
+    help_benv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
     help_loglvl = "select log level"
-    choices_buildenv = ("local", "docker", "podman")
+    choices_benv = ("local", "docker", "podman")
     choices_loglvl = ("normal", "verbose", "quiet")
     choices_base = ("los", "pa", "x", "aosp")
     help_logfile = "save logs to a file"
@@ -50,10 +51,11 @@ def parse_args() -> argparse.Namespace:
     default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
-        "--buildenv",
+        "--build-env",
+        dest="benv",
         required=True,
-        choices=choices_buildenv,
-        help=help_buildenv,
+        choices=choices_benv,
+        help=help_benv,
     )
     parser_kernel.add_argument(
         "--base",
@@ -103,10 +105,11 @@ def parse_args() -> argparse.Namespace:
     )
     # assets
     parser_assets.add_argument(
-        "--buildenv",
+        "--build-env",
+        dest="benv",
         required=True,
-        choices=choices_buildenv,
-        help=help_buildenv
+        choices=choices_benv,
+        help=help_benv
     )
     parser_assets.add_argument(
         "--base",
@@ -163,10 +166,11 @@ def parse_args() -> argparse.Namespace:
     )
     # bundle
     parser_bundle.add_argument(
-        "--buildenv",
+        "--build-env",
+        dest="benv",
         required=True,
-        choices=choices_buildenv,
-        help=help_buildenv
+        choices=choices_benv,
+        help=help_benv
     )
     parser_bundle.add_argument(
         "--base",
@@ -230,7 +234,7 @@ def validate_settings(config: dict) -> None:
     :param config: A dictionary containing app arguments.
     """
     # detect OS family
-    if config.get("buildenv") == "local":
+    if config.get("benv") == "local":
         if not platform.system() == "Linux":
             msg.error("Can't build kernel on a non-Linux machine.")
         else:
@@ -265,7 +269,7 @@ def main(args: argparse.Namespace) -> None:
     arguments["build_module"] = args.command
     params = {
         "build_module",
-        "buildenv",
+        "benv",
         "codename",
         "base",
         "lkv",
@@ -291,37 +295,39 @@ def main(args: argparse.Namespace) -> None:
             os.remove(args.outlog)
         os.environ["OSTREAM"] = args.outlog
         msg.outputstream()
-    # containerized build
-    if args.buildenv in ("docker", "podman"):
-        ContainerEngine(config=passed_params).run()
-    # local build
-    else:
-        match args.command:
-            case "kernel":
-                KernelBuilder(
-                    codename = args.codename,
-                    base = args.base,
-                    lkv = args.lkv,
-                    clean = args.clean_kernel,
-                    ksu = args.ksu,
-                ).run()
-            case "assets":
-                AssetCollector(
-                    codename = args.codename,
-                    base = args.base,
-                    chroot = args.chroot,
-                    clean = args.clean_assets,
-                    rom_only = args.rom_only,
-                    ksu = args.ksu,
-                ).run()
-            case "bundle":
-                BundleCreator(
-                    codename = args.codename,
-                    base = args.base,
-                    lkv = args.lkv,
-                    package_type = args.package_type,
-                    ksu = args.ksu,
-                ).run()
+    # determine the build
+    match args.benv:
+        case "docker":
+            DockerEngine(config=passed_params).run()
+        case "podman":
+            PodmanEngine(config=passed_params).run()
+        case "local":
+            match args.command:
+                case "kernel":
+                    KernelBuilder(
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        clean = args.clean_kernel,
+                        ksu = args.ksu,
+                    ).run()
+                case "assets":
+                    AssetsCollector(
+                        codename = args.codename,
+                        base = args.base,
+                        chroot = args.chroot,
+                        clean = args.clean_assets,
+                        rom_only = args.rom_only,
+                        ksu = args.ksu,
+                    ).run()
+                case "bundle":
+                    BundleCreator(
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        package_type = args.package_type,
+                        ksu = args.ksu,
+                    ).run()
 
 
 if __name__ == "__main__":

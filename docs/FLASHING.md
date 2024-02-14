@@ -23,7 +23,7 @@ Listed below files are required:
 - compiled kernel, obviously;
 - ROM;
 - Magisk or KernelSU;
-- TWRP, the unofficial 3.7.0 version (supports operations with encrypted and dynamic partitions);
+- TWRP, the special [build](https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download) by faoliveira78 (supports operations with encrypted and dynamic partitions);
 - DM-Verity and Force Encrypt disabler;
 - Kali NetHunter + Kali NetHunter Terminal apps;
 - Kali NetHunter Chroot (you can do this later, but it would be easier to download this beforehand);
@@ -50,8 +50,9 @@ Before doing anything, please ensure that you have:
 - wipe your phone via `Wipe -> Advanced Wipe` menu, check all the shown boxes;
 - wipe your device again via `Wipe -> Format Data` menu (this will remove any encryption that is present on your device);
 - reboot into TWRP via `Reboot -> Recovery`;
-- flash ROM;
-- flash kernel;
+- if using a Retrofit Dynamic Partitions ROM such as ParanoidAndoid -> untoggle `Unmount System before installing a ZIP` in the Settings;
+- flash the ROM;
+- flash the kernel;
 - **if using Magisk** --> flash root manager (Magisk; you must change the `.apk` extension into `.zip` for this);
 - flash DM-Verity and Force Encrypt disabler zip;
 - reboot into system via `Reboot -> System` .

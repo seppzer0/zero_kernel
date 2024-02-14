@@ -7,9 +7,10 @@ An Android kernel with Kali NetHunter functionality.
 - [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
   - [**Disclaimer**](#disclaimer)
+  - [Description](#description)
   - [Kernel Features](#kernel-features)
   - [Supported ROMs](#supported-roms)
-  - [Important Note](#important-note)
+  - [ROM Artifacts in Releases](#rom-artifacts-in-releases)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
     - [Kernel](#kernel)
@@ -27,6 +28,14 @@ An Android kernel with Kali NetHunter functionality.
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
+## Description
+
+Technically speaking, the codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
+
+The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
+
+The architecture of this wrapper is ~~trying to be~~ as modular as possible, making it a little easier to add support for new devices.
+
 ## Kernel Features
 
 The kernel has the following features:
@@ -38,7 +47,7 @@ The kernel has the following features:
 
 ## Supported ROMs
 
-For OnePlus 5/T devices:
+For **OnePlus 5/T** devices:
 
 - 4.4 Linux kernel version:
   - LineageOS;
@@ -52,11 +61,11 @@ For OnePlus 5/T devices:
 
 \** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
-## Important Note
+## ROM Artifacts in Releases
 
 The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
 
-This can be verified with the checksums, which should be identical to the ones presented on the ROM project's official web page.
+This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
 
 You can always download the same ROM file from official sources if you'd like. The mirroring in this repository is done due to the fact that some ROM projects remove their older builds once they become too outdated.
 
@@ -97,10 +106,9 @@ To run this tool in a `local` environment, you will need:
 You will also need a few Python packages. To install them, use:
 
 ```sh
+python3 -m pip install poetry
 python3 -m poetry install --no-root
 ```
-
-To install `poetry`, use `python3 -m pip install poetry`.
 
 ### Kernel
 
@@ -110,14 +118,14 @@ For more options you can refer to the help message below.
 
 ```help
 $ python3 wrapper kernel --help
-usage: wrapper kernel [-h] --buildenv {local,docker,podman} --base
+usage: wrapper kernel [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
                       [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -131,6 +139,7 @@ options:
   -o OUTLOG, --output OUTLOG
                         save logs to a file
   --ksu                 add KernelSU support
+
 ```
 
 ### Assets
@@ -139,14 +148,14 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 wrapper assets --help
-usage: wrapper assets [-h] --buildenv {local,docker,podman} --base
+usage: wrapper assets [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --chroot
                       {full,minimal} [--rom-only] [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -184,7 +193,7 @@ An option named `slim` is a much lighter version of `full` packaging, as only th
 
 ```help
 $ python3 wrapper bundle --help
-usage: wrapper bundle [-h] --buildenv {local,docker,podman} --base
+usage: wrapper bundle [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV
                       --package-type {conan,slim,full} [--conan-upload]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
@@ -192,7 +201,7 @@ usage: wrapper bundle [-h] --buildenv {local,docker,podman} --base
 
 options:
   -h, --help            show this help message and exit
-  --buildenv {local,docker,podman}
+  --build-env {local,docker,podman}
                         select build environment
   --base {los,pa,x,aosp}
                         select a kernel base for the build
@@ -214,12 +223,23 @@ options:
 
 Here are some examples of commands:
 
-- **(Recommended)** Build kernel and collect ROM via Docker:
-  - `python3 wrapper bundle --buildenv=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim`;
-- Build kernel locally:
-  - `python3 wrapper kernel --buildenv=local --base=los --codename=dumpling --lkv=4.4`;
-- Collect all the assets locally:
-  - `python3 wrapper assets --buildenv=local --base=los --codename=dumpling --package-type=full`.
+**(Recommended)** Build kernel and collect ROM via Docker:
+
+```sh
+python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+```
+
+Build kernel locally:
+
+```sh
+python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+```
+
+Collect all of the assets locally:
+
+```sh
+python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full
+```
 
 ## Credits
 

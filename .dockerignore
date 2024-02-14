@@ -2,7 +2,7 @@
 .vscode
 **/__pycache__
 
-# git subrepos (==submodules)
+# git subrepos
 android_*
 *_kernel_*
 clang*

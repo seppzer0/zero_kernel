@@ -94,5 +94,27 @@
                 "commit": ""
             }
         }
+    },
+    "lemonade": {
+        "5.4": {
+            "pa": {
+                "type": "git",
+                "path": "android_kernel_oneplus_sm8350",
+                "url": "https://github.com/AOSPA/android_kernel_oneplus_sm8350",
+                "branch": "topaz",
+                "commit": ""
+            }
+        }
+    },
+    "lemonadep": {
+        "5.4": {
+            "pa": {
+                "type": "git",
+                "path": "android_kernel_oneplus_sm8350",
+                "url": "https://github.com/AOSPA/android_kernel_oneplus_sm8350",
+                "branch": "topaz",
+                "commit": ""
+            }
+        }
     }
 }

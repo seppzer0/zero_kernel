@@ -102,12 +102,9 @@ class Resources:
                         msg.note(f"Found an existing path: {path}")
                 case _:
                     msg.error("Invalid resource type detected. Use only: generic, git.")
-    
-    def export_path(self) -> None:
-        """Add path to PATH.
 
-        :param path: A path that is being exported to PATH.
-        """
+    def export_path(self) -> None:
+        """Add path to PATH."""
         for elem in self.paths:
             p = self.paths[elem]["path"]
             pathenv = str(f"{p}/bin/")

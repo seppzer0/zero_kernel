@@ -43,15 +43,12 @@ def download(url: str) -> None:
     msg.note(f"Downloading {fn} ..")
     print(f"      URL: {url}")
     try:
-        # URL for TWRP is weird, have to adjust the query
-        if "twrp" in url.lower():
-            with requests.get(url, stream=True, headers={"referer": url}) as r:
-                r.raise_for_status()
-                with open(fn, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192): 
-                        f.write(chunk)
+        if "sourceforge" in url:
+            msg.note("Sorceforge URL detected, using wget..")
+            fn = url.split("/download")[0].split("/")[-1]
+            ccmd.launch(f"wget -O {fn} {url}")
         else:
-            with requests.get(url, stream=True) as r:
+            with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
                 with open(fn, 'wb') as f:
                     for chunk in r.iter_content(chunk_size=8192): 

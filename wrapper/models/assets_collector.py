@@ -11,8 +11,8 @@ from clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 from configs import Config as cfg
 
 
-class AssetCollector:
-    """Asset collector."""
+class AssetsCollector:
+    """Assets collector."""
 
     _root: Path = cfg.DIR_ROOT
     _dir_assets: Path = Path(_root, cfg.DIR_ASSETS)

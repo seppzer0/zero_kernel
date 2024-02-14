@@ -4,7 +4,7 @@ FROM python:3.12-slim-bookworm AS base
 ARG WDIR=/zero_build
 ENV CONAN_UPLOAD_CUSTOM 0
 
-# place sources from host to container
+# transfer sources from host to container
 COPY . ${WDIR}
 WORKDIR ${WDIR}
 
@@ -16,6 +16,7 @@ RUN \
     apt-get install -y \
         neovim \
         curl \
+        wget \
         git \
         gcc \
         g++ \
