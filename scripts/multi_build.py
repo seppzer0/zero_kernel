@@ -17,7 +17,7 @@ def parse_args() -> None:
 
 
 def rmove(src: Path, dst: Path) -> None:
-    """Recusrively move files from one directory to another.
+    """Recursively move files from one directory to another.
 
     :param src: Source path.
     :param dst: Destination path.
