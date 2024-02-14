@@ -33,7 +33,7 @@ def launch(
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
         # return only output if required
         if get_output is True:
-            return result.stdout.decode('utf-8').splitlines()
+            return result.stdout.decode('utf-8').rstrip()
     except Exception:
         msg.error(f"Error executing command: {cmd}")
     # if output stream is a file -- close it

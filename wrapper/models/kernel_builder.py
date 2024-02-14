@@ -528,7 +528,7 @@ class KernelBuilder:
         cmd1 = "make -j{} O=out {} "\
                "ARCH=arm64 "\
                "SUBARCH=arm64 "\
-               "LLVM=1" \
+               "LLVM=1 "\
                "LLVM_IAS=1"\
                 .format(punits, self._defconfig)
         cmd2 = "make -j{} O=out "\
