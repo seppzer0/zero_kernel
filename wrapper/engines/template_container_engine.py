@@ -64,9 +64,11 @@ class TemplateContainerEngine:
         }
         # extend the command with given arguments
         for arg, value in arguments.items():
+            # arguments that have a string value
             if value not in (None, False, True):
                 cmd += f" {arg}={value}"
-            elif value in (True,):
+            # arguments that act like boolean switches
+            elif value:
                 cmd += f" {arg}"
         # extend the command with the selected packaging option
         if self.build_module == "bundle":
