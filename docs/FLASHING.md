@@ -42,7 +42,7 @@ The installation process is done in the following order:
 Before doing anything, please ensure that you have:
 
 - an unlocked bootloader;
-- an installed TWRP blu_spark recovery;
+- an installed TWRP recovery;
 - a <u>working</u> NANDroid backup of your device.
 
 ### **2.1 In TWRP**
