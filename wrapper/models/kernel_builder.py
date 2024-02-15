@@ -28,28 +28,27 @@ class KernelBuilder:
 
     def run(self) -> None:
         msg.banner("zero kernel builder")
-        os.chdir(self._root)
+        #os.chdir(self._root)
         msg.note("Setting up tools and links..")
-        # manage build resources
         self._rcs.path_gen()
         self._rcs.download()
         self._rcs.export_path()
-        # clean directories
         self._clean_build()
         if self._clean:
             sys.exit(0)
-        # specify localversion
-        with open("localversion", "w") as f:
-            f.write("~NetHunter-seppzer0")
+        self._write_localversion()
         msg.done("Done! Tools are configured!")
-        # validate the specified Linux kernel version
         if self._lkv != self._linux_kernel_version:
             msg.error("Linux kernel version in sources is different what was specified in arguments")
-        # apply various patches
         self._patch_all()
-        # build and package
         self._build()
         self._create_zip()
+
+    @staticmethod
+    def _write_localversion() -> None:
+        """Write a localversion file."""
+        with open("localversion", "w") as f:
+            f.write("~NetHunter-seppzer0")
 
     @property
     def _ucodename(self) -> str:

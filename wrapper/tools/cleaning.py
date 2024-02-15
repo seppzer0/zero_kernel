@@ -67,6 +67,9 @@ def root(extra: list[str] = []) -> None:
         "localversion",
         "KernelSU",
         "multi_build",
+        ".coverage",
+        ".vscode",
+        ".pytest_cache"
     ]
     # add extra elements to clean up from root directory
     if extra:
