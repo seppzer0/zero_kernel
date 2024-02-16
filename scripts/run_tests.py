@@ -24,6 +24,12 @@ class Tester:
         """Run type (hint) checks with Pyright."""
         self._launch_cmd("pyright wrapper")
 
+    def bandit_checks(self) -> None:
+        """Run SAST with Bandit."""
+        fmts = ("json", "html")
+        for fmt in fmts:
+            self._launch(f"python3 -m bandit -r -f {fmt} {self.rootpath} -o report.{fmt}")
+
 
 def main() -> None:
     rootpath = Path(Path(__file__).absolute().parents[1])
