@@ -12,7 +12,7 @@ from configs.directory_config import DirectoryConfig as dcfg
 
 class ArgumentConfig(BaseModel):
     """A variable storage to use across the application.
-    
+
     :param benv: Build environment.
     :param build_module: Wrapper module to be launched.
     :param codename: Device codename.
@@ -44,7 +44,6 @@ class ArgumentConfig(BaseModel):
 
     def check_settings(self) -> None:
         """Run settings validations."""
-        print("kek")
         # detect OS family
         if self.benv == "local":
             if not platform.system() == "Linux":
