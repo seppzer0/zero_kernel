@@ -157,7 +157,7 @@ class ContainerEngine(BaseModel):
                             msg.error("Could not find Conan local cache on the host machine.")
         return options
 
-    def createdirs(self) -> None:
+    def create_dirs(self) -> None:
         """Create required directories for volume mounting."""
         match self.module:
             case "kernel":
@@ -201,7 +201,7 @@ class ContainerEngine(BaseModel):
             self.wrapper_cmd
         )
         # prepare directories
-        self.createdirs()
+        self.create_dirs()
         ccmd.launch(cmd)
         # navigate to root directory and clean image from host machine
         os.chdir(self.wdir_local)
