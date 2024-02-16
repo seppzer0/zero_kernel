@@ -101,7 +101,7 @@ class TemplateContainerEngine(BaseModel):
         # extend the command with the selected packaging option
         if self.build_module == "bundle":
             if self.package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {Path(self.wdir_container, self.dcfg.bundle)}"
+                cmd += f" && chmod 777 -R {Path(self.wdir_container, dcfg.bundle)}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
@@ -123,18 +123,18 @@ class TemplateContainerEngine(BaseModel):
                 options.append(
                     '-v {}/{}:{}/{}'.format(
                         dcfg.root,
-                        self.dcfg.kernel,
+                        dcfg.kernel,
                         self.wdir_container,
-                        self.dcfg.kernel
+                        dcfg.kernel
                     )
                 )
             case "assets":
                 options.append(
                     '-v {}/{}:{}/{}'.format(
                         dcfg.root,
-                        self.dcfg.assets,
+                        dcfg.assets,
                         self.wdir_container,
-                        self.dcfg.assets
+                        dcfg.assets
                     )
                 )
             case "bundle":
@@ -143,9 +143,9 @@ class TemplateContainerEngine(BaseModel):
                         options.append(
                             '-v {}/{}:{}/{}'.format(
                                 dcfg.root,
-                                self.dcfg.bundle,
+                                dcfg.bundle,
                                 self.wdir_container,
-                                self.dcfg.bundle
+                                dcfg.bundle
                             )
                         )
                     case "conan":
@@ -162,17 +162,17 @@ class TemplateContainerEngine(BaseModel):
         """Create required directories for volume mounting."""
         match self.build_module:
             case "kernel":
-                kdir = Path(dcfg.dcfg.kernel)
+                kdir = Path(dcfg.kernel)
                 if not kdir.isdir():
                     os.mkdir(kdir)
             case "assets":
-                assetsdir = Path(dcfg.dcfg.assets)
+                assetsdir = Path(dcfg.assets)
                 if not assetsdir.isdir():
                     os.mkdir(assetsdir)
             case "bundle":
                 if self.package_type in ("slim", "full"):
                     # mount directory with release artifacts
-                    bdir = Path(dcfg.dcfg.bundle)
+                    bdir = Path(dcfg.bundle)
                     shutil.rmtree(bdir, ignore_errors=True)
                     os.mkdir(bdir)
 
