@@ -2,11 +2,11 @@ import os
 import subprocess
 from pathlib import Path
 
+ROOTPATH: Path = Path(Path(__file__).absolute().parents[1])
+
 
 class Tester:
     """A single class for all types of tests."""
-
-    rootpath: Path = Path(Path(__file__).absolute().parents[1])
 
     def _launch_cmd(cmd: str) -> None:
         """Launch specified command."""
@@ -28,15 +28,15 @@ class Tester:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
         for fmt in fmts:
-            self._launch(f"python3 -m bandit -r -f {fmt} {self.rootpath} -o report.{fmt}")
+            self._launch(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}")
 
 
 def main() -> None:
-    rootpath = Path(Path(__file__).absolute().parents[1])
-    os.chdir(rootpath)
+    os.chdir(ROOTPATH)
     t = Tester()
     t.pytest_checks()
     t.pyright_checks()
+    t.bandit_checks()
 
 
 if __name__ == "__main__":
