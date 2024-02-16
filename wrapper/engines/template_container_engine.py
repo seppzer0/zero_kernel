@@ -28,7 +28,7 @@ class TemplateContainerEngine(BaseModel):
     :param wdir_container: Working directory in the container.
     :param wdir_local: Working directory from the local environment (aka root of the repo).
     :param benv: Build environment.
-    :param build_module: Wrapper module to be launched.
+    :param module: Wrapper module to be launched.
     :param codename: Device codename.
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
@@ -51,7 +51,7 @@ class TemplateContainerEngine(BaseModel):
     wdir_local: Path = dcfg.root
 
     benv: str
-    build_module: str
+    module: str
     codename: str
     base: str
     lkv: Optional[str] = None
@@ -79,7 +79,7 @@ class TemplateContainerEngine(BaseModel):
         # prepare launch command
         cmd = f"python3 {Path('wrapper', 'bridge.py')}"
         arguments = {
-            "--build-module": self.build_module,
+            "--module": self.module,
             "--codename": self.codename,
             "--base": self.base,
             "--lkv": self.lkv,
@@ -99,7 +99,7 @@ class TemplateContainerEngine(BaseModel):
             elif value:
                 cmd += f" {arg}"
         # extend the command with the selected packaging option
-        if self.build_module == "bundle":
+        if self.module == "bundle":
             if self.package_type in ("slim", "full"):
                 cmd += f" && chmod 777 -R {Path(self.wdir_container, dcfg.bundle)}"
             else:
@@ -118,7 +118,7 @@ class TemplateContainerEngine(BaseModel):
             "-w {}".format(self.wdir_container),
         ]
         # mount directories
-        match self.build_module:
+        match self.module:
             case "kernel":
                 options.append(
                     '-v {}/{}:{}/{}'.format(
@@ -160,7 +160,7 @@ class TemplateContainerEngine(BaseModel):
 
     def createdirs(self) -> None:
         """Create required directories for volume mounting."""
-        match self.build_module:
+        match self.module:
             case "kernel":
                 kdir = Path(dcfg.kernel)
                 if not kdir.isdir():

@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
     args = None if sys.argv[1:] else ["-h"]
     # parser and subparsers
     parser_parent = argparse.ArgumentParser(description="A custom wrapper for the zero kernel.")
-    subparsers = parser_parent.add_subparsers(dest="command")
+    subparsers = parser_parent.add_subparsers(dest="module")
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
     parser_bundle = subparsers.add_parser("bundle", help="build the kernel + collect assets")
@@ -239,11 +239,11 @@ def main(args: argparse.Namespace) -> None:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # create a config for argument check and storage
     arguments = vars(args)
-    arguments["build_module"] = args.command
+    arguments["module"] = args.module
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
     # setup output stream
-    if args.command and args.outlog:
+    if args.module and args.outlog:
         msg.note(f"Writing output to {args.outlog}")
         if args.outlog in os.listdir():
             os.remove(args.outlog)
@@ -256,7 +256,7 @@ def main(args: argparse.Namespace) -> None:
         case "podman":
             PodmanEngine(**json.loads(acfg.model_dump_json())).run()
         case "local":
-            match args.command:
+            match args.module:
                 case "kernel":
                     KernelBuilder(
                         codename = acfg.codename,

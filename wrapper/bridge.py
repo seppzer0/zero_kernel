@@ -23,9 +23,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
-        "--build-module",
-        dest="build_module",
-        help="select module",
+        "--module",
+        help="select wrapper module",
         choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
@@ -84,7 +83,7 @@ def parse_args() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
-    match args.build_module:
+    match args.module:
         case "kernel":
             KernelBuilder(
                 codename = args.codename,

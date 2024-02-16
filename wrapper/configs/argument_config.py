@@ -14,7 +14,7 @@ class ArgumentConfig(BaseModel):
     """A variable storage to use across the application.
 
     :param benv: Build environment.
-    :param build_module: Wrapper module to be launched.
+    :param module: Wrapper module to be launched.
     :param codename: Device codename.
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
@@ -28,7 +28,7 @@ class ArgumentConfig(BaseModel):
     :param ksu: Flag indicating KernelSU support.
     """
     benv: str
-    build_module: str
+    module: str
     codename: str
     base: str
     lkv: Optional[str] = None
@@ -59,7 +59,7 @@ class ArgumentConfig(BaseModel):
             devices = json.load(f)
         if self.codename not in devices.keys():
             msg.error("Unsupported device codename specified.")
-        if self.command == "bundle":
+        if self.module == "bundle":
             # check Conan-related argument usage
             if self.package_type != "conan" and self.conan_upload:
                 msg.error("Cannot use Conan-related arguments with non-Conan packaging\n")
