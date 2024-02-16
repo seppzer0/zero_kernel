@@ -1,7 +1,7 @@
-from .template_rom_api import TemplateRomApi
+from .rom_api import RomApi
 
 
-class ParanoidAndroidApi(TemplateRomApi):
+class ParanoidAndroidApi(RomApi):
     """Limited interaction with ParanoidAndroid API."""
 
     endpoint: str = "https://api.paranoidandroid.co/updates/{}"

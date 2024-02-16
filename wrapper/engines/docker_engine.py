@@ -4,10 +4,10 @@ from typing import override
 import tools.messages as msg
 import tools.commands as ccmd
 
-from .template_container_engine import TemplateContainerEngine
+from .container_engine import ContainerEngine
 
 
-class DockerEngine(TemplateContainerEngine):
+class DockerEngine(ContainerEngine):
     """Docker engine.
     
     :param benv: Build environment.

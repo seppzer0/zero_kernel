@@ -4,9 +4,9 @@ from pydantic import BaseModel
 import tools.messages as msg
 
 
-class TemplateRomApi(BaseModel):
-    """A template class for interacting with ROMs' APIs.
-    
+class RomApi(BaseModel):
+    """A generic class for interacting with ROMs' APIs.
+
     :param endpoint: API endpoint to interact with.
     :param json_key: A JSON key to look for in the response.
     :param rom_name: ROM project's name.

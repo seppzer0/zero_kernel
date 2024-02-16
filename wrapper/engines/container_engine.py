@@ -10,9 +10,9 @@ import tools.commands as ccmd
 from configs.directory_config import DirectoryConfig as dcfg
 
 
-class TemplateContainerEngine(BaseModel):
-    """A template engine for containerized builds.
-    
+class ContainerEngine(BaseModel):
+    """A generic container engine for containerized builds.
+
     Note that here paths from DirectoryConfig are not used
     directly. Because the build will run in a container,
     these paths will be redefined according to container's
@@ -21,7 +21,6 @@ class TemplateContainerEngine(BaseModel):
 
     :param name_image: Name of the Docker/Podman image.
     :param name_container: Name of the Docker/Podman container.
-    :param dir_init: Initial directory (?).
     :param dir_kernel: Directory (name) for the kernel artifacts.
     :param dir_assets: Directory (name) for the assets artifacts.
     :param dir_bundle: Directory (name) for the bundle artifacts.
