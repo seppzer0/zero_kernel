@@ -8,6 +8,6 @@ class LineageOsApi(TemplateRomApi):
     json_key: str = "response"
     rom_name: str = "LOS"
 
-    def __init__(self, codename: str, rom_only: bool) -> None:
-        super().__init__(codename, rom_only)
-        self.endpoint = self.endpoint.format(codename)
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        self.endpoint = self.endpoint.format(self.codename)

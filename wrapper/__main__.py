@@ -2,21 +2,20 @@ import os
 import sys
 import json
 import argparse
-import platform
 from pathlib import Path
 
 import tools.cleaning as cm
 import tools.messages as msg
-import tools.commands as ccmd
 
-from models.bundle_creator import BundleCreator
-from models.kernel_builder import KernelBuilder
-from models.assets_collector import AssetsCollector
+from modules.bundle_creator import BundleCreator
+from modules.kernel_builder import KernelBuilder
+from modules.assets_collector import AssetsCollector
+
+from configs import ArgumentConfig
+from configs.directory_config import DirectoryConfig as dcfg
 
 from engines.docker_engine import DockerEngine
 from engines.podman_engine import PodmanEngine
-
-from configs import Config as cfg
 
 
 def parse_args() -> argparse.Namespace:
@@ -77,7 +76,7 @@ def parse_args() -> argparse.Namespace:
         "-c", "--clean",
         dest="clean_kernel",
         action="store_true",
-        help="don't build anything, just clean the environment"
+        help="don't build anything, only clean kernel directories"
     )
     parser_kernel.add_argument(
         "--clean-image",
@@ -228,66 +227,21 @@ def parse_args() -> argparse.Namespace:
     return parser_parent.parse_args(args)
 
 
-def validate_settings(config: dict) -> None:
-    """Run settings validations.
-    
-    :param config: A dictionary containing app arguments.
-    """
-    # detect OS family
-    if config.get("benv") == "local":
-        if not platform.system() == "Linux":
-            msg.error("Can't build kernel on a non-Linux machine.")
-        else:
-            # check that it is Debian-based
-            try:
-                ccmd.launch("apt --version", loglvl="quiet")
-            except Exception:
-                msg.error("Detected Linux distribution is not Debian-based, unable to launch.")
-    # check if specified device is supported
-    with open(Path(cfg.DIR_ROOT, "wrapper", "manifests", "devices.json")) as f:
-        devices = json.load(f)
-    if config.get("codename") not in devices.keys():
-        msg.error("Unsupported device codename specified.")
-    if config.get("command") == "bundle":
-        # check Conan-related argument usage
-        if config.get("package_type") != "conan" and config.get("conan_upload"):
-            msg.error("Cannot use Conan-related arguments with non-Conan packaging\n")
-
-
 def main(args: argparse.Namespace) -> None:
     # start preparing the environment
-    os.chdir(cfg.DIR_ROOT)
+    os.chdir(dcfg.root)
     if args.clean_root:
         cm.root()
         sys.exit(0)
     os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
-    with open(Path(cfg.DIR_ROOT, "pyproject.toml")) as f:
+    with open(Path(dcfg.root, "pyproject.toml")) as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
-    # store arguments as a set, to pass on to models
+    # create a config for argument check and storage
     arguments = vars(args)
     arguments["build_module"] = args.command
-    params = {
-        "build_module",
-        "benv",
-        "codename",
-        "base",
-        "lkv",
-        "clean_image",
-        "chroot",
-        "package_type",
-        "clean_kernel",
-        "clean_assets",
-        "rom_only",
-        "conan_upload",
-        "ksu",
-    }
-    passed_params = {}
-    for key, value in arguments.items():
-        if key in params:
-            passed_params[key] = value
-    # validate arguments
-    validate_settings(config=passed_params)
+    acfg = ArgumentConfig(**arguments)
+    acfg.check_settings()
     # setup output stream
     if args.command and args.outlog:
         msg.note(f"Writing output to {args.outlog}")
@@ -298,35 +252,35 @@ def main(args: argparse.Namespace) -> None:
     # determine the build
     match args.benv:
         case "docker":
-            DockerEngine(config=passed_params).run()
+            DockerEngine(**json.loads(acfg.model_dump_json())).run()
         case "podman":
-            PodmanEngine(config=passed_params).run()
+            PodmanEngine(**json.loads(acfg.model_dump_json())).run()
         case "local":
             match args.command:
                 case "kernel":
                     KernelBuilder(
-                        codename = args.codename,
-                        base = args.base,
-                        lkv = args.lkv,
-                        clean = args.clean_kernel,
-                        ksu = args.ksu,
+                        codename = acfg.codename,
+                        base = acfg.base,
+                        lkv = acfg.lkv,
+                        clean_kernel = acfg.clean_kernel,
+                        ksu = acfg.ksu,
                     ).run()
                 case "assets":
                     AssetsCollector(
-                        codename = args.codename,
-                        base = args.base,
-                        chroot = args.chroot,
-                        clean = args.clean_assets,
-                        rom_only = args.rom_only,
-                        ksu = args.ksu,
+                        codename = acfg.codename,
+                        base = acfg.base,
+                        chroot = acfg.chroot,
+                        clean_assets = acfg.clean_assets,
+                        rom_only = acfg.rom_only,
+                        ksu = acfg.ksu,
                     ).run()
                 case "bundle":
                     BundleCreator(
-                        codename = args.codename,
-                        base = args.base,
-                        lkv = args.lkv,
-                        package_type = args.package_type,
-                        ksu = args.ksu,
+                        codename = acfg.codename,
+                        base = acfg.base,
+                        lkv = acfg.lkv,
+                        package_type = acfg.package_type,
+                        ksu = acfg.ksu,
                     ).run()
 
 

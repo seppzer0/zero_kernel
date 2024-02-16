@@ -1,18 +1,23 @@
 import requests
+from pydantic import BaseModel
 
 import tools.messages as msg
 
 
-class TemplateRomApi:
-    """A template class for interacting with ROMs' APIs."""
+class TemplateRomApi(BaseModel):
+    """A template class for interacting with ROMs' APIs.
+    
+    :param endpoint: API endpoint to interact with.
+    :param json_key: A JSON key to look for in the response.
+    :param rom_name: ROM project's name.
+    :param rom_only: Flag indicating ROM-only asset collection.
+    """
 
     endpoint: str
     json_key: str
     rom_name: str
-
-    def __init__(self, codename: str, rom_only: str) -> None:
-        self.codename = codename
-        self.rom_only = rom_only
+    codename: str
+    rom_only: bool
 
     def run(self) -> str:
         """Get the latest build of the ROM."""

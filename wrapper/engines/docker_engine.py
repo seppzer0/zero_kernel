@@ -8,12 +8,12 @@ from .template_container_engine import TemplateContainerEngine
 
 
 class DockerEngine(TemplateContainerEngine):
-    """Docker engine."""
+    """Docker engine.
+    
+    :param benv: Build environment.
+    """
 
     benv: str = "docker"
-
-    def __init__(self, config: dict) -> None:
-        super().__init__(config)
 
     @staticmethod
     def _force_buildkit() -> None:

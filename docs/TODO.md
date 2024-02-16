@@ -49,7 +49,7 @@
 - [x] add a new argument responsible for Linux kernel version selection;
 - [x] add 4.14 Linux kernel version builds;
 - [ ] decompose `run` methods into separate methods as much as possible;
-- [ ] switch to pydantic;
+- [x] switch to pydantic;
 - [ ] new device support: OP9;
 - [ ] add type checks with pyright;
 - [ ] add unit tests with coverage checks;

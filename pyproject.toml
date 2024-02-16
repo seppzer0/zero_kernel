@@ -11,11 +11,13 @@ python = "^3.12"
 conan = "~1"
 argparse = "*"
 requests = "*"
-bandit = "*"
 pathlib = "*"
-dataclasses = "*"
 typing = "*"
+pydantic = "^2.6"
 
+[tool.poetry.dev-dependencies]
+bandit = "*"
+pytest-cov = "*"
 
 [build-system]
 requires = ["poetry-core"]

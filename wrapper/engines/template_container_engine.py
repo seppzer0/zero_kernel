@@ -1,39 +1,67 @@
 import os
 import shutil
 from pathlib import Path
+from typing import Optional
+from pydantic import BaseModel
 
 import tools.messages as msg
 import tools.commands as ccmd
 
-from configs import Config as cfg
+from configs.directory_config import DirectoryConfig as dcfg
 
 
-class TemplateContainerEngine:
-    """A template engine for containerized builds."""
+class TemplateContainerEngine(BaseModel):
+    """A template engine for containerized builds.
+    
+    Note that here paths from DirectoryConfig are not used
+    directly. Because the build will run in a container,
+    these paths will be redefined according to container's
+    directory structure. We only need to specify directory
+    names and not full paths.
 
-    benv: str
+    :param name_image: Name of the Docker/Podman image.
+    :param name_container: Name of the Docker/Podman container.
+    :param dir_init: Initial directory (?).
+    :param dir_kernel: Directory (name) for the kernel artifacts.
+    :param dir_assets: Directory (name) for the assets artifacts.
+    :param dir_bundle: Directory (name) for the bundle artifacts.
+    :param wdir_container: Working directory in the container.
+    :param wdir_local: Working directory from the local environment (aka root of the repo).
+    :param benv: Build environment.
+    :param build_module: Wrapper module to be launched.
+    :param codename: Device codename.
+    :param base: Kernel source base.
+    :param lkv: Linux kernel version.
+    :param chroot: Chroot type.
+    :param package_type: Package type.
+    :param clean_image: Flag to clean a Docker/Podman image from local cache.
+    :param clean_assets: Flag to clean folder for assets storage.
+    :param rom_only: Flag indicating ROM-only asset collection.
+    :param conan_upload: Flag to enable Conan upload.
+    :param ksu: Flag to add KernelSU support into the kernel.
+    """
+
     name_image: str = "zero-kernel-image"
     name_container: str = "zero-kernel-container"
-    dir_init: Path = Path.cwd()
-    dir_kernel: Path = Path(cfg.DIR_KERNEL)
-    dir_assets: Path = Path(cfg.DIR_ASSETS)
-    dir_bundle: Path = Path(cfg.DIR_BUNDLE)
+    #dir_init: Path = Path.cwd()
+    dir_kernel: Path = dcfg.kernel.name
+    dir_assets: Path = dcfg.assets.name
+    dir_bundle: Path = dcfg.bundle.name
     wdir_container: Path = Path("/", "zero_build")
-    wdir_local: Path = cfg.DIR_ROOT
+    wdir_local: Path = dcfg.root
 
-    def __init__(self, config: dict) -> None:
-        self.build_module = config.get("build_module")
-        self.codename = config.get("codename")
-        self.base = config.get("base")
-        self.lkv = config.get("lkv")
-        self.chroot = config.get("chroot", None)
-        self.package_type = config.get("package_type", None)
-        self.clean_image = config.get("clean_image", False)
-        self.clean_kernel = config.get("clean_kernel", False)
-        self.clean_assets = config.get("clean_assets", False)
-        self.rom_only = config.get("rom_only", False)
-        self.conan_upload = config.get("conan_upload", False)
-        self.ksu = config.get("ksu", False)
+    benv: str
+    build_module: str
+    codename: str
+    base: str
+    lkv: Optional[str] = None
+    chroot: Optional[str] = None
+    package_type: Optional[str] = None
+    clean_image: Optional[bool] = False
+    clean_assets: Optional[bool] = False
+    rom_only: Optional[bool] = False
+    conan_upload: Optional[bool] = False
+    ksu: Optional[bool] = False
 
     @property
     def dir_bundle_conan(self) -> Path:
@@ -73,7 +101,7 @@ class TemplateContainerEngine:
         # extend the command with the selected packaging option
         if self.build_module == "bundle":
             if self.package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {Path(self.wdir_container, self.dir_bundle)}"
+                cmd += f" && chmod 777 -R {Path(self.wdir_container, self.dcfg.bundle)}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
@@ -94,19 +122,19 @@ class TemplateContainerEngine:
             case "kernel":
                 options.append(
                     '-v {}/{}:{}/{}'.format(
-                        cfg.DIR_ROOT,
-                        self.dir_kernel,
+                        dcfg.root,
+                        self.dcfg.kernel,
                         self.wdir_container,
-                        self.dir_kernel
+                        self.dcfg.kernel
                     )
                 )
             case "assets":
                 options.append(
                     '-v {}/{}:{}/{}'.format(
-                        cfg.DIR_ROOT,
-                        self.dir_assets,
+                        dcfg.root,
+                        self.dcfg.assets,
                         self.wdir_container,
-                        self.dir_assets
+                        self.dcfg.assets
                     )
                 )
             case "bundle":
@@ -114,37 +142,37 @@ class TemplateContainerEngine:
                     case "slim" | "full":
                         options.append(
                             '-v {}/{}:{}/{}'.format(
-                                cfg.DIR_ROOT,
-                                self.dir_bundle,
+                                dcfg.root,
+                                self.dcfg.bundle,
                                 self.wdir_container,
-                                self.dir_bundle
+                                self.dcfg.bundle
                             )
                         )
                     case "conan":
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
                         # determine the path to local Conan cache and check if it exists
-                        if self.dir_bundle_conan.is_dir():
+                        if self.dir_bundle_conan.isdir():
                             options.append(f'-v {self.dir_bundle_conan}:/"/root/.conan"')
                         else:
                             msg.error("Could not find Conan local cache on the host machine.")
         return options
 
-    def create_dirs(self) -> None:
+    def createdirs(self) -> None:
         """Create required directories for volume mounting."""
         match self.build_module:
             case "kernel":
-                kdir = Path(cfg.DIR_KERNEL)
-                if not kdir.is_dir():
+                kdir = Path(dcfg.dcfg.kernel)
+                if not kdir.isdir():
                     os.mkdir(kdir)
             case "assets":
-                assetsdir = Path(cfg.DIR_ASSETS)
-                if not assetsdir.is_dir():
+                assetsdir = Path(dcfg.dcfg.assets)
+                if not assetsdir.isdir():
                     os.mkdir(assetsdir)
             case "bundle":
                 if self.package_type in ("slim", "full"):
                     # mount directory with release artifacts
-                    bdir = Path(cfg.DIR_BUNDLE)
+                    bdir = Path(dcfg.dcfg.bundle)
                     shutil.rmtree(bdir, ignore_errors=True)
                     os.mkdir(bdir)
 
@@ -174,9 +202,9 @@ class TemplateContainerEngine:
             self.wrapper_cmd
         )
         # prepare directories
-        self.create_dirs()
+        self.createdirs()
         ccmd.launch(cmd)
         # navigate to root directory and clean image from host machine
-        os.chdir(self.dir_init)
+        os.chdir(self.wdir_local)
         if self.clean_image:
             ccmd.launch(f"{self.benv} rmi {self.name_image}")

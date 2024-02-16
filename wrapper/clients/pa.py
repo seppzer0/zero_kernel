@@ -8,8 +8,8 @@ class ParanoidAndroidApi(TemplateRomApi):
     json_key: str = "updates"
     rom_name: str = "PA"
 
-    def __init__(self, codename: str, rom_only: bool) -> None:
-        super().__init__(codename, rom_only)
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
         # PA has a custom codename/device naming
         self.endpoint = self.endpoint.format(self._codename_pa)
 

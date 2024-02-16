@@ -100,9 +100,9 @@ def main(args: argparse.Namespace) -> None:
         size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
         extra = "--chroot minimal --rom-only --clean" if argset["module"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
-        clean = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
+        clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {benv} {base} {codename} {lkv} {size} {ksu} {clean} {extra}"
+        cmd = f"python3 wrapper {module} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory

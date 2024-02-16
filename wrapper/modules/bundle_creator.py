@@ -3,49 +3,46 @@ import json
 import shutil
 import itertools
 from pathlib import Path
+from pydantic import BaseModel
 
 import tools.cleaning as cm
 import tools.messages as msg
 import tools.commands as ccmd
 import tools.fileoperations as fo
 
-from models.kernel_builder import KernelBuilder
-from models.assets_collector import AssetsCollector
+from modules.kernel_builder import KernelBuilder
+from modules.assets_collector import AssetsCollector
 
-from configs import Config as cfg
+from configs.directory_config import DirectoryConfig as dcfg
 
 
-class BundleCreator:
-    """Bundle kernel + asset artifacts."""
+class BundleCreator(BaseModel):
+    """Bundle kernel + asset artifacts.
+    
+    :param base: Kernel source base.
+    :param lkv: Linux kernel version.
+    :param package_type: Package type.
+    :param ksu: Flag indicating KernelSU support.
+    """
 
-    _root: Path = cfg.DIR_ROOT
-
-    def __init__(
-            self,
-            codename: str,
-            base: str,
-            lkv: str,
-            package_type: str,
-            ksu: bool
-        ) -> None:
-        self._codename = codename
-        self._base = base
-        self._lkv = lkv
-        self._package_type = package_type
-        self._ksu = ksu
+    codename: str
+    base: str
+    lkv: str
+    package_type: str
+    ksu: bool
 
     def run(self) -> None:
-        os.chdir(self._root)
+        os.chdir(dcfg.root)
         # determine the bundle type and process it
-        match self._package_type:
+        match self.package_type:
             case "slim" | "full":
-                self._build_kernel(self._base)
+                self._build_kernel(self.base)
                 # "full" chroot is hardcoded here
-                self._collect_assets(self._base, "full")
+                self._collect_assets(self.base, "full")
                 # make a unified "bundle" directory with both .zips
-                bdir = cfg.DIR_BUNDLE
-                kdir = cfg.DIR_KERNEL
-                adir = cfg.DIR_ASSETS
+                bdir = dcfg.bundle
+                kdir = dcfg.kernel
+                adir = dcfg.assets
                 # clean up
                 if bdir in os.listdir():
                     contents = Path(bdir).glob("*")
@@ -56,21 +53,21 @@ class BundleCreator:
                 # copy kernel
                 kfn = "".join(os.listdir(kdir))
                 shutil.copy(
-                    self._root / kdir / kfn,
-                    self._root / bdir / kfn
+                    dcfg.root / kdir / kfn,
+                    dcfg.root / bdir / kfn
                 )
                 # move the assets
                 for afn in os.listdir(adir):
                     # here, because of their size assets are moved and not copied
                     shutil.move(
-                        self._root / adir / afn,
-                        self._root / bdir / afn
+                        dcfg.root / adir / afn,
+                        dcfg.root / bdir / afn
                     )
             case "conan":
                 # form Conan reference
                 name = "zero_kernel"
                 version = os.getenv("KVERSION")
-                user = self._codename
+                user = self.codename
                 channel = ""
                 if ccmd.launch("git branch --show-current", get_output=True) == "main":
                     channel = "stable"
@@ -79,7 +76,7 @@ class BundleCreator:
                 reference = f"{name}/{version}@{user}/{channel}"
                 # form option sets
                 chroot = ("minimal", "full")
-                option_sets = list(itertools.product([self._base], chroot))
+                option_sets = list(itertools.product([self.base], chroot))
                 # build and upload Conan packages
                 for opset in option_sets:
                     self._build_kernel(opset[0])
@@ -91,7 +88,7 @@ class BundleCreator:
                 if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
                     self._conan_upload(reference)
         # navigate back to root directory
-        os.chdir(self._root)
+        os.chdir(dcfg.root)
 
     def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         """Build the kernel.
@@ -99,19 +96,19 @@ class BundleCreator:
         :param rom_name: Name of the ROM.
         :param clean_only: Append an argument to just clean the kernel directory.
         """
-        if not Path(cfg.DIR_KERNEL).is_dir() or clean_only is True:
+        if not Path(dcfg.kernel).is_dir() or clean_only is True:
             KernelBuilder(
-                codename = self._codename,
+                codename = self.codename,
                 base = rom_name,
-                lkv = self._lkv,
-                clean = clean_only,
-                ksu = self._ksu,
+                lkv = self.lkv,
+                clean_kernel = clean_only,
+                ksu = self.ksu,
             ).run()
 
     @property
     def _rom_only_flag(self) -> str:
         """Determine the value of the --rom-only flag."""
-        return True if "full" not in self._package_type else False
+        return True if "full" not in self.package_type else False
 
     def _collect_assets(self, rom_name: str, chroot: str) -> None:
         """Collect assets.
@@ -120,26 +117,26 @@ class BundleCreator:
         :param chroot: Type of chroot.
         """
         AssetsCollector(
-            codename = self._codename,
+            codename = self.codename,
             base = rom_name,
             chroot = chroot,
-            clean = True,
+            clean_assets = True,
             rom_only = self._rom_only_flag,
-            ksu = self._ksu,
+            ksu = self.ksu,
         ).run()
 
     def _conan_sources(self) -> None:
         """Prepare sources for rebuildable Conan packages."""
-        sourcedir = self._root / "source"
+        sourcedir = dcfg.root / "source"
         print("\n", end="")
         msg.note("Copying sources for Conan packaging..")
         cm.remove(str(sourcedir))
         fo.ucopy(
-            self._root,
+            dcfg.root,
             sourcedir,
             (
-                cfg.DIR_KERNEL,
-                cfg.DIR_ASSETS,
+                dcfg.kernel,
+                dcfg.assets,
                 "__pycache__",
                 ".vscode",
                 "source",
@@ -171,7 +168,7 @@ class BundleCreator:
             option_name = "rom" if not any(c.isalpha() for c in option_value) else "chroot"
             cmd += f" -o {option_name}={option_value}"
         # add codename as an option separately
-        cmd += f" -o codename={self._codename}"
+        cmd += f" -o codename={self.codename}"
         ccmd.launch(cmd)
 
     @staticmethod
