@@ -12,7 +12,7 @@ from utils import Resources
 
 def parse_args() -> argparse.Namespace:
     """Parse arguments.
-    
+
     Arguments here are NOT mandatory because this script has dual use:
     1) launch one of the modules: kernel, assets, bundle;
     2) install shared tools from tools.json.
