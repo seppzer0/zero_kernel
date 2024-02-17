@@ -54,4 +54,5 @@
 - [ ] add type checks with pyright;
 - [ ] add unit tests with coverage checks;
 - [ ] move device-specific modifications into appropriate folder with custom Modificator (sub)classes;
-- [ ] switch to `__enter__` and `__exit__` Python's magic methods for container engines.
+- [ ] switch to `__enter__` and `__exit__` Python's magic methods for container engines;
+- [ ] switch to `exec` commands for Docker and Podman instead of a single `run` command.
