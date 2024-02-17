@@ -18,7 +18,7 @@ from configs.directory_config import DirectoryConfig as dcfg
 
 class BundleCreator(BaseModel):
     """Bundle kernel + asset artifacts.
-    
+
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
     :param package_type: Package type.

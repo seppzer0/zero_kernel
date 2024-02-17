@@ -16,7 +16,7 @@ from utils import Resources
 
 class KernelBuilder(BaseModel):
     """Kernel builder.
-    
+
     :param codename: Device codename.
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
@@ -61,7 +61,7 @@ class KernelBuilder(BaseModel):
     @property
     def _ucodename(self) -> str:
         """A unified device codename to apply patches for.
-        
+
         E.g., "dumplinger", combining "dumpling" and "cheeseburger",
         both of which share the same kernel source.
         """
@@ -320,7 +320,7 @@ class KernelBuilder(BaseModel):
 
     def _patch_rtl8812au(self) -> None:
         """Patch RTL8812AU sources.
-        
+
         NOTE: .patch files are unreliable in this case, have to replace lines manually
         """
         # copy RTL8812AU sources into kernel sources

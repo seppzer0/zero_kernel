@@ -13,7 +13,7 @@ from configs.directory_config import DirectoryConfig as dcfg
 
 class AssetsCollector(BaseModel):
     """Assets collector.
-    
+
     :param codename: Device codename.
     :param base: Kernel source base.
     :param chroot: Chroot type.
