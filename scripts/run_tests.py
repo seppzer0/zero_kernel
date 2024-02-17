@@ -20,11 +20,11 @@ class Tester:
         Includes coverage checks.
         """
         os.environ["PYTHONPATH"] = self.rootpath
-        return self._launch_cmd("pytest tests --cov")
+        return self._launch_cmd("python3 -m pytest tests/ --cov")
 
     def pyright_checks(self) -> CompletedProcess:
         """Run type (hint) checks with Pyright."""
-        return self._launch_cmd("pyright wrapper")
+        return self._launch_cmd("python3 -m pyright wrapper")
 
     def bandit_checks(self) -> List[CompletedProcess]:
         """Run SAST with Bandit."""
