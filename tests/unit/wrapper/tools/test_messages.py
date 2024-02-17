@@ -9,7 +9,7 @@ def test__message_note__validate(capfd):
     expected_result = f"[ * ] {m}"
     msg.note(m)
     out, err = capfd.readouterr()
-    assert out.replace("\n", "") == expected_result
+    assert out.rstrip() == expected_result
 
 
 @pytest.mark.parametrize("dont_exit", (False, True))
@@ -23,7 +23,7 @@ def test__message_error__validate(capfd, dont_exit: bool) -> None:
     else:
         msg.error(m, dont_exit)
         out, err = capfd.readouterr()
-        assert err.replace("\n", "") == expected_result
+        assert err.rstrip() == expected_result
 
 
 def test__message_done__validate(capfd) -> None:
@@ -32,7 +32,7 @@ def test__message_done__validate(capfd) -> None:
     expected_result = f"[ + ] {m}"
     msg.done(m)
     out, err = capfd.readouterr()
-    assert out.replace("\n", "") == expected_result
+    assert out.rstrip() == expected_result
 
 
 def test__message_cancel__validate(capfd) -> None:
@@ -43,7 +43,7 @@ def test__message_cancel__validate(capfd) -> None:
     with pytest.raises(SystemExit):
         msg.cancel(m)
     out, err = capfd.readouterr()
-    assert out.replace("\n", "") == expected_result
+    assert out.rstrip() == expected_result
 
 
 def test__message_debug__validate(capfd) -> None:
@@ -52,4 +52,4 @@ def test__message_debug__validate(capfd) -> None:
     expected_result = f"[ DEBUG ] {m}"
     msg.debug(m)
     out, err = capfd.readouterr()
-    assert out.replace("\n", "") == expected_result
+    assert out.rstrip() == expected_result
