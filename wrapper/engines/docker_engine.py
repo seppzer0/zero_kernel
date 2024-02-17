@@ -49,6 +49,6 @@ class DockerEngine(ContainerEngine):
         self.create_dirs()
         ccmd.launch(cmd)
         # navigate to root directory and clean image from host machine
-        os.chdir(self.dir_init)
+        os.chdir(self.wdir_local)
         if self.clean_image:
             ccmd.launch(f"{self.benv} rmi {self.name_image}")
