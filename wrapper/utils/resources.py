@@ -3,10 +3,10 @@ import json
 import tarfile
 from typing import Optional
 
-import tools.cleaning as cm
-import tools.messages as msg
-import tools.commands as ccmd
-import tools.fileoperations as fo
+import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
+import wrapper.tools.fileoperations as fo
 
 from configs.directory_config import DirectoryConfig as dcfg
 
