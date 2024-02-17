@@ -8,10 +8,7 @@ from .container_engine import ContainerEngine
 
 
 class DockerEngine(ContainerEngine):
-    """Docker engine.
-    
-    :param benv: Build environment.
-    """
+    """Docker engine."""
 
     @staticmethod
     def _force_buildkit() -> None:
