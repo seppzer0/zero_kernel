@@ -19,6 +19,9 @@ pydantic = "^2.6"
 bandit = "*"
 pytest-cov = "*"
 
+[tool.coverage.report]
+show_missing = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
