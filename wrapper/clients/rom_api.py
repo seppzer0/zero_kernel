@@ -1,7 +1,7 @@
 import requests
 from pydantic import BaseModel
 
-import tools.messages as msg
+import wrapper.tools.messages as msg
 
 
 class RomApi(BaseModel):

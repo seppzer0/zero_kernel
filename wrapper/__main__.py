@@ -4,18 +4,18 @@ import json
 import argparse
 from pathlib import Path
 
-import tools.cleaning as cm
-import tools.messages as msg
+import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
 
-from modules.bundle_creator import BundleCreator
-from modules.kernel_builder import KernelBuilder
-from modules.assets_collector import AssetsCollector
+from wrapper.modules.bundle_creator import BundleCreator
+from wrapper.modules.kernel_builder import KernelBuilder
+from wrapper.modules.assets_collector import AssetsCollector
 
-from configs import ArgumentConfig
-from configs.directory_config import DirectoryConfig as dcfg
+from wrapper.configs import ArgumentConfig
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from engines.docker_engine import DockerEngine
-from engines.podman_engine import PodmanEngine
+from wrapper.engines.docker_engine import DockerEngine
+from wrapper.engines.podman_engine import PodmanEngine
 
 
 def parse_args() -> argparse.Namespace:

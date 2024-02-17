@@ -4,9 +4,9 @@ import shutil
 from typing import Union
 from pathlib import Path
 
-import tools.commands as ccmd
+import wrapper.tools.commands as ccmd
 
-from configs.directory_config import DirectoryConfig as dcfg
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
 def remove(elements: Union[str, Path, list[Path]]) -> None:

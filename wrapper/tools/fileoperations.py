@@ -4,8 +4,8 @@ import requests
 from typing import Tuple
 from pathlib import Path
 
-import tools.messages as msg
-import tools.commands as ccmd
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
 
 
 def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:

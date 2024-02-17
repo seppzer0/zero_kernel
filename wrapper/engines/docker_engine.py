@@ -1,10 +1,10 @@
 import os
 from typing import override
 
-import tools.messages as msg
-import tools.commands as ccmd
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
 
-from .container_engine import ContainerEngine
+from wrapper.engines.container_engine import ContainerEngine
 
 
 class DockerEngine(ContainerEngine):

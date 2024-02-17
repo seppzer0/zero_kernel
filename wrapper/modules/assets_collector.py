@@ -2,13 +2,13 @@ import os
 from pathlib import Path
 from pydantic import BaseModel
 
-import tools.cleaning as cm
-import tools.messages as msg
-import tools.fileoperations as fo
+import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
+import wrapper.tools.fileoperations as fo
 
-from clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
+from wrapper.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 
-from configs.directory_config import DirectoryConfig as dcfg
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
 class AssetsCollector(BaseModel):

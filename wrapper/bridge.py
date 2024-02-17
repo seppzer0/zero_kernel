@@ -1,13 +1,13 @@
 import sys
 import argparse
 
-import tools.messages as msg
+import wrapper.tools.messages as msg
 
-from modules.bundle_creator import BundleCreator
-from modules.kernel_builder import KernelBuilder
-from modules.assets_collector import AssetsCollector
+from wrapper.modules.bundle_creator import BundleCreator
+from wrapper.modules.kernel_builder import KernelBuilder
+from wrapper.modules.assets_collector import AssetsCollector
 
-from utils import Resources
+from wrapper.utils import Resources
 
 
 def parse_args() -> argparse.Namespace:
