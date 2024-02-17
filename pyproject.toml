@@ -19,6 +19,15 @@ pydantic = "^2.6"
 bandit = "*"
 pytest-cov = "*"
 
+[tool.coverage.run]
+source = [
+    "wrapper/clients",
+    "wrapper/configs",
+    "wrapper/engines",
+    "wrapper/modules",
+    "wrapper/utils"
+]
+
 [tool.coverage.report]
 show_missing = true
 
