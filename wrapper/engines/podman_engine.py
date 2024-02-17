@@ -6,5 +6,3 @@ class PodmanEngine(ContainerEngine):
     
     :param benv: Build environment.
     """
-
-    benv: str = "podman"

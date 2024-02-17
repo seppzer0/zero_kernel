@@ -13,8 +13,6 @@ class DockerEngine(ContainerEngine):
     :param benv: Build environment.
     """
 
-    benv: str = "docker"
-
     @staticmethod
     def _force_buildkit() -> None:
         """Force enable Docker BuildKit."""
