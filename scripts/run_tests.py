@@ -1,6 +1,8 @@
 import os
 import subprocess
+from typing import List
 from pathlib import Path
+from subprocess import CompletedProcess
 
 ROOTPATH: Path = Path(Path(__file__).absolute().parents[1])
 
@@ -8,27 +10,29 @@ ROOTPATH: Path = Path(Path(__file__).absolute().parents[1])
 class Tester:
     """A single class for all types of tests."""
 
-    def _launch_cmd(cmd: str) -> None:
+    def _launch_cmd(cmd: str) -> CompletedProcess:
         """Launch specified command."""
-        subprocess.run(cmd, shell=True, check=True)
+        return subprocess.run(cmd, shell=True, check=True)
 
-    def pytest_checks(self) -> None:
+    def pytest_checks(self) -> CompletedProcess:
         """Run Unit tests with Pytest.
 
         Includes coverage checks.
         """
         os.environ["PYTHONPATH"] = self.rootpath
-        self._launch_cmd("pytest tests --cov")
+        return self._launch_cmd("pytest tests --cov")
 
-    def pyright_checks(self) -> None:
+    def pyright_checks(self) -> CompletedProcess:
         """Run type (hint) checks with Pyright."""
-        self._launch_cmd("pyright wrapper")
+        return self._launch_cmd("pyright wrapper")
 
-    def bandit_checks(self) -> None:
+    def bandit_checks(self) -> List[CompletedProcess]:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
+        cps = []
         for fmt in fmts:
-            self._launch(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}")
+            cps.append(self._launch(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}"))
+        return cps
 
 
 def main() -> None:

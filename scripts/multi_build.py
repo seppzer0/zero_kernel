@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 
-def parse_args() -> None:
+def parse_args() -> argparse.Namespace:
     """Parse arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(

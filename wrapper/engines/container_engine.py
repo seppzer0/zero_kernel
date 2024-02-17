@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
+from subprocess import CompletedProcess
 
 import tools.messages as msg
 import tools.commands as ccmd
@@ -175,7 +176,7 @@ class ContainerEngine(BaseModel):
                     shutil.rmtree(bdir, ignore_errors=True)
                     os.mkdir(bdir)
 
-    def build(self) -> None:
+    def build(self) -> CompletedProcess:
         """Build the image."""
         print("\n")
         alias = self.benv.capitalize()
@@ -187,9 +188,10 @@ class ContainerEngine(BaseModel):
             self.wdir_local / 'Dockerfile',
             self.name_image
         )
-        ccmd.launch(cmd)
+        res = ccmd.launch(cmd)
         msg.done("Done!")
         print("\n")
+        return res
 
     def run(self) -> None:
         self.build()
