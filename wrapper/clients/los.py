@@ -1,4 +1,4 @@
-from .rom_api import RomApi
+from wrapper.clients.rom_api import RomApi
 
 
 class LineageOsApi(RomApi):
