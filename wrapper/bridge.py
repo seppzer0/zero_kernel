@@ -7,7 +7,7 @@ from wrapper.modules.bundle_creator import BundleCreator
 from wrapper.modules.kernel_builder import KernelBuilder
 from wrapper.modules.assets_collector import AssetsCollector
 
-from wrapper.utils import Resources
+from wrapper.utils import ResourceManager
 
 
 def parse_args() -> argparse.Namespace:
@@ -112,7 +112,7 @@ def main(args: argparse.Namespace) -> None:
         case _:
             # if no module was selected, then shared tools are (supposed to be) installed
             if args.tools:
-                tconf = Resources()
+                tconf = ResourceManager()
                 tconf.path_gen()
                 tconf.download()
             else:

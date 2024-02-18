@@ -11,16 +11,16 @@ import wrapper.tools.fileoperations as fo
 from configs.directory_config import DirectoryConfig as dcfg
 
 
-class Resources:
+class ResourceManager:
     """An entity for managing build resources."""
 
     paths: list[str] = []
 
     def __init__(
             self,
-            codename: Optional[str] = "",
-            lkv: Optional[str] = "",
-            base: Optional[str] = ""
+            codename: Optional[str] = None,
+            lkv: Optional[str] = None,
+            base: Optional[str] = None
         ) -> None:
         self._codename = codename
         self._lkv = lkv

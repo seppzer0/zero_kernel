@@ -11,7 +11,7 @@ import wrapper.tools.fileoperations as fo
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from wrapper.utils import Resources
+from wrapper.utils import ResourceManager
 
 from wrapper.modules.interfaces import IModuleExecutor
 
@@ -34,7 +34,7 @@ class KernelBuilder(BaseModel, IModuleExecutor):
 
     def __init__(self, **data) -> None:
         super().__init__(**data)
-        self._rcs = Resources(codename=self.codename, base=self.base, lkv=self.lkv)
+        self._rcs = ResourceManager(codename=self.codename, base=self.base, lkv=self.lkv)
 
     def run(self) -> None:
         os.chdir(dcfg.root)
