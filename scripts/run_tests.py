@@ -15,11 +15,8 @@ class Tester:
         return subprocess.run(cmd, shell=True, check=True)
 
     def pytest_checks(self) -> CompletedProcess:
-        """Run Unit tests with Pytest.
-
-        Includes coverage checks.
-        """
-        os.environ["PYTHONPATH"] = self.rootpath
+        """Run unit tests with Pytest and coverage checks."""
+        os.environ["PYTHONPATH"] = ROOTPATH
         return self._launch_cmd("python3 -m pytest tests/ --cov")
 
     def pyright_checks(self) -> CompletedProcess:
