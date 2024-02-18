@@ -13,8 +13,10 @@ from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 from wrapper.utils import Resources
 
+from wrapper.modules.interfaces import IModuleExecutor
 
-class KernelBuilder(BaseModel):
+
+class KernelBuilder(BaseModel, IModuleExecutor):
     """Kernel builder.
 
     :param codename: Device codename.

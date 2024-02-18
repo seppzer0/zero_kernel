@@ -55,4 +55,7 @@
 - [ ] add unit tests with coverage checks;
 - [ ] move device-specific modifications into appropriate folder with custom Modificator (sub)classes;
 - [ ] switch to `__enter__` and `__exit__` Python's magic methods for container engines;
-- [ ] switch to `exec` commands for Docker and Podman instead of a single `run` command.
+- [ ] switch to `exec` commands for Docker and Podman instead of a single `run` command;
+- [ ] replace `ccmd.launch()` to just `launch()` (or any other name);
+- [ ] embed newlines usage (from both sides) into `messages` functions as arguments;
+- [ ] add tests on cases of custom wrapper edge case exits (kernel build on Windows, ROM-only asset collection for a ROM-universal kernel etc.)

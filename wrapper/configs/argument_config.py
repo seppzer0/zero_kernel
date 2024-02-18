@@ -44,8 +44,8 @@ class ArgumentConfig(BaseModel):
 
     def check_settings(self) -> None:
         """Run settings validations."""
-        # detect OS family
-        if self.benv == "local":
+        # allow only asset colletion on a non-Linux machine
+        if self.benv == "local" and self.module in ("kernel", "bundle"):
             if not platform.system() == "Linux":
                 msg.error("Can't build kernel on a non-Linux machine.")
             else:

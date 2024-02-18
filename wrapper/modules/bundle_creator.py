@@ -15,8 +15,10 @@ from wrapper.modules.assets_collector import AssetsCollector
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
+from wrapper.modules.interfaces import IModuleExecutor
 
-class BundleCreator(BaseModel):
+
+class BundleCreator(BaseModel, IModuleExecutor):
     """Bundle kernel + asset artifacts.
 
     :param base: Kernel source base.
@@ -30,65 +32,6 @@ class BundleCreator(BaseModel):
     lkv: str
     package_type: str
     ksu: bool
-
-    def run(self) -> None:
-        os.chdir(dcfg.root)
-        # determine the bundle type and process it
-        match self.package_type:
-            case "slim" | "full":
-                self._build_kernel(self.base)
-                # "full" chroot is hardcoded here
-                self._collect_assets(self.base, "full")
-                # make a unified "bundle" directory with both .zips
-                bdir = dcfg.bundle
-                kdir = dcfg.kernel
-                adir = dcfg.assets
-                # clean up
-                if bdir in os.listdir():
-                    contents = Path(bdir).glob("*")
-                    for f in contents:
-                        os.remove(f)
-                else:
-                    os.mkdir(bdir)
-                # copy kernel
-                kfn = "".join(os.listdir(kdir))
-                shutil.copy(
-                    dcfg.root / kdir / kfn,
-                    dcfg.root / bdir / kfn
-                )
-                # move the assets
-                for afn in os.listdir(adir):
-                    # here, because of their size assets are moved and not copied
-                    shutil.move(
-                        dcfg.root / adir / afn,
-                        dcfg.root / bdir / afn
-                    )
-            case "conan":
-                # form Conan reference
-                name = "zero_kernel"
-                version = os.getenv("KVERSION")
-                user = self.codename
-                channel = ""
-                if ccmd.launch("git branch --show-current", get_output=True) == "main":
-                    channel = "stable"
-                else:
-                    channel = "testing"
-                reference = f"{name}/{version}@{user}/{channel}"
-                # form option sets
-                chroot = ("minimal", "full")
-                option_sets = list(itertools.product([self.base], chroot))
-                # build and upload Conan packages
-                for opset in option_sets:
-                    self._build_kernel(opset[0])
-                    self._build_kernel(opset[0], True)
-                    self._conan_sources()
-                    self._collect_assets(opset[0], opset[1])
-                    self._conan_package(opset, reference)
-                # upload packages
-                if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
-                    self._conan_upload(reference)
-        # navigate back to root directory
-        os.chdir(dcfg.root)
 
     def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         """Build the kernel.
@@ -184,3 +127,62 @@ class BundleCreator(BaseModel):
               f"conan user -p {os.getenv('CONAN_PASSWORD')} -r {alias} {os.getenv('CONAN_LOGIN_USERNAME')} && "\
               f"conan upload -f {reference} -r {alias}"
         ccmd.launch(cmd)
+
+    def run(self) -> None:
+        os.chdir(dcfg.root)
+        # determine the bundle type and process it
+        match self.package_type:
+            case "slim" | "full":
+                self._build_kernel(self.base)
+                # "full" chroot is hardcoded here
+                self._collect_assets(self.base, "full")
+                # make a unified "bundle" directory with both .zips
+                bdir = dcfg.bundle
+                kdir = dcfg.kernel
+                adir = dcfg.assets
+                # clean up
+                if bdir in os.listdir():
+                    contents = Path(bdir).glob("*")
+                    for f in contents:
+                        os.remove(f)
+                else:
+                    os.mkdir(bdir)
+                # copy kernel
+                kfn = "".join(os.listdir(kdir))
+                shutil.copy(
+                    dcfg.root / kdir / kfn,
+                    dcfg.root / bdir / kfn
+                )
+                # move the assets
+                for afn in os.listdir(adir):
+                    # here, because of their size assets are moved and not copied
+                    shutil.move(
+                        dcfg.root / adir / afn,
+                        dcfg.root / bdir / afn
+                    )
+            case "conan":
+                # form Conan reference
+                name = "zero_kernel"
+                version = os.getenv("KVERSION")
+                user = self.codename
+                channel = ""
+                if ccmd.launch("git branch --show-current", get_output=True) == "main":
+                    channel = "stable"
+                else:
+                    channel = "testing"
+                reference = f"{name}/{version}@{user}/{channel}"
+                # form option sets
+                chroot = ("minimal", "full")
+                option_sets = list(itertools.product([self.base], chroot))
+                # build and upload Conan packages
+                for opset in option_sets:
+                    self._build_kernel(opset[0])
+                    self._build_kernel(opset[0], True)
+                    self._conan_sources()
+                    self._collect_assets(opset[0], opset[1])
+                    self._conan_package(opset, reference)
+                # upload packages
+                if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
+                    self._conan_upload(reference)
+        # navigate back to root directory
+        os.chdir(dcfg.root)

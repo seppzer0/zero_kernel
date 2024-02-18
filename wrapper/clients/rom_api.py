@@ -3,8 +3,10 @@ from pydantic import BaseModel
 
 import wrapper.tools.messages as msg
 
+from wrapper.clients.interfaces import IRomApi
 
-class RomApi(BaseModel):
+
+class RomApi(BaseModel, IRomApi):
     """A generic class for interacting with ROMs' APIs.
 
     :param endpoint: API endpoint to interact with.
@@ -17,10 +19,17 @@ class RomApi(BaseModel):
     json_key: str
     rom_name: str
     codename: str
-    rom_only: bool
+
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
+        self.endpoint = self.endpoint.format(self.codename_mapper)
+
+    @property
+    def codename_mapper(self) -> str:
+        # by default, codename is devicename
+        return self.codename
 
     def run(self) -> str:
-        """Get the latest build of the ROM."""
         data = requests.get(self.endpoint)
         try:
             data = data.json()[self.json_key][0]["url"]

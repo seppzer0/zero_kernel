@@ -51,7 +51,7 @@ class GitHubApi(BaseModel):
             browser_download_urls = []
             for elem in data:
                 url_dto = elem["browser_download_url"]
-                if url_dto and self._file_filter in url_dto:
+                if url_dto and self.file_filter in url_dto:
                     browser_download_urls.append(url_dto)
             # if there is more than one fitting response -- throw an error
             if len(browser_download_urls) > 1:
@@ -64,7 +64,7 @@ class GitHubApi(BaseModel):
         except Exception:
             # if not available via API -- use regular "git clone"
             rdir = Path(dcfg.assets, self._direct_url.rsplit("/", 1)[1])
-            msg.note(f"Non-API GitHub resolution for {self._project}")
+            msg.note(f"Non-API GitHub resolution for {self.project}")
             cm.remove(rdir)
             ccmd.launch(f"git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {self._direct_url} {rdir}")
             os.chdir(rdir)

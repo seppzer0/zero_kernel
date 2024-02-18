@@ -10,8 +10,10 @@ from wrapper.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
+from wrapper.modules.interfaces import IModuleExecutor
 
-class AssetsCollector(BaseModel):
+
+class AssetsCollector(BaseModel, IModuleExecutor):
     """Assets collector.
 
     :param codename: Device codename.
@@ -44,10 +46,13 @@ class AssetsCollector(BaseModel):
             case "x" | "aosp":
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
         # process the "ROM-only" download for non-universal kernel bases
-        if self.rom_only and self.base not in ("x", "aosp"):
-            fo.download(rom_collector_dto.run())
-            print("\n", end="")
-            msg.done("ROM-only asset collection complete!")
+        if self.rom_only:
+            if self.base in ("x", "aosp"):
+                msg.cancel("Cancelling assets collection")
+            else:
+                fo.download(rom_collector_dto.run())
+                print("\n", end="")
+                msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
         else:
             assets = [

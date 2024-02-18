@@ -10,8 +10,10 @@ import wrapper.tools.commands as ccmd
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
+from wrapper.engines.interfaces import IContainerEngine
 
-class ContainerEngine(BaseModel):
+
+class ContainerEngine(BaseModel, IContainerEngine):
     """A generic container engine for containerized builds.
 
     Note that here paths from DirectoryConfig are not used
@@ -65,7 +67,6 @@ class ContainerEngine(BaseModel):
 
     @property
     def dir_bundle_conan(self) -> Path:
-        """Determine path to Conan's local cache."""
         res = ""
         if os.getenv("CONAN_USER_HOME"):
             res = Path(os.getenv("CONAN_USER_HOME"))
@@ -75,7 +76,6 @@ class ContainerEngine(BaseModel):
 
     @property
     def wrapper_cmd(self) -> str:
-        """Return the launch command for the wrapper."""
         # prepare launch command
         cmd = f"python3 {Path('wrapper', 'bridge.py')}"
         arguments = {
@@ -108,7 +108,6 @@ class ContainerEngine(BaseModel):
 
     @property
     def container_options(self) -> list[str]:
-        """Form the arguments for container launch."""
         # declare the base
         options = [
             "-i",
@@ -159,7 +158,6 @@ class ContainerEngine(BaseModel):
         return options
 
     def create_dirs(self) -> None:
-        """Create required directories for volume mounting."""
         match self.module:
             case "kernel":
                 kdir = Path(dcfg.kernel)
@@ -177,7 +175,6 @@ class ContainerEngine(BaseModel):
                     os.mkdir(bdir)
 
     def build(self) -> CompletedProcess:
-        """Build the image."""
         print("\n")
         alias = self.benv.capitalize()
         msg.note(f"Building the {alias} image..")
