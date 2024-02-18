@@ -70,16 +70,16 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         return "dumplinger" if self.codename in ("dumpling", "cheeseburger") else self.codename
 
     @property
-    def _defconfig(self) -> str:
+    def _defconfig(self) -> Path:
         """Determine defconfig file name.
 
         Depending on Linux kernel version (4.4 or 4.14)
         the location for defconfig file may vary.
         """
         defconfigs = {
-            "los": "lineage_oneplus5_defconfig",
-            "pa": Path("vendor", "paranoid_defconfig") if self._linux_kernel_version == "4.14" else "paranoid_defconfig",
-            "x": "msm8998_oneplus_android_defconfig" if self._linux_kernel_version == "4.14" else "oneplus5_defconfig"
+            "los": Path("lineage_oneplus5_defconfig"),
+            "pa": Path("vendor", "paranoid_defconfig") if self.lkv == "4.14" else Path("paranoid_defconfig"),
+            "x": Path("msm8998_oneplus_android_defconfig") if self.lkv == "4.14" else Path("oneplus5_defconfig")
         }
         return defconfigs[self.base]
 

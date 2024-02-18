@@ -8,7 +8,7 @@ import wrapper.tools.messages as msg
 import wrapper.tools.commands as ccmd
 import wrapper.tools.fileoperations as fo
 
-from configs.directory_config import DirectoryConfig as dcfg
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
 class ResourceManager:
