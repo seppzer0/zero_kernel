@@ -27,6 +27,7 @@ class ArgumentConfig(BaseModel):
     :param conan_upload: Flag to enable Conan upload.
     :param ksu: Flag indicating KernelSU support.
     """
+
     benv: str
     module: str
     codename: str
@@ -40,7 +41,6 @@ class ArgumentConfig(BaseModel):
     rom_only: Optional[bool] = False
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
-
 
     def check_settings(self) -> None:
         """Run settings validations."""

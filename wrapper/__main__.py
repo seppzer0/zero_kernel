@@ -239,7 +239,6 @@ def main(args: argparse.Namespace) -> None:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # create a config for argument check and storage
     arguments = vars(args)
-    arguments["module"] = args.module
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
     # setup output stream

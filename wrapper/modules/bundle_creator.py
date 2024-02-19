@@ -49,7 +49,7 @@ class BundleCreator(BaseModel, IModuleExecutor):
             ).run()
 
     @property
-    def _rom_only_flag(self) -> str:
+    def _rom_only_flag(self) -> bool:
         """Determine the value of the --rom-only flag."""
         return True if "full" not in self.package_type else False
 

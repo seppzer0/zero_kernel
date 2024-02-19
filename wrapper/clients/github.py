@@ -25,7 +25,7 @@ class GitHubApi(BaseModel):
     _direct_url = "https://github.com/{}"
 
     project: str
-    file_filter: Optional[str] = ""
+    file_filter: Optional[str] = None
 
     def __init__(self, **data) -> None:
         super().__init__(**data)

@@ -39,7 +39,7 @@ class IContainerEngine(ABC):
 
 
 class IDockerEngine(ABC):
-    """An interface for Docker specific methods."""
+    """An interface for Docker-specific methods."""
 
     @staticmethod
     @abstractmethod

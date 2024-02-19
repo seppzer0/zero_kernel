@@ -58,7 +58,7 @@ class KernelBuilder(BaseModel, IModuleExecutor):
     def _write_localversion() -> None:
         """Write a localversion file."""
         with open("localversion", "w") as f:
-            f.write("~NetHunter-seppzer0")
+            f.write("~zero-kernel")
 
     @property
     def _ucodename(self) -> str:

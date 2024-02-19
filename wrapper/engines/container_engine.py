@@ -45,7 +45,6 @@ class ContainerEngine(BaseModel, IContainerEngine):
 
     name_image: str = "zero-kernel-image"
     name_container: str = "zero-kernel-container"
-    #dir_init: Path = Path.cwd()
     dir_kernel: Path = dcfg.kernel.name
     dir_assets: Path = dcfg.assets.name
     dir_bundle: Path = dcfg.bundle.name
