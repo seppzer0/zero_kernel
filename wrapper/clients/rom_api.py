@@ -19,6 +19,7 @@ class RomApi(BaseModel, IRomApi):
     json_key: str
     rom_name: str
     codename: str
+    rom_only: bool
 
     def __init__(self, **data) -> None:
         super().__init__(**data)
