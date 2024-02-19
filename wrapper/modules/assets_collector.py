@@ -40,9 +40,9 @@ class AssetsCollector(BaseModel, IModuleExecutor):
         rom_collector_dto = ""
         match self.base:
             case "los":
-                rom_collector_dto = LineageOsApi(self.codename, self.rom_only)
+                rom_collector_dto = LineageOsApi(codename=self.codename)
             case "pa":
-                rom_collector_dto = ParanoidAndroidApi(self.codename, self.rom_only)
+                rom_collector_dto = ParanoidAndroidApi(codename=self.codename)
             case "x" | "aosp":
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
         # process the "ROM-only" download for non-universal kernel bases
