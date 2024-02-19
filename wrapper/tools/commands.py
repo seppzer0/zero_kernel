@@ -1,15 +1,16 @@
 import os
 import subprocess
 from typing import Union
+from subprocess import CompletedProcess
 
-import tools.messages as msg
+import wrapper.tools.messages as msg
 
 
 def launch(
         cmd: str,
         get_output: bool = False,
         loglvl: str = os.getenv("LOGLEVEL", "normal")
-    ) -> Union[str, None]:
+    ) -> Union[str, CompletedProcess]:
     """
     A custom subprocess wrapper to launch commands.
 
@@ -33,9 +34,10 @@ def launch(
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
         # return only output if required
         if get_output is True:
-            return result.stdout.decode('utf-8').rstrip()
+            result = result.stdout.decode('utf-8').rstrip()
     except Exception:
         msg.error(f"Error executing command: {cmd}")
     # if output stream is a file -- close it
     if isinstance(cstdout, str):
         cstdout.close()
+    return result

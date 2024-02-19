@@ -1,10 +1,5 @@
-from .template_container_engine import TemplateContainerEngine
+from wrapper.engines.container_engine import ContainerEngine
 
 
-class PodmanEngine(TemplateContainerEngine):
+class PodmanEngine(ContainerEngine):
     """Podman engine."""
-
-    benv: str = "podman"
-
-    def __init__(self, config: dict) -> None:
-        super().__init__(config)

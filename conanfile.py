@@ -10,10 +10,10 @@ class ZeroKernelConan(ConanFile):
     topics = ("zero_kernel", "kali-nethunter", "nethunter")
     settings = None
     options = {
-                "base": ("los", "pa", "x", "aosp"),
-                "chroot": ("minimal", "full"),
-                "codename": ("dumpling", "cheeseburger")
-              }
+        "base": ("los", "pa", "x", "aosp"),
+        "chroot": ("minimal", "full"),
+        "codename": ("dumpling", "cheeseburger")
+    }
 
     def export_sources(self):
         self.copy("*", src="source", dst=".")

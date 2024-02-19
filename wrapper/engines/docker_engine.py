@@ -1,30 +1,22 @@
 import os
 from typing import override
 
-import tools.messages as msg
-import tools.commands as ccmd
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
 
-from .template_container_engine import TemplateContainerEngine
+from wrapper.engines.container_engine import ContainerEngine
+
+from wrapper.engines.interfaces import IDockerEngine
 
 
-class DockerEngine(TemplateContainerEngine):
+class DockerEngine(ContainerEngine, IDockerEngine):
     """Docker engine."""
-
-    benv: str = "docker"
-
-    def __init__(self, config: dict) -> None:
-        super().__init__(config)
 
     @staticmethod
     def _force_buildkit() -> None:
-        """Force enable Docker BuildKit."""
         os.environ["DOCKER_BUILDKIT"] = "1"
 
     def _check_cache(self) -> bool:
-        """Check local Docker cache for the specified image.
-
-        For now, this is done for Docker exclusively.
-        """
         img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
         img_cache = ccmd.launch(img_cache_cmd, get_output=True)
         check = True if self.name_image in img_cache else False
@@ -49,6 +41,6 @@ class DockerEngine(TemplateContainerEngine):
         self.create_dirs()
         ccmd.launch(cmd)
         # navigate to root directory and clean image from host machine
-        os.chdir(self.dir_init)
+        os.chdir(self.wdir_local)
         if self.clean_image:
             ccmd.launch(f"{self.benv} rmi {self.name_image}")

@@ -1,30 +1,30 @@
 import sys
 import argparse
 
-import tools.messages as msg
+import wrapper.tools.messages as msg
 
-from models.bundle_creator import BundleCreator
-from models.kernel_builder import KernelBuilder
-from models.assets_collector import AssetsCollector
+from wrapper.modules.bundle_creator import BundleCreator
+from wrapper.modules.kernel_builder import KernelBuilder
+from wrapper.modules.assets_collector import AssetsCollector
 
-from utils import Resources
+from wrapper.utils import ResourceManager
 
 
 def parse_args() -> argparse.Namespace:
     """Parse arguments.
-    
-    Arguments here are NOT required because this script has dual use:
+
+    Arguments here are NOT mandatory because this script has dual use:
     1) launch one of the modules: kernel, assets, bundle;
     2) install shared tools from tools.json.
 
-    Making arguments required would force to specify all of them from both cases.
+    Because of that, all of the arguments are technically optional.
+    Making any of the arguments mandatory would not allow it to be dual-use.
     """
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
-        "--build-module",
-        dest="build_module",
-        help="select module",
+        "--module",
+        help="select wrapper module",
         choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
@@ -83,13 +83,13 @@ def parse_args() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
-    match args.build_module:
+    match args.module:
         case "kernel":
             KernelBuilder(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
-                clean = args.clean_kernel,
+                clean_kernel = args.clean_kernel,
                 ksu = args.ksu,
             ).run()
         case "assets":
@@ -97,7 +97,7 @@ def main(args: argparse.Namespace) -> None:
                 codename = args.codename,
                 base = args.base,
                 chroot = args.chroot,
-                clean = args.clean_assets,
+                clean_assets = args.clean_assets,
                 rom_only = args.rom_only,
                 ksu = args.ksu,
             ).run()
@@ -112,7 +112,7 @@ def main(args: argparse.Namespace) -> None:
         case _:
             # if no module was selected, then shared tools are (supposed to be) installed
             if args.tools:
-                tconf = Resources()
+                tconf = ResourceManager()
                 tconf.path_gen()
                 tconf.download()
             else:

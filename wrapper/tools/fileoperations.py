@@ -4,8 +4,8 @@ import requests
 from typing import Tuple
 from pathlib import Path
 
-import tools.messages as msg
-import tools.commands as ccmd
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
 
 
 def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
@@ -51,7 +51,7 @@ def download(url: str) -> None:
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
                 with open(fn, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192): 
+                    for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
     except Exception:
         msg.error("Download failed.")
@@ -101,7 +101,7 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
 
 def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
     """Insert new line before the specified one.
-    
+
     :param filename: Name of the file.
     :param pointer_line: The line before which new line will be inserted.
     :param new_line: The line being inserted.
@@ -122,7 +122,7 @@ def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
 
 def apply_patch(filename: str) -> None:
     """Apply .patch file.
-    
+
     :param filename: Name of the .patch file.
     """
     msg.note(f"Applying patch: {filename}")

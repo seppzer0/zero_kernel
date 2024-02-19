@@ -1,28 +1,26 @@
 import os
 import json
 import tarfile
-from pathlib import Path
 from typing import Optional
 
-import tools.cleaning as cm
-import tools.messages as msg
-import tools.commands as ccmd
-import tools.fileoperations as fo
+import wrapper.tools.cleaning as cm
+import wrapper.tools.messages as msg
+import wrapper.tools.commands as ccmd
+import wrapper.tools.fileoperations as fo
 
-from configs import Config as cfg
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
-class Resources:
+class ResourceManager:
     """An entity for managing build resources."""
 
-    _root: Path = cfg.DIR_ROOT
     paths: list[str] = []
 
     def __init__(
             self,
-            codename: Optional[str] = "",
-            lkv: Optional[str] = "",
-            base: Optional[str] = ""
+            codename: Optional[str] = None,
+            lkv: Optional[str] = None,
+            base: Optional[str] = None
         ) -> None:
         self._codename = codename
         self._lkv = lkv
@@ -30,16 +28,16 @@ class Resources:
 
     def path_gen(self) -> dict[str]:
         """Generate paths from JSON data."""
-        os.chdir(self._root)
+        os.chdir(dcfg.root)
         # define paths
         tools = ""
         device = ""
         # load JSON data
-        with open(self._root / "wrapper" / "manifests" / "tools.json") as f:
+        with open(dcfg.root / "wrapper" / "manifests" / "tools.json") as f:
             tools = json.load(f)
         # codename and ROM are undefined only when the Docker/Podman image is being prepared
         if self._codename and self._base:
-            with open(self._root / "wrapper" / "manifests" / "devices.json") as f:
+            with open(dcfg.root / "wrapper" / "manifests" / "devices.json") as f:
                 data = json.load(f)
                 # load data only for the required codename + linux kernel version combination
                 try:
@@ -54,7 +52,7 @@ class Resources:
             msg.note("Only shared tools are installed.")
         for e in self.paths:
             # convert path into it's absolute form
-            self.paths[e]["path"] = self._root / self.paths[e]["path"]
+            self.paths[e]["path"] = dcfg.root / self.paths[e]["path"]
 
     def download(self) -> None:
         """Download files from URLs."""
@@ -97,7 +95,7 @@ class Resources:
                             cmd = f"git checkout {commit}"
                             os.chdir(path)
                             ccmd.launch(cmd)
-                            os.chdir(self._root)
+                            os.chdir(dcfg.root)
                     else:
                         msg.note(f"Found an existing path: {path}")
                 case _:

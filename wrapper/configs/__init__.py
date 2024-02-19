@@ -1,1 +1,2 @@
-from .configs import Config
+from .argument_config import ArgumentConfig
+from .directory_config import DirectoryConfig

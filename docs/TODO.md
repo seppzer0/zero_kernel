@@ -28,12 +28,10 @@
 - [x] add a single-point manifest with main info on the tool;
 - [x] improve documentation;
 - [x] apply OOP paradigm;
-- [ ] add tests (unit/integration/etc);
 - [x] switch to Poetry for dependency management;
 - [ ] create a commit-based lockfile system for reproducible kernel builds;
 - [x] switch to `pathlib`;
 - [ ] switch to `raise` instead of `sys.exit`;
-- [ ] use `pydantic`;
 - [x] add a FAQ page;
 - [x] refactor Docker/Podman command formation;
 - [ ] refactor logging mechanism;
@@ -50,6 +48,14 @@
 - [ ] add system app debloater;
 - [x] add a new argument responsible for Linux kernel version selection;
 - [x] add 4.14 Linux kernel version builds;
-- [ ] decompose `run` methods into separate functions as much as possible;
+- [ ] decompose `run` methods into separate methods as much as possible;
+- [x] switch to pydantic;
 - [ ] new device support: OP9;
-- [ ] add type checks with pyright.
+- [ ] add type checks with pyright;
+- [ ] add unit tests with coverage checks;
+- [ ] move device-specific modifications into appropriate folder with custom Modificator (sub)classes;
+- [ ] switch to `__enter__` and `__exit__` Python's magic methods for container engines;
+- [ ] switch to `exec` commands for Docker and Podman instead of a single `run` command;
+- [ ] replace `ccmd.launch()` to just `launch()` (or any other name);
+- [ ] embed newlines usage (from both sides) into `messages` functions as arguments;
+- [ ] add tests on cases of custom wrapper edge case exits (kernel build on Windows, ROM-only asset collection for a ROM-universal kernel etc.)

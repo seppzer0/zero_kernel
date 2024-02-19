@@ -131,7 +131,7 @@ options:
                         select a kernel base for the build
   --codename CODENAME   select device codename
   --lkv LKV             select Linux Kernel Version
-  -c, --clean           don't build anything, just clean the environment
+  -c, --clean           don't build anything, only clean kernel directories
   --clean-image         remove Docker/Podman image from the host machine after
                         build
   --log-level {normal,verbose,quiet}

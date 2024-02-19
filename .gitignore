@@ -1,7 +1,8 @@
 # basic
+__pycache__
 .vscode
-**/__pycache__
-.mypy_cache
+.coverage
+.pytest_cache
 
 # git subrepos
 /android_*

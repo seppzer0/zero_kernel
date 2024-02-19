@@ -4,9 +4,9 @@ import shutil
 from typing import Union
 from pathlib import Path
 
-import tools.commands as ccmd
+import wrapper.tools.commands as ccmd
 
-from configs import Config as cfg
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
 def remove(elements: Union[str, Path, list[Path]]) -> None:
@@ -55,9 +55,9 @@ def root(extra: list[str] = []) -> None:
     :param extra: Extra elements to be removed.
     """
     trsh = [
-        cfg.DIR_KERNEL,
-        cfg.DIR_ASSETS,
-        cfg.DIR_BUNDLE,
+        dcfg.kernel,
+        dcfg.assets,
+        dcfg.bundle,
         "android_*",
         "*_kernel_*",
         "clang*",
@@ -67,11 +67,14 @@ def root(extra: list[str] = []) -> None:
         "localversion",
         "KernelSU",
         "multi_build",
+        ".coverage",
+        ".vscode",
+        ".pytest_cache"
     ]
     # add extra elements to clean up from root directory
     if extra:
         for e in extra:
-            trsh.append(Path(cfg.DIR_ROOT, e))
+            trsh.append(Path(dcfg.root, e))
     # clean
     remove(trsh)
     ccmd.launch("py3clean .")
