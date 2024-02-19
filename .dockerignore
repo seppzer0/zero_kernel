@@ -5,12 +5,13 @@ __pycache__
 .pytest_cache
 
 # git subrepos
-android_*
-*_kernel_*
-clang*
-rtl8812au
-AnyKernel3
-KernelSU
+# (uncomment below if you explicitely want Docker/Podman to not use locally downloaded dirs)
+#android_*
+#*_kernel_*
+#clang*
+#rtl8812au
+#AnyKernel3
+#KernelSU
 
 # misc local artifacts
 kernel

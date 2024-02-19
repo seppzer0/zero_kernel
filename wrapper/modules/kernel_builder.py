@@ -522,7 +522,7 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         self._patch_anykernel3()
         self._patch_kernel()
         # optionally include KernelSU support
-        if self._ksu:
+        if self.ksu:
             self._patch_ksu()
         self._patch_rtl8812au()
         msg.done("Patches added!")
@@ -603,7 +603,7 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         verbase = self._linux_kernel_version
         ver_int = os.getenv("KVERSION")
         # create the final ZIP file
-        name_suffix = "-ksu" if self._ksu else ""
+        name_suffix = "-ksu" if self.ksu else ""
         name_full = f"{os.getenv('KNAME', 'zero')}-{ver_int}-{self._ucodename}-{self.base}-{verbase}{name_suffix}"
         kdir = dcfg.root / dcfg.kernel
         if not kdir.is_dir():
