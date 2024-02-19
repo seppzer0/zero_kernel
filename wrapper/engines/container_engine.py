@@ -152,7 +152,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
                         # determine the path to local Conan cache and check if it exists
-                        if self.dir_bundle_conan.isdir():
+                        if self.dir_bundle_conan.is_dir():
                             options.append(f'-v {self.dir_bundle_conan}:/"/root/.conan"')
                         else:
                             msg.error("Could not find Conan local cache on the host machine.")
@@ -162,11 +162,11 @@ class ContainerEngine(BaseModel, IContainerEngine):
         match self.module:
             case "kernel":
                 kdir = Path(dcfg.kernel)
-                if not kdir.isdir():
+                if not kdir.is_dir():
                     os.mkdir(kdir)
             case "assets":
                 assetsdir = Path(dcfg.assets)
-                if not assetsdir.isdir():
+                if not assetsdir.is_dir():
                     os.mkdir(assetsdir)
             case "bundle":
                 if self.package_type in ("slim", "full"):
