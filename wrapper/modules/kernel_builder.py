@@ -248,7 +248,7 @@ class KernelBuilder(BaseModel, IModuleExecutor):
                 "staging" /\
                 "qca-wifi-host-cmn" /\
                 "wlan_cfg" /\
-                "wlan_dcfg.c":
+                "wlan_cfg.c":
                 ("struct wlan_cfg_dp_soc_ctxt *wlan_cfg_soc_attach()",),
             }
             data.update(extra_pa)
