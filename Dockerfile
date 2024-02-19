@@ -7,6 +7,7 @@ ENV CONAN_UPLOAD_CUSTOM 0
 # transfer sources from host to container
 COPY . ${WDIR}
 WORKDIR ${WDIR}
+ENV PYTHONPATH ${WDIR}
 
 # install system packages;
 # NeoVim is added for debugging sessions.
