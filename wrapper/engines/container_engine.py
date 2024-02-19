@@ -36,8 +36,9 @@ class ContainerEngine(BaseModel, IContainerEngine):
     :param lkv: Linux kernel version.
     :param chroot: Chroot type.
     :param package_type: Package type.
-    :param clean_image: Flag to clean a Docker/Podman image from local cache.
+    :param clean_kernel: Flag to clean folder for kernel storage.
     :param clean_assets: Flag to clean folder for assets storage.
+    :param clean_image: Flag to clean a Docker/Podman image from local cache.
     :param rom_only: Flag indicating ROM-only asset collection.
     :param conan_upload: Flag to enable Conan upload.
     :param ksu: Flag to add KernelSU support into the kernel.
@@ -58,8 +59,9 @@ class ContainerEngine(BaseModel, IContainerEngine):
     lkv: Optional[str] = None
     chroot: Optional[str] = None
     package_type: Optional[str] = None
-    clean_image: Optional[bool] = False
+    clean_kernel: Optional[bool] = False
     clean_assets: Optional[bool] = False
+    clean_image: Optional[bool] = False
     rom_only: Optional[bool] = False
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
