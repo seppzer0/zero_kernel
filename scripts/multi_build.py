@@ -40,7 +40,7 @@ def rmove(src: Path, dst: Path) -> None:
 
 def main(args: argparse.Namespace) -> None:
     """Run multi build."""
-    apath = Path(Path(__file__).absolute().parents[1])
+    rootpath = Path(Path(__file__).absolute().parents[1])
     argsets = (
         {
             "module": "kernel",
@@ -54,13 +54,6 @@ def main(args: argparse.Namespace) -> None:
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.4",
-            "ksu": True
-        },
-        {
-            "module": "kernel",
-            "rom": "pa",
-            "codename": "dumpling",
-            "lkv": "4.14",
             "ksu": True
         },
         {
@@ -83,15 +76,12 @@ def main(args: argparse.Namespace) -> None:
             "ksu": True
         },
     )
-    os.chdir(apath)
-    dir_shared = "multi-build"
+    os.chdir(rootpath)
+    dir_shared = Path(rootpath, "multi-build")
     shutil.rmtree(dir_shared, ignore_errors=True)
+    os.mkdir(dir_shared)
     for count, argset in enumerate(argsets, 1):
-        # create artifact holder directory
-        if dir_shared not in os.listdir():
-            os.mkdir(dir_shared)
-        # define values individually
-        module = argset["module"]
+        # define some of the values individually
         benv = f"--build-env {args.env}"
         base = f'--base {argset["rom"]}'
         codename = f'--codename {argset["codename"]}'
@@ -102,7 +92,7 @@ def main(args: argparse.Namespace) -> None:
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {module} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
+        cmd = f"python3 wrapper {argset['module']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
@@ -114,7 +104,9 @@ def main(args: argparse.Namespace) -> None:
                 out = "kernel"
             case "assets":
                 out = "assets"
-        rmove(Path(out), Path(dir_shared))
+        # convert into full path
+        out = Path(rootpath, out)
+        rmove(out, dir_shared)
 
 
 if __name__ == "__main__":
