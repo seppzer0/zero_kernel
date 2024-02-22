@@ -111,34 +111,18 @@ class ContainerEngine(BaseModel, IContainerEngine):
             "-e LOGLEVEL={}".format(os.getenv("LOGLEVEL")),
             "-w {}".format(self.wdir_container),
         ]
+        # define volume mounting template
+        v_template = "-v {ldir}:{wdir}/{cdir}".format(wdir=self.wdir_container)
         # mount directories
         match self.module:
             case "kernel":
-                options.append(
-                    '-v {}:{}/{}'.format(
-                        dcfg.kernel,
-                        self.wdir_container,
-                        dcfg.kernel.name
-                    )
-                )
+                options.append(v_template.format(ldir=dcfg.kernel, cdir=dcfg.kernel.name))
             case "assets":
-                options.append(
-                    '-v {}:{}/{}'.format(
-                        dcfg.assets,
-                        self.wdir_container,
-                        dcfg.assets.name
-                    )
-                )
+                options.append(v_template.format(ldir=dcfg.assets, cdir=dcfg.assets.name))
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
-                        options.append(
-                            '-v {}:{}/{}'.format(
-                                dcfg.bundle,
-                                self.wdir_container,
-                                dcfg.bundle.name
-                            )
-                        )
+                        options.append(v_template.format(ldir=dcfg.bundle, cdir=dcfg.bundle.name))
                     case "conan":
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
