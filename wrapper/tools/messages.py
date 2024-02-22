@@ -50,7 +50,7 @@ def done(text: str) -> None:
 
     :param text: Text to wrap.
     """
-    print(f"[ + ] {text}")
+    print(f"[ \u2713 ] {text}")
 
 
 def debug(text: str) -> None:
