@@ -1,8 +1,8 @@
 import os
 import glob
 import shutil
-from typing import Union
 from pathlib import Path
+from typing import Union, Optional
 
 import wrapper.tools.commands as ccmd
 
@@ -47,10 +47,10 @@ def git(directory: Path) -> None:
     os.chdir(goback)
 
 
-def root(extra: list[str] = []) -> None:
+def root(extra: Optional[list[str]] = []) -> None:
     """Fully clean the root directory.
 
-    .vscode is not cleaned, __pycache__ --> via py3clean
+    __pycache__ is cleaned via py3clean
 
     :param extra: Extra elements to be removed.
     """
