@@ -24,9 +24,6 @@ class ContainerEngine(BaseModel, IContainerEngine):
 
     :param name_image: Name of the Docker/Podman image.
     :param name_container: Name of the Docker/Podman container.
-    :param dir_kernel: Directory (name) for the kernel artifacts.
-    :param dir_assets: Directory (name) for the assets artifacts.
-    :param dir_bundle: Directory (name) for the bundle artifacts.
     :param wdir_container: Working directory in the container.
     :param wdir_local: Working directory from the local environment (aka root of the repo).
     :param benv: Build environment.
@@ -46,9 +43,6 @@ class ContainerEngine(BaseModel, IContainerEngine):
 
     name_image: str = "zero-kernel-image"
     name_container: str = "zero-kernel-container"
-    dir_kernel: Path = dcfg.kernel.name
-    dir_assets: Path = dcfg.assets.name
-    dir_bundle: Path = dcfg.bundle.name
     wdir_container: Path = Path("/", "zero_build")
     wdir_local: Path = dcfg.root
 
@@ -121,31 +115,28 @@ class ContainerEngine(BaseModel, IContainerEngine):
         match self.module:
             case "kernel":
                 options.append(
-                    '-v {}/{}:{}/{}'.format(
-                        dcfg.root,
+                    '-v {}:{}/{}'.format(
                         dcfg.kernel,
                         self.wdir_container,
-                        dcfg.kernel
+                        dcfg.kernel.name
                     )
                 )
             case "assets":
                 options.append(
-                    '-v {}/{}:{}/{}'.format(
-                        dcfg.root,
+                    '-v {}:{}/{}'.format(
                         dcfg.assets,
                         self.wdir_container,
-                        dcfg.assets
+                        dcfg.assets.name
                     )
                 )
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
                         options.append(
-                            '-v {}/{}:{}/{}'.format(
-                                dcfg.root,
+                            '-v {}:{}/{}'.format(
                                 dcfg.bundle,
                                 self.wdir_container,
-                                dcfg.bundle
+                                dcfg.bundle.name
                             )
                         )
                     case "conan":
