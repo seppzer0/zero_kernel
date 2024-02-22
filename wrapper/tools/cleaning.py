@@ -2,14 +2,14 @@ import os
 import glob
 import shutil
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional
 
 import wrapper.tools.commands as ccmd
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
-def remove(elements: Union[str, Path, list[Path]]) -> None:
+def remove(elements: str | Path | list[Path]) -> None:
     """An ultimate Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.

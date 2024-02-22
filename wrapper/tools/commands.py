@@ -1,6 +1,5 @@
 import os
 import subprocess
-from typing import Union
 from subprocess import CompletedProcess
 
 import wrapper.tools.messages as msg
@@ -10,7 +9,7 @@ def launch(
         cmd: str,
         get_output: bool = False,
         loglvl: str = os.getenv("LOGLEVEL", "normal")
-    ) -> Union[str, CompletedProcess]:
+    ) -> str | CompletedProcess:
     """
     A custom subprocess wrapper to launch commands.
 
