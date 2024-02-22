@@ -77,11 +77,12 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         the location for defconfig file may vary.
         """
         defconfigs = {
-            "los": Path("lineage_oneplus5_defconfig"),
-            "pa": Path("vendor", "paranoid_defconfig") if self.lkv == "4.14" else Path("paranoid_defconfig"),
-            "x": Path("msm8998_oneplus_android_defconfig") if self.lkv == "4.14" else Path("oneplus5_defconfig")
+            "los": "lineage_oneplus5_defconfig",
+            "pa": "vendor/paranoid_defconfig" if self.lkv == "4.14" else "paranoid_defconfig",
+            "x": "msm8998_oneplus_android_defconfig" if self.lkv == "4.14" else "oneplus5_defconfig"
         }
-        return defconfigs[self.base]
+        # convert whatever output to path object
+        return Path(defconfigs[self.base])
 
     def _clean_build(self) -> None:
         """Clean environment from potential artifacts."""
