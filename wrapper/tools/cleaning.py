@@ -66,7 +66,7 @@ def root(extra: list[str] = []) -> None:
         "source",
         "localversion",
         "KernelSU",
-        "multi_build",
+        "multi-build",
         ".coverage",
         ".vscode",
         ".pytest_cache"
