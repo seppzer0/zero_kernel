@@ -30,8 +30,8 @@ def rmove(src: Path, dst: Path) -> None:
         for e in contents:
             # do not copy restricted files
             if e != src:
-                src_e = Path(src, e)
-                dst_e = Path(dst, e)
+                src_e = src / e
+                dst_e = dst / e
                 shutil.move(src_e, dst_e)
     # for a single file
     elif src.is_file():
@@ -40,7 +40,7 @@ def rmove(src: Path, dst: Path) -> None:
 
 def main(args: argparse.Namespace) -> None:
     """Run multi build."""
-    rootpath = Path(Path(__file__).absolute().parents[1])
+    rootpath = Path(__file__).absolute().parents[1]
     argsets = (
         {
             "module": "kernel",
@@ -77,7 +77,7 @@ def main(args: argparse.Namespace) -> None:
         },
     )
     os.chdir(rootpath)
-    dir_shared = Path(rootpath, "multi-build")
+    dir_shared = rootpath / "multi-build"
     shutil.rmtree(dir_shared, ignore_errors=True)
     os.mkdir(dir_shared)
     for count, argset in enumerate(argsets, 1):

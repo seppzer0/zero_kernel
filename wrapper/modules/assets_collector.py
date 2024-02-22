@@ -59,36 +59,29 @@ class AssetsCollector(BaseModel, IModuleExecutor):
                 # files from GitHub projects
                 GitHubApi(
                     project=su_manager,
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="seppzer0/Disable_Dm-Verity_ForceEncrypt",
-                    assetdir=dcfg.assets
                 ).run(),
                 GitHubApi(
                     project="klausw/hackerskeyboard",
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="aleksey-saenko/TTLChanger",
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="ukanth/afwall",
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="emanuele-f/PCAPdroid",
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 GitHubApi(
                     project="nfcgate/nfcgate",
-                    assetdir=dcfg.assets,
                     file_filter=".apk"
                 ).run(),
                 # files from direct URLs
@@ -107,8 +100,8 @@ class AssetsCollector(BaseModel, IModuleExecutor):
             # collect all the specified assets into single directory
             nhpatch = "nhpatch.sh"
             fo.ucopy(
-                Path(dcfg.root, "modifications", nhpatch),
-                Path(dcfg.assets, nhpatch)
+                dcfg.root / "modifications" / nhpatch,
+                dcfg.assets / nhpatch
             )
             for e in assets:
                 if e:

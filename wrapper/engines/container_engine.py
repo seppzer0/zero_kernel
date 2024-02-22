@@ -96,7 +96,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
         # extend the command with the selected packaging option
         if self.module == "bundle":
             if self.package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {Path(self.wdir_container, dcfg.bundle)}"
+                cmd += f" && chmod 777 -R {self.wdir_container / dcfg.bundle.name}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
@@ -136,19 +136,16 @@ class ContainerEngine(BaseModel, IContainerEngine):
     def create_dirs(self) -> None:
         match self.module:
             case "kernel":
-                kdir = Path(dcfg.kernel)
-                if not kdir.is_dir():
-                    os.mkdir(kdir)
+                if not dcfg.kernel.is_dir():
+                    os.mkdir(dcfg.kernel)
             case "assets":
-                assetsdir = Path(dcfg.assets)
-                if not assetsdir.is_dir():
-                    os.mkdir(assetsdir)
+                if not dcfg.assets.is_dir():
+                    os.mkdir(dcfg.assets)
             case "bundle":
                 if self.package_type in ("slim", "full"):
                     # mount directory with release artifacts
-                    bdir = Path(dcfg.bundle)
-                    shutil.rmtree(bdir, ignore_errors=True)
-                    os.mkdir(bdir)
+                    shutil.rmtree(dcfg.bundle, ignore_errors=True)
+                    os.mkdir(dcfg.bundle)
 
     def build(self) -> CompletedProcess:
         print("\n")

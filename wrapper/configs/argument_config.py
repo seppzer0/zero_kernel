@@ -55,7 +55,7 @@ class ArgumentConfig(BaseModel):
                 except Exception:
                     msg.error("Detected Linux distribution is not Debian-based.")
         # check if specified device is supported
-        with open(Path(dcfg.root, "wrapper", "manifests", "devices.json")) as f:
+        with open(dcfg.root / "wrapper" / "manifests" / "devices.json") as f:
             devices = json.load(f)
         if self.codename not in devices.keys():
             msg.error("Unsupported device codename specified.")

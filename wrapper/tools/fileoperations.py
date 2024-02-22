@@ -23,8 +23,8 @@ def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
         for e in contents:
             # do not copy restricted files
             if e not in exceptions and e != src:
-                src_e = Path(src, e)
-                dst_e = Path(dst, e)
+                src_e = src / e
+                dst_e = dst / e
                 if src_e.is_dir():
                     shutil.copytree(src_e, dst_e)
                 elif src_e.is_file():

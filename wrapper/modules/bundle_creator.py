@@ -39,7 +39,7 @@ class BundleCreator(BaseModel, IModuleExecutor):
         :param rom_name: Name of the ROM.
         :param clean_only: Append an argument to just clean the kernel directory.
         """
-        if not Path(dcfg.kernel).is_dir() or clean_only is True:
+        if not dcfg.kernel.is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self.codename,
                 base = rom_name,
@@ -136,30 +136,20 @@ class BundleCreator(BaseModel, IModuleExecutor):
                 self._build_kernel(self.base)
                 # "full" chroot is hardcoded here
                 self._collect_assets(self.base, "full")
-                # make a unified "bundle" directory with both .zips
-                bdir = dcfg.bundle
-                kdir = dcfg.kernel
-                adir = dcfg.assets
                 # clean up
-                if bdir in os.listdir():
-                    contents = Path(bdir).glob("*")
+                if dcfg.bundle in os.listdir():
+                    contents = dcfg.bundle.glob("*")
                     for f in contents:
                         os.remove(f)
                 else:
-                    os.mkdir(bdir)
+                    os.mkdir(dcfg.bundle)
                 # copy kernel
-                kfn = "".join(os.listdir(kdir))
-                shutil.copy(
-                    dcfg.root / kdir / kfn,
-                    dcfg.root / bdir / kfn
-                )
-                # move the assets
-                for afn in os.listdir(adir):
+                kfn = "".join(os.listdir(dcfg.kernel))
+                shutil.copy(dcfg.kernel / kfn, dcfg.bundle / kfn)
+                # move assets (and not copy because they are way too big)
+                for afn in os.listdir(dcfg.assets):
                     # here, because of their size assets are moved and not copied
-                    shutil.move(
-                        dcfg.root / adir / afn,
-                        dcfg.root / bdir / afn
-                    )
+                    shutil.move(dcfg.assets / afn, dcfg.bundle / afn)
             case "conan":
                 # form Conan reference
                 name = "zero_kernel"

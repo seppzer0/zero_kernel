@@ -74,7 +74,7 @@ def root(extra: Optional[list[str]] = []) -> None:
     # add extra elements to clean up from root directory
     if extra:
         for e in extra:
-            trsh.append(Path(dcfg.root, e))
+            trsh.append(dcfg.root / e)
     # clean
     remove(trsh)
     ccmd.launch("py3clean .")
