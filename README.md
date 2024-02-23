@@ -17,14 +17,14 @@ An Android kernel with Kali NetHunter functionality.
     - [Assets](#assets)
     - [Bundle](#bundle)
   - [Examples](#examples)
-  - [Credits](#credits)
   - [See also](#see-also)
+  - [Credits](#credits)
 
 ## **Disclaimer**
 
 **This kernel is made for educational purposes only.**
 
-**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs and/or kernels.**
+**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs, kernels and/or any other forms of software.**
 
 **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
@@ -241,15 +241,15 @@ Collect all of the assets locally:
 python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
+## See also
+
+- [FAQ](docs/FAQ.md);
+- [TODO List](docs/TODO.md);
+- [Kernel Flashing Instructions](docs/FLASHING.md).
+
 ## Credits
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
 - [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
 - [4.14-kernel-oneplus-msm8998](https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998): a base of 4.14 kernels for OnePlus 5/T, with KernelSU patches;
 - [kali-nethunter-kernel](https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel): official kernel patches from Kali NetHunter project.
-
-## See also
-
-- [FAQ](docs/FAQ.md);
-- [TODO List](docs/TODO.md);
-- [Kernel Flashing Instructions](docs/FLASHING.md).
