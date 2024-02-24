@@ -22,11 +22,12 @@ An Android kernel with Kali NetHunter functionality.
 
 ## **Disclaimer**
 
-**This kernel is made for educational purposes only.**
-
-**I am not responsible for anything that may or may not happen to your device by installing any custom ROMs, kernels and/or any other forms of software.**
-
-**Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
+> [!IMPORTANT]
+> **This kernel is made for educational purposes only.**
+>
+> **I am not responsible for anything that may or may not happen to your device by installing any custom ROMs, kernels and/or any other forms of software.**
+>
+> **Anything you do with this kernel you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
 ## Description
 
@@ -63,7 +64,8 @@ For **OnePlus 5/T** devices:
 
 ## ROM Artifacts in Releases
 
-The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
+> [!NOTE]
+> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
 
 This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
 
@@ -98,23 +100,25 @@ optional arguments:
 
 **It is highly recommended to use `docker` option to run this tool.** For that you need Docker Engine or Docker Desktop, depending on your OS.
 
+> [!WARNING]
+> Because of how *specific* Linux kernel source is, building it on Windows even with Docker might be challenging.
+
 To run this tool in a `local` environment, you will need:
 
 - a Debian-based Linux distribution (other types of distros are untested);
 - a few [packages](Dockerfile#L15) installed in your system.
 
-You will also need a few Python packages. To install them, use:
+You will also need to configure your Python installation, including some of the packages installation:
 
 ```sh
 python3 -m pip install poetry
 python3 -m poetry install --no-root
+export PYTHONPATH=$(pwd)
 ```
 
 ### Kernel
 
-Kernel build process can be launched by using the `python3 wrapper kernel <arguments>` command.
-
-For more options you can refer to the help message below.
+Kernel build process can be launched using the `kernel` subcommand of the wrapper.
 
 ```help
 $ python3 wrapper kernel --help
