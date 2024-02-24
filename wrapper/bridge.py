@@ -74,7 +74,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
-        "--tools",
+        "--shared",
         help="only setup the shared tools in the environment",
         action="store_true"
     )
