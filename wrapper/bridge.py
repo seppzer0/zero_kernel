@@ -111,7 +111,7 @@ def main(args: argparse.Namespace) -> None:
             ).run()
         case _:
             # if no module was selected, then shared tools are (supposed to be) installed
-            if args.tools:
+            if args.shared:
                 tconf = ResourceManager()
                 tconf.path_gen()
                 tconf.download()
