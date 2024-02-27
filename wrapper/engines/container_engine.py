@@ -112,17 +112,17 @@ class ContainerEngine(BaseModel, IContainerEngine):
             "-w {}".format(self.wdir_container),
         ]
         # define volume mounting template
-        v_template = "-v {ldir}:{wdir}/{cdir}".format(wdir=self.wdir_container)
+        v_template = "-v {}:{}/{}"
         # mount directories
         match self.module:
             case "kernel":
-                options.append(v_template.format(ldir=dcfg.kernel, cdir=dcfg.kernel.name))
+                options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
             case "assets":
-                options.append(v_template.format(ldir=dcfg.assets, cdir=dcfg.assets.name))
+                options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
-                        options.append(v_template.format(ldir=dcfg.bundle, cdir=dcfg.bundle.name))
+                        options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
                     case "conan":
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
