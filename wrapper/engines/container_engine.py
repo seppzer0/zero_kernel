@@ -118,11 +118,11 @@ class ContainerEngine(BaseModel, IContainerEngine):
             case "kernel":
                 options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
             case "assets":
-                options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
+                options.append(v_template.format(dcfg.assets, self.wdir_container, dcfg.assets.name))
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
-                        options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
+                        options.append(v_template.format(dcfg.bundle, self.wdir_container, dcfg.bundle.name))
                     case "conan":
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
