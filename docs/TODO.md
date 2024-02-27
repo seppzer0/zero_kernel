@@ -58,4 +58,5 @@
 - [ ] switch to `exec` commands for Docker and Podman instead of a single `run` command;
 - [ ] replace `ccmd.launch()` to just `launch()` (or any other name);
 - [ ] embed newlines usage (from both sides) into `messages` functions as arguments;
-- [ ] add tests on cases of custom wrapper edge case exits (kernel build on Windows, ROM-only asset collection for a ROM-universal kernel etc.)
+- [ ] add tests on cases of custom wrapper edge case exits (kernel build on Windows, ROM-only asset collection for a ROM-universal kernel etc.);
+- [ ] break down (or create inheritance from) KernelBuilder into LineageOsKernelBuilder, ParanoidAndroidKernelBuilder, XKernelBuilder etc.

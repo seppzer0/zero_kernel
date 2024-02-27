@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from pydantic import BaseModel
 
 import wrapper.tools.cleaning as cm
@@ -10,10 +9,10 @@ from wrapper.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from wrapper.modules.interfaces import IModuleExecutor
+from wrapper.modules.interfaces import IAssetsCollector
 
 
-class AssetsCollector(BaseModel, IModuleExecutor):
+class AssetsCollector(BaseModel, IAssetsCollector):
     """Assets collector.
 
     :param codename: Device codename.
@@ -30,13 +29,8 @@ class AssetsCollector(BaseModel, IModuleExecutor):
     rom_only: bool
     ksu: bool
 
-    def run(self) -> None:
-        os.chdir(dcfg.root)
-        msg.banner("zero asset collector")
-        self._check()
-        os.chdir(dcfg.assets)
-        # determine which SU manager and ROM are required
-        su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
+    @property
+    def rom_collector_dto(self) -> LineageOsApi | ParanoidAndroidApi | None:
         rom_collector_dto = ""
         match self.base:
             case "los":
@@ -45,12 +39,18 @@ class AssetsCollector(BaseModel, IModuleExecutor):
                 rom_collector_dto = ParanoidAndroidApi(codename=self.codename, rom_only=self.rom_only)
             case "x" | "aosp":
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
+        return rom_collector_dto
+
+    @property
+    def assets(self) -> list[str | LineageOsApi | ParanoidAndroidApi]:
+        # determine which SU manager and ROM are required
+        su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
-            if self.base in ("x", "aosp"):
-                msg.cancel("Cancelling assets collection")
+            if not self.rom_collector_dto:
+                msg.cancel("Cancelling ROM-only asset collection")
             else:
-                fo.download(rom_collector_dto.run())
+                fo.download(self.rom_collector_dto.run())
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
@@ -95,23 +95,10 @@ class AssetsCollector(BaseModel, IModuleExecutor):
                 "https://f-droid.org/F-Droid.apk",
             ]
             # finally, add ROM into assets list if kernel base is not universal
-            if self.base not in ("x", "aosp"):
-                assets.append(rom_collector_dto.run())
-            # collect all the specified assets into single directory
-            nhpatch = "nhpatch.sh"
-            fo.ucopy(
-                dcfg.root / "modifications" / nhpatch,
-                dcfg.assets / nhpatch
-            )
-            for e in assets:
-                if e:
-                    fo.download(e)
-            print("\n", end="")
-            msg.done("Assets collected!")
-        os.chdir(dcfg.root)
+            if self.rom_collector_dto:
+                assets.append(self.rom_collector_dto.run())
 
     def _check(self) -> None:
-        """Initiate some checks before execution."""
         os.chdir(dcfg.root)
         # directory check
         if not dcfg.assets.is_dir():
@@ -132,3 +119,15 @@ class AssetsCollector(BaseModel, IModuleExecutor):
                     case _:
                         msg.error("Invalid option selected.")
         print("\n", end="")
+
+    def run(self) -> None:
+        os.chdir(dcfg.root)
+        msg.banner("zero asset collector")
+        self._check()
+        os.chdir(dcfg.assets)
+        for e in self.assets:
+            if e:
+                fo.download(e)
+        print("\n", end="")
+        msg.done("Assets collected!")
+        os.chdir(dcfg.root)

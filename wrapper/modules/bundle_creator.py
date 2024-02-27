@@ -2,7 +2,6 @@ import os
 import json
 import shutil
 import itertools
-from pathlib import Path
 from pydantic import BaseModel
 
 import wrapper.tools.cleaning as cm
@@ -15,10 +14,10 @@ from wrapper.modules.assets_collector import AssetsCollector
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from wrapper.modules.interfaces import IModuleExecutor
+from wrapper.modules.interfaces import IBundleCreator
 
 
-class BundleCreator(BaseModel, IModuleExecutor):
+class BundleCreator(BaseModel, IBundleCreator):
     """Bundle kernel + asset artifacts.
 
     :param base: Kernel source base.
@@ -34,11 +33,6 @@ class BundleCreator(BaseModel, IModuleExecutor):
     ksu: bool
 
     def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
-        """Build the kernel.
-
-        :param rom_name: Name of the ROM.
-        :param clean_only: Append an argument to just clean the kernel directory.
-        """
         if not dcfg.kernel.is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self.codename,
@@ -50,15 +44,9 @@ class BundleCreator(BaseModel, IModuleExecutor):
 
     @property
     def _rom_only_flag(self) -> bool:
-        """Determine the value of the --rom-only flag."""
         return True if "full" not in self.package_type else False
 
     def _collect_assets(self, rom_name: str, chroot: str) -> None:
-        """Collect assets.
-
-        :param rom_name: Name of the ROM.
-        :param chroot: Type of chroot.
-        """
         AssetsCollector(
             codename = self.codename,
             base = rom_name,
@@ -69,7 +57,6 @@ class BundleCreator(BaseModel, IModuleExecutor):
         ).run()
 
     def _conan_sources(self) -> None:
-        """Prepare sources for rebuildable Conan packages."""
         sourcedir = dcfg.root / "source"
         print("\n", end="")
         msg.note("Copying sources for Conan packaging..")
@@ -91,20 +78,11 @@ class BundleCreator(BaseModel, IModuleExecutor):
 
     @staticmethod
     def _conan_options(json_file: str) -> dict:
-        """Read Conan options from a JSON file.
-
-        :param json_file: Name of the JSON file to read data from.
-        """
         with open(json_file) as f:
             json_data = json.load(f)
         return json_data
 
     def _conan_package(self, options: list[str], reference: str) -> None:
-        """Create the Conan package.
-
-        :param options: Conan options.
-        :param reference: Conan reference.
-        """
         cmd = f"conan export-pkg . {reference}"
         for option_value in options:
             # not the best solution, but will work temporarily for 'rom' and 'chroot' options
@@ -116,10 +94,6 @@ class BundleCreator(BaseModel, IModuleExecutor):
 
     @staticmethod
     def _conan_upload(reference: str) -> None:
-        """Upload Conan component to the remote.
-
-        :param reference: Conan reference.
-        """
         # configure Conan client and upload packages
         url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
         alias = "zero-kernel-conan"
