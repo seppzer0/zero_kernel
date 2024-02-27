@@ -43,6 +43,20 @@ def main(args: argparse.Namespace) -> None:
     rootpath = Path(__file__).absolute().parents[1]
     argsets = (
         {
+            "module": "bundle",
+            "rom": "los",
+            "codename": "dumpling",
+            "lkv": "4.4",
+            "ksu": False
+        },
+        {
+            "module": "kernel",
+            "rom": "los",
+            "codename": "dumpling",
+            "lkv": "4.4",
+            "ksu": True
+        },
+        {
             "module": "kernel",
             "rom": "x",
             "codename": "dumpling",
@@ -67,6 +81,12 @@ def main(args: argparse.Namespace) -> None:
             "module": "assets",
             "rom": "los",
             "codename": "cheeseburger",
+            "ksu": True
+        },
+        {
+            "module": "assets",
+            "rom": "pa",
+            "codename": "dumpling",
             "ksu": True
         },
         {
@@ -110,5 +130,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    # launch the builds
     main(parse_args())
