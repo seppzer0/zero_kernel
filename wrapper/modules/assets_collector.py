@@ -42,10 +42,9 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         return rom_collector_dto
 
     @property
-    def assets(self) -> list[str | LineageOsApi | ParanoidAndroidApi]:
-        # define dm-verity and forceencrypt disabler (DFD)
+    def assets(self) -> list[str | GitHubApi | LineageOsApi | ParanoidAndroidApi]:
+        # define dm-verity and forceencrypt disabler (DFD) and SU manager
         dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
-        # determine which SU manager and ROM are required
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
