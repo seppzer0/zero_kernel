@@ -3,9 +3,9 @@ import argparse
 
 import wrapper.tools.messages as msg
 
-from wrapper.modules.bundle_creator import BundleCreator
-from wrapper.modules.kernel_builder import KernelBuilder
-from wrapper.modules.assets_collector import AssetsCollector
+from wrapper.commands.bundle import BundleCreator
+from wrapper.commands.kernel import KernelBuilder
+from wrapper.commands.assets import AssetsCollector
 
 from wrapper.utils import ResourceManager
 
@@ -14,7 +14,7 @@ def parse_args() -> argparse.Namespace:
     """Parse arguments.
 
     Arguments here are NOT mandatory because this script has dual use:
-    1) launch one of the modules: kernel, assets, bundle;
+    1) launch one of the commands: kernel, assets, bundle;
     2) install shared tools from tools.json.
 
     Because of that, all of the arguments are technically optional.
@@ -23,8 +23,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
-        "--module",
-        help="select wrapper module",
+        "--command",
+        help="select wrapper command",
         choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
@@ -83,7 +83,7 @@ def parse_args() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
-    match args.module:
+    match args.command:
         case "kernel":
             KernelBuilder(
                 codename = args.codename,
@@ -110,7 +110,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case _:
-            # if no module was selected, then shared tools are (supposed to be) installed
+            # if no command was selected, then shared tools are (supposed to be) installed
             if args.shared:
                 tconf = ResourceManager()
                 tconf.path_gen()

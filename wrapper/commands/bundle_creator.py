@@ -9,12 +9,12 @@ import wrapper.tools.messages as msg
 import wrapper.tools.commands as ccmd
 import wrapper.tools.fileoperations as fo
 
-from wrapper.modules.kernel_builder import KernelBuilder
-from wrapper.modules.assets_collector import AssetsCollector
+from wrapper.commands.kernel import KernelBuilder
+from wrapper.commands.assets import AssetsCollector
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from wrapper.modules.interfaces import IBundleCreator
+from wrapper.commands.interfaces import IBundleCreator
 
 
 class BundleCreator(BaseModel, IBundleCreator):

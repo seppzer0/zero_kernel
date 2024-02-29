@@ -27,7 +27,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
     :param wdir_container: Working directory in the container.
     :param wdir_local: Working directory from the local environment (aka root of the repo).
     :param benv: Build environment.
-    :param module: Wrapper module to be launched.
+    :param command: Wrapper command to be launched.
     :param codename: Device codename.
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
@@ -47,7 +47,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
     wdir_local: Path = dcfg.root
 
     benv: str
-    module: str
+    command: str
     codename: str
     base: str
     lkv: Optional[str] = None
@@ -74,7 +74,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
         # prepare launch command
         cmd = f"python3 {Path('wrapper', 'bridge.py')}"
         arguments = {
-            "--module": self.module,
+            "--command": self.command,
             "--codename": self.codename,
             "--base": self.base,
             "--lkv": self.lkv,
@@ -94,7 +94,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
             elif value:
                 cmd += f" {arg}"
         # extend the command with the selected packaging option
-        if self.module == "bundle":
+        if self.command == "bundle":
             if self.package_type in ("slim", "full"):
                 cmd += f" && chmod 777 -R {self.wdir_container / dcfg.bundle.name}"
             else:
@@ -114,7 +114,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
         # define volume mounting template
         v_template = "-v {}:{}/{}"
         # mount directories
-        match self.module:
+        match self.command:
             case "kernel":
                 options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
             case "assets":
@@ -134,7 +134,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
         return options
 
     def create_dirs(self) -> None:
-        match self.module:
+        match self.command:
             case "kernel":
                 if not dcfg.kernel.is_dir():
                     os.mkdir(dcfg.kernel)

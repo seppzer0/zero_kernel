@@ -179,7 +179,7 @@ options:
 
 ### Bundle
 
-There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` modules into a single package.
+There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` commands into a single package.
 
 This is especially useful for linking the kernel version with the appropriate ROM version.
 

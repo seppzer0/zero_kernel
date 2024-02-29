@@ -13,7 +13,7 @@ from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 from wrapper.utils import ResourceManager
 
-from wrapper.modules.interfaces import IKernelBuilder
+from wrapper.commands.interfaces import IKernelBuilder
 
 
 class KernelBuilder(BaseModel, IKernelBuilder):

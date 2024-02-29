@@ -9,7 +9,7 @@ from wrapper.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
 
 from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-from wrapper.modules.interfaces import IAssetsCollector
+from wrapper.commands.interfaces import IAssetsCollector
 
 
 class AssetsCollector(BaseModel, IAssetsCollector):

@@ -43,54 +43,54 @@ def main(args: argparse.Namespace) -> None:
     rootpath = Path(__file__).absolute().parents[1]
     argsets = (
         {
-            "module": "bundle",
+            "command": "bundle",
             "rom": "los",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": False
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "los",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": True
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": False
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": True
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.14",
             "ksu": False
         },
         {
-            "module": "assets",
+            "command": "assets",
             "rom": "los",
             "codename": "cheeseburger",
             "ksu": True
         },
         {
-            "module": "assets",
+            "command": "assets",
             "rom": "pa",
             "codename": "dumpling",
             "ksu": True
         },
         {
-            "module": "assets",
+            "command": "assets",
             "rom": "pa",
             "codename": "cheeseburger",
             "ksu": True
@@ -105,19 +105,19 @@ def main(args: argparse.Namespace) -> None:
         benv = f"--build-env {args.env}"
         base = f'--base {argset["rom"]}'
         codename = f'--codename {argset["codename"]}'
-        lkv = f'--lkv {argset["lkv"]}' if argset["module"] in ("kernel", "bundle") else ""
+        lkv = f'--lkv {argset["lkv"]}' if argset["command"] in ("kernel", "bundle") else ""
         ksu = "--ksu" if argset["ksu"] else ""
-        size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
-        extra = "--chroot minimal --rom-only --clean" if argset["module"] == "assets" else ""
+        size = f'--package-type {argset["size"]}' if argset["command"] == "bundle" else ""
+        extra = "--chroot minimal --rom-only --clean" if argset["command"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {argset['module']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
+        cmd = f"python3 wrapper {argset['command']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
         out = ""
-        match argset["module"]:
+        match argset["command"]:
             case "bundle":
                 out = "bundle"
             case "kernel":

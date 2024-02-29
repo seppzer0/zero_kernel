@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from wrapper.modules.kernel_builder import KernelBuilder
+from wrapper.commands.kernel import KernelBuilder
 
 
 @pytest.mark.parametrize(
