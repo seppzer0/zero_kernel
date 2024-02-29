@@ -17,7 +17,9 @@ pydantic = "^2.6"
 
 [tool.poetry.dev-dependencies]
 bandit = "*"
+pytest = "*"
 pytest-cov = "*"
+pyright = "*"
 
 [tool.coverage.run]
 source = [
