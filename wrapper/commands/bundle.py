@@ -111,12 +111,11 @@ class BundleCreator(BaseModel, IBundleCreator):
                 # "full" chroot is hardcoded here
                 self._collect_assets(self.base, "full")
                 # clean up
-                if dcfg.bundle in os.listdir():
+                if dcfg.bundle in os.listdir(dcfg.root):
                     contents = dcfg.bundle.glob("*")
                     for f in contents:
                         os.remove(f)
                 else:
-                    cm.remove(dcfg.bundle)
                     os.mkdir(dcfg.bundle)
                 # copy kernel
                 kfn = "".join(os.listdir(dcfg.kernel))
