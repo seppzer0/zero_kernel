@@ -32,8 +32,8 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     clean_kernel: bool
     ksu: bool
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._rcs = ResourceManager(codename=self.codename, base=self.base, lkv=self.lkv)
 
     @staticmethod

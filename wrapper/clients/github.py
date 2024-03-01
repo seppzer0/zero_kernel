@@ -27,8 +27,8 @@ class GitHubApi(BaseModel):
     project: str
     file_filter: Optional[str] = None
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._endpoint = self._endpoint.format(self.project)
         self._direct_url = self._direct_url.format(self.project)
 

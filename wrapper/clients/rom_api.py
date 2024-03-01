@@ -21,8 +21,8 @@ class RomApi(BaseModel, IRomApi):
     codename: str
     rom_only: bool
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.endpoint = self.endpoint.format(self.codename_mapper)
 
     @property

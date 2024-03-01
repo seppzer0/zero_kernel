@@ -7,7 +7,7 @@ class IKernelBuilder(ABC):
     """An interface for the kernel builder."""
 
     @abstractmethod
-    def __init__(self, **data) -> None:
+    def __init__(self, **kwargs) -> None:
         raise NotImplementedError()
 
     @staticmethod
