@@ -111,7 +111,7 @@ class BundleCreator(BaseModel, IBundleCreator):
                 # "full" chroot is hardcoded here
                 self._collect_assets(self.base, "full")
                 # clean up
-                if dcfg.bundle in os.listdir(dcfg.root):
+                if dcfg.bundle.is_dir():
                     contents = dcfg.bundle.glob("*")
                     for f in contents:
                         os.remove(f)
