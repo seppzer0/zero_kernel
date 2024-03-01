@@ -73,4 +73,5 @@ class GitHubApi(BaseModel):
             shutil.make_archive(str(rdir), "zip", rdir)
             cm.remove(rdir)
             return
+            data = None
         return data

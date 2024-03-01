@@ -42,7 +42,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         return rom_collector_dto
 
     @property
-    def assets(self) -> tuple[str] | list[str | None]:
+    def assets(self) -> tuple[str | None] | list[str | None]:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
         dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
@@ -99,7 +99,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
             res = assets
-            return res
+        return res
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
