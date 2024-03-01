@@ -44,8 +44,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
     @property
     def assets(self) -> list[str | GitHubApi | LineageOsApi | ParanoidAndroidApi]:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
-        dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
-        dfd_res = dfd.run()
+        dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
@@ -54,8 +53,8 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             else:
                 # add DFD alongside the ROM
                 fo.download(self.rom_collector_dto.run())
-                if dfd_res:
-                    fo.download(dfd_res)
+                if dfd:
+                    fo.download(dfd)
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
@@ -99,8 +98,8 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
-            if dfd_res:
-                assets.append(dfd_res)
+            if dfd:
+                assets.append(dfd)
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
