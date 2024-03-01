@@ -107,7 +107,7 @@ def main(args: argparse.Namespace) -> None:
         codename = f'--codename {argset["codename"]}'
         lkv = f'--lkv {argset["lkv"]}' if argset["command"] in ("kernel", "bundle") else ""
         ksu = "--ksu" if argset["ksu"] else ""
-        size = f'--package-type {argset["size"]}' if argset["command"] == "bundle" else ""
+        size = "--package-type slim" if argset["command"] == "bundle" else ""
         extra = "--chroot minimal --rom-only --clean" if argset["command"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""

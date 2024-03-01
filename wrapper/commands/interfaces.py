@@ -1,7 +1,7 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
 
-from wrapper.clients.interfaces import LineageOsApi, ParanoidAndroidApi
+from wrapper.clients import LineageOsApi, ParanoidAndroidApi
 
 class IKernelBuilder(ABC):
     """An interface for the kernel builder."""
