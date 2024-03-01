@@ -52,7 +52,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 msg.cancel("Cancelling ROM-only asset collection")
             else:
                 # add DFD alongside the ROM
-                res = (self.rom_collector_dto.run(), dfd)
+                assets = (self.rom_collector_dto.run(), dfd)
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
@@ -98,8 +98,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
-            res = assets
-        return res
+        return assets
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
