@@ -53,7 +53,9 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             else:
                 # add DFD alongside the ROM
                 fo.download(self.rom_collector_dto.run())
-                fo.download(dfd.run())
+                dfd_res = dfd.run()
+                if dfd_res:
+                    fo.download(dfd_res)
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
         # process the non-"RON-only" download
