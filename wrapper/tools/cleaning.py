@@ -1,4 +1,5 @@
 import os
+import stat
 import glob
 import shutil
 from pathlib import Path
@@ -26,13 +27,24 @@ def remove(elements: str | Path | list[Path]) -> None:
         # a simple list-through removal
         if "*" not in e:
             if os.path.isdir(e):
-                shutil.rmtree(e)
+                shutil.rmtree(e, onerror=on_rm_error)
             elif os.path.isfile(e):
                 os.remove(e)
         # a recursive "glob" removal
         else:
             for fn in glob.glob(e):
                 remove(fn)
+
+
+def on_rm_error(func, path: Path, exc_info):
+    """For Windows system to remove a .git folder.
+    
+    :param func: Function to be used along with.
+    :param path: Path that is being removed.
+    :exc_info param: Misc info.
+    """
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
 
 
 def git(directory: Path) -> None:
@@ -49,8 +61,6 @@ def git(directory: Path) -> None:
 
 def root(extra: Optional[list[str]] = []) -> None:
     """Fully clean the root directory.
-
-    __pycache__ is cleaned via py3clean
 
     :param extra: Extra elements to be removed.
     """
@@ -77,4 +87,4 @@ def root(extra: Optional[list[str]] = []) -> None:
             trsh.append(dcfg.root / e)
     # clean
     remove(trsh)
-    ccmd.launch("py3clean .")
+    [remove(p) for p in Path(".").rglob("__pycache__")]
