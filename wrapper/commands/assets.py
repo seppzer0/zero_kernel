@@ -60,6 +60,8 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         # process the non-"RON-only" download
         else:
             assets = [
+                # DFD
+                dfd,
                 # files from GitHub projects
                 GitHubApi(
                     project=su_manager,
@@ -98,8 +100,6 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
-            if dfd:
-                assets.append(dfd)
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
@@ -129,7 +129,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         self._check()
         os.chdir(dcfg.assets)
         for e in self.assets:
-            if e:
+            if e is not None:
                 fo.download(e)
         print("\n", end="")
         msg.done("Assets collected!")
