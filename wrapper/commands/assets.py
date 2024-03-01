@@ -45,6 +45,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
     def assets(self) -> list[str | GitHubApi | LineageOsApi | ParanoidAndroidApi]:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
         dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
+        dfd_res = dfd.run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
@@ -53,7 +54,6 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             else:
                 # add DFD alongside the ROM
                 fo.download(self.rom_collector_dto.run())
-                dfd_res = dfd.run()
                 if dfd_res:
                     fo.download(dfd_res)
                 print("\n", end="")
@@ -61,8 +61,6 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         # process the non-"RON-only" download
         else:
             assets = [
-                # DFD
-                dfd.run(),
                 # files from GitHub projects
                 GitHubApi(
                     project=su_manager,
@@ -98,9 +96,11 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",
             ]
-            # finally, add ROM into assets list if kernel base is not universal
+            # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
+            if dfd_res:
+                assets.append(dfd_res)
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
