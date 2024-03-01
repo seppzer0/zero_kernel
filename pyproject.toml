@@ -10,16 +10,16 @@ packages = [{include = "wrapper"}]
 python = "^3.12"
 conan = "~1"
 argparse = "*"
-requests = "*"
-pathlib = "*"
-typing = "*"
+requests = "^2.31"
+pathlib = "^1.0"
+typing = "^3.7"
 pydantic = "^2.6"
 
 [tool.poetry.dev-dependencies]
-bandit = "*"
-pytest = "*"
-pytest-cov = "*"
-pyright = "*"
+bandit = "^1.7"
+pytest = "^8.0"
+pytest-cov = "^4.1"
+pyright = "^1.1"
 
 [tool.coverage.run]
 source = [
