@@ -116,6 +116,7 @@ class BundleCreator(BaseModel, IBundleCreator):
                     for f in contents:
                         os.remove(f)
                 else:
+                    cm.remove(dcfg.bundle)
                     os.mkdir(dcfg.bundle)
                 # copy kernel
                 kfn = "".join(os.listdir(dcfg.kernel))
