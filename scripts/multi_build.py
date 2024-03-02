@@ -83,18 +83,6 @@ def main(args: argparse.Namespace) -> None:
             "codename": "cheeseburger",
             "ksu": True
         },
-        {
-            "command": "assets",
-            "rom": "pa",
-            "codename": "dumpling",
-            "ksu": True
-        },
-        {
-            "command": "assets",
-            "rom": "pa",
-            "codename": "cheeseburger",
-            "ksu": True
-        },
     )
     os.chdir(rootpath)
     dir_shared = rootpath / "multi-build"
