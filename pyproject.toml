@@ -24,9 +24,9 @@ pyright = "^1.1"
 [tool.coverage.run]
 source = [
     "wrapper/clients",
+    "wrapper/commands",
     "wrapper/configs",
     "wrapper/engines",
-    "wrapper/commands",
     "wrapper/utils"
 ]
 
