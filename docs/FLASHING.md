@@ -53,7 +53,7 @@ Before doing anything, please ensure that you have:
 - if using a Retrofit Dynamic Partitions ROM such as ParanoidAndoid -> untoggle `Unmount System before installing a ZIP` in the Settings;
 - flash the ROM;
 - flash the kernel;
-- **if using Magisk** --> flash root manager (Magisk; you must change the `.apk` extension into `.zip` for this);
+- **if using Magisk** --> flash Magisk root manager (you must change the `.apk` extension into `.zip` for this);
 - flash DM-Verity and Force Encrypt disabler zip;
 - reboot into system via `Reboot -> System` .
 
