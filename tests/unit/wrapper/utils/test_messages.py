@@ -1,6 +1,6 @@
 import pytest
 
-import wrapper.tools.messages as msg
+from wrapper.utils import messages as msg
 
 
 def test__message_note__validate(capfd):

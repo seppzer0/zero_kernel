@@ -5,12 +5,10 @@ from typing import Optional
 from pydantic import BaseModel
 from subprocess import CompletedProcess
 
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
-from wrapper.engines.interfaces import IContainerEngine
+from wrapper.tools import commands as ccmd
+from wrapper.utils import messages as msg
+from wrapper.configs import DirectoryConfig as dcfg
+from wrapper.interfaces import IContainerEngine
 
 
 class ContainerEngine(BaseModel, IContainerEngine):

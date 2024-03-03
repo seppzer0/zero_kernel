@@ -5,11 +5,9 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
+from wrapper.tools import cleaning as cm, commands as ccmd
+from wrapper.utils import messages as msg
+from wrapper.configs import DirectoryConfig as dcfg
 
 
 class GitHubApi(BaseModel):

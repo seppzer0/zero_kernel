@@ -4,21 +4,15 @@ import shutil
 import itertools
 from pydantic import BaseModel
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-import wrapper.tools.fileoperations as fo
+from wrapper.tools import cleaning as cm, commands as ccmd, fileoperations as fo
+from wrapper.utils import messages as msg
+from wrapper.configs import DirectoryConfig as dcfg
+from wrapper.modules import KernelBuilder, AssetsCollector
+from wrapper.interfaces import IBundleCommand
 
-from wrapper.commands.kernel import KernelBuilder
-from wrapper.commands.assets import AssetsCollector
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
-from wrapper.commands.interfaces import IBundleCreator
-
-
-class BundleCreator(BaseModel, IBundleCreator):
-    """Bundle kernel + asset artifacts.
+class BundleCommand(BaseModel, IBundleCommand):
+    """A command that packages the artifacts produced by
+    'kernel_builder' and 'assets_collector' core modules.
 
     :param base: Kernel source base.
     :param lkv: Linux kernel version.

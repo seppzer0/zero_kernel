@@ -3,19 +3,11 @@ import sys
 import json
 import argparse
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-
-from wrapper.commands.bundle import BundleCreator
-from wrapper.commands.kernel import KernelBuilder
-from wrapper.commands.assets import AssetsCollector
-
-from wrapper.configs import ArgumentConfig
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
-from wrapper.engines.docker_engine import DockerEngine
-from wrapper.engines.podman_engine import PodmanEngine
-
+from wrapper.tools import cleaning as cm
+from wrapper.utils import messages as msg
+from wrapper.configs import ArgumentConfig, DirectoryConfig as dcfg
+from wrapper.engines import DockerEngine, PodmanEngine
+from wrapper.commands import KernelCommand, AssetsCommand, BundleCommand
 
 def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
@@ -256,7 +248,7 @@ def main(args: argparse.Namespace) -> None:
         case "local":
             match args.command:
                 case "kernel":
-                    KernelBuilder(
+                    KernelCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         lkv = acfg.lkv,
@@ -264,7 +256,7 @@ def main(args: argparse.Namespace) -> None:
                         ksu = acfg.ksu,
                     ).run()
                 case "assets":
-                    AssetsCollector(
+                    AssetsCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         chroot = acfg.chroot,
@@ -273,7 +265,7 @@ def main(args: argparse.Namespace) -> None:
                         ksu = acfg.ksu,
                     ).run()
                 case "bundle":
-                    BundleCreator(
+                    BundleCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         lkv = acfg.lkv,

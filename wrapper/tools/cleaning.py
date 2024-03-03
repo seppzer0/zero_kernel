@@ -5,9 +5,8 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-import wrapper.tools.commands as ccmd
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
+from wrapper.tools import commands as ccmd
+from wrapper.configs import DirectoryConfig as dcfg
 
 
 def remove(elements: str | Path | list[Path]) -> None:

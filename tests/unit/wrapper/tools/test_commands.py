@@ -1,6 +1,6 @@
 import pytest
 
-import wrapper.tools.commands as ccmd
+from wrapper.tools import commands as ccmd
 
 
 def test__launch__invalid_command(capfd) -> None:

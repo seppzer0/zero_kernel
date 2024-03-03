@@ -149,7 +149,7 @@ class IAssetsCollector(ABC):
         raise NotImplementedError()
 
 
-class IBundleCreator(ABC):
+class IBundleCommand(ABC):
     """An interface for the bundle creator."""
 
     @abstractmethod

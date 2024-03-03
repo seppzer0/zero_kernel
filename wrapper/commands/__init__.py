@@ -1,3 +1,3 @@
-from .kernel import KernelBuilder
-from .bundle import BundleCreator
-from .assets import AssetsCollector
+from .kernel import KernelCommand
+from .bundle import BundleCommand
+from .assets import AssetsCommand

@@ -1,13 +1,8 @@
 import sys
 import argparse
 
-import wrapper.tools.messages as msg
-
-from wrapper.commands.bundle import BundleCreator
-from wrapper.commands.kernel import KernelBuilder
-from wrapper.commands.assets import AssetsCollector
-
-from wrapper.utils import ResourceManager
+from wrapper.utils import messages as msg, ResourceManager
+from wrapper.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
 def parse_args() -> argparse.Namespace:
@@ -85,7 +80,7 @@ def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
     match args.command:
         case "kernel":
-            KernelBuilder(
+            KernelCommand(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
@@ -93,7 +88,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case "assets":
-            AssetsCollector(
+            AssetsCommand(
                 codename = args.codename,
                 base = args.base,
                 chroot = args.chroot,
@@ -102,7 +97,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case "bundle":
-            BundleCreator(
+            BundleCommand(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
