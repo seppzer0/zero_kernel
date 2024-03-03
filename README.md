@@ -1,6 +1,6 @@
 # zero_kernel
 
-An advanced Android kernel builder with Kali NetHunter modifications support.
+An advanced Android kernel builder with Kali NetHunter functionality.
 
 ## Contents
 
