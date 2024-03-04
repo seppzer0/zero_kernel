@@ -5,7 +5,8 @@ from pydantic import BaseModel
 
 from wrapper.tools import commands as ccmd
 from wrapper.utils import messages as msg
-from wrapper.configs import DirectoryConfig as dcfg
+
+from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
 
 class ArgumentConfig(BaseModel):
