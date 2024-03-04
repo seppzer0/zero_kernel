@@ -1,4 +1,4 @@
-from wrapper.modules import KernelBuilder
+from wrapper.core import KernelBuilder
 
 
 class KernelCommand(KernelBuilder):

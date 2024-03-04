@@ -1,4 +1,4 @@
-from wrapper.modules import AssetsCollector
+from wrapper.core import AssetsCollector
 
 
 class AssetsCommand(AssetsCollector):
