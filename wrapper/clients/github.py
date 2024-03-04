@@ -30,7 +30,7 @@ class GitHubApi(BaseModel):
         self._endpoint = self._endpoint.format(self.project)
         self._direct_url = self._direct_url.format(self.project)
 
-    def run(self) -> str:
+    def run(self) -> str | None:
         """Get the latest version of an artifact from GitHub project."""
         response = requests.get(self._endpoint).json()
         # this will check whether the GitHub API usage is exceeded
@@ -70,6 +70,5 @@ class GitHubApi(BaseModel):
             os.chdir(dcfg.assets)
             shutil.make_archive(str(rdir), "zip", rdir)
             cm.remove(rdir)
-            return
-            data = None
+            return None
         return data

@@ -10,6 +10,7 @@ from wrapper.configs import DirectoryConfig as dcfg
 from wrapper.modules import KernelBuilder, AssetsCollector
 from wrapper.interfaces import IBundleCommand
 
+
 class BundleCommand(BaseModel, IBundleCommand):
     """A command that packages the artifacts produced both
     by 'kernel_builder' and 'assets_collector' core modules.

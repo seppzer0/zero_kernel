@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 from wrapper.clients import LineageOsApi, ParanoidAndroidApi
 
+
 class IKernelBuilder(ABC):
     """An interface for the kernel builder."""
 
