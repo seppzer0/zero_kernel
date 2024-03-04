@@ -60,4 +60,5 @@
 - [ ] embed newlines usage (from both sides) into `messages` functions as arguments;
 - [ ] add tests on cases of custom wrapper edge case exits (kernel build on Windows, ROM-only asset collection for a ROM-universal kernel etc.);
 - [ ] break down (or create inheritance from) KernelBuilder into LineageOsKernelBuilder, ParanoidAndroidKernelBuilder, XKernelBuilder etc;
-- [ ] investigate project restructuring to avoid circular import.
+- [ ] investigate project restructuring to avoid circular import;
+- [ ] consider creating a separate "errors" subpackage for all errors.
