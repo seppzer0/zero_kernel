@@ -11,8 +11,8 @@ from wrapper.modules import KernelBuilder, AssetsCollector
 from wrapper.interfaces import IBundleCommand
 
 class BundleCommand(BaseModel, IBundleCommand):
-    """A command that packages the artifacts produced by
-    'kernel_builder' and 'assets_collector' core modules.
+    """A command that packages the artifacts produced both
+    by 'kernel_builder' and 'assets_collector' core modules.
 
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
