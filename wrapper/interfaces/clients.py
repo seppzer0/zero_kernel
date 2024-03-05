@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class IRomApi(ABC):
     """An interface for interacting with ROM projects' APIs."""
 

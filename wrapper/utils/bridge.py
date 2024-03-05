@@ -1,20 +1,16 @@
 import sys
 import argparse
 
-import wrapper.tools.messages as msg
-
-from wrapper.modules.bundle_creator import BundleCreator
-from wrapper.modules.kernel_builder import KernelBuilder
-from wrapper.modules.assets_collector import AssetsCollector
-
+from wrapper.tools import messages as msg
 from wrapper.utils import ResourceManager
+from wrapper.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
 def parse_args() -> argparse.Namespace:
     """Parse arguments.
 
     Arguments here are NOT mandatory because this script has dual use:
-    1) launch one of the modules: kernel, assets, bundle;
+    1) launch one of the commands: kernel, assets, bundle;
     2) install shared tools from tools.json.
 
     Because of that, all of the arguments are technically optional.
@@ -23,8 +19,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
     parser.add_argument(
-        "--module",
-        help="select wrapper module",
+        "--command",
+        help="select wrapper command",
         choices=("kernel", "assets", "bundle")
     )
     parser.add_argument(
@@ -74,7 +70,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
-        "--tools",
+        "--shared",
         help="only setup the shared tools in the environment",
         action="store_true"
     )
@@ -83,9 +79,9 @@ def parse_args() -> argparse.Namespace:
 
 def main(args: argparse.Namespace) -> None:
     """Launch the bridge."""
-    match args.module:
+    match args.command:
         case "kernel":
-            KernelBuilder(
+            KernelCommand(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
@@ -93,7 +89,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case "assets":
-            AssetsCollector(
+            AssetsCommand(
                 codename = args.codename,
                 base = args.base,
                 chroot = args.chroot,
@@ -102,7 +98,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case "bundle":
-            BundleCreator(
+            BundleCommand(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
@@ -110,8 +106,8 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             ).run()
         case _:
-            # if no module was selected, then shared tools are (supposed to be) installed
-            if args.tools:
+            # if no command was selected, then shared tools are (supposed to be) installed
+            if args.shared:
                 tconf = ResourceManager()
                 tconf.path_gen()
                 tconf.download()

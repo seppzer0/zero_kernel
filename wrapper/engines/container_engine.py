@@ -5,12 +5,9 @@ from typing import Optional
 from pydantic import BaseModel
 from subprocess import CompletedProcess
 
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
-from wrapper.engines.interfaces import IContainerEngine
+from wrapper.tools import commands as ccmd, messages as msg
+from wrapper.configs import DirectoryConfig as dcfg
+from wrapper.interfaces import IContainerEngine
 
 
 class ContainerEngine(BaseModel, IContainerEngine):
@@ -27,7 +24,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
     :param wdir_container: Working directory in the container.
     :param wdir_local: Working directory from the local environment (aka root of the repo).
     :param benv: Build environment.
-    :param module: Wrapper module to be launched.
+    :param command: Wrapper command to be launched.
     :param codename: Device codename.
     :param base: Kernel source base.
     :param lkv: Linux kernel version.
@@ -47,7 +44,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
     wdir_local: Path = dcfg.root
 
     benv: str
-    module: str
+    command: str
     codename: str
     base: str
     lkv: Optional[str] = None
@@ -72,9 +69,9 @@ class ContainerEngine(BaseModel, IContainerEngine):
     @property
     def wrapper_cmd(self) -> str:
         # prepare launch command
-        cmd = f"python3 {Path('wrapper', 'bridge.py')}"
+        cmd = f"python3 {Path('wrapper', 'utils', 'bridge.py')}"
         arguments = {
-            "--module": self.module,
+            "--command": self.command,
             "--codename": self.codename,
             "--base": self.base,
             "--lkv": self.lkv,
@@ -94,9 +91,9 @@ class ContainerEngine(BaseModel, IContainerEngine):
             elif value:
                 cmd += f" {arg}"
         # extend the command with the selected packaging option
-        if self.module == "bundle":
+        if self.command == "bundle":
             if self.package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {Path(self.wdir_container, dcfg.bundle)}"
+                cmd += f" && chmod 777 -R {self.wdir_container / dcfg.bundle.name}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
@@ -111,34 +108,18 @@ class ContainerEngine(BaseModel, IContainerEngine):
             "-e LOGLEVEL={}".format(os.getenv("LOGLEVEL")),
             "-w {}".format(self.wdir_container),
         ]
+        # define volume mounting template
+        v_template = "-v {}:{}/{}"
         # mount directories
-        match self.module:
+        match self.command:
             case "kernel":
-                options.append(
-                    '-v {}:{}/{}'.format(
-                        dcfg.kernel,
-                        self.wdir_container,
-                        dcfg.kernel.name
-                    )
-                )
+                options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
             case "assets":
-                options.append(
-                    '-v {}:{}/{}'.format(
-                        dcfg.assets,
-                        self.wdir_container,
-                        dcfg.assets.name
-                    )
-                )
+                options.append(v_template.format(dcfg.assets, self.wdir_container, dcfg.assets.name))
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
-                        options.append(
-                            '-v {}:{}/{}'.format(
-                                dcfg.bundle,
-                                self.wdir_container,
-                                dcfg.bundle.name
-                            )
-                        )
+                        options.append(v_template.format(dcfg.bundle, self.wdir_container, dcfg.bundle.name))
                     case "conan":
                         if self.conan_upload:
                             options.append('-e CONAN_UPLOAD_CUSTOM=1')
@@ -150,21 +131,18 @@ class ContainerEngine(BaseModel, IContainerEngine):
         return options
 
     def create_dirs(self) -> None:
-        match self.module:
+        match self.command:
             case "kernel":
-                kdir = Path(dcfg.kernel)
-                if not kdir.is_dir():
-                    os.mkdir(kdir)
+                if not dcfg.kernel.is_dir():
+                    os.mkdir(dcfg.kernel)
             case "assets":
-                assetsdir = Path(dcfg.assets)
-                if not assetsdir.is_dir():
-                    os.mkdir(assetsdir)
+                if not dcfg.assets.is_dir():
+                    os.mkdir(dcfg.assets)
             case "bundle":
                 if self.package_type in ("slim", "full"):
                     # mount directory with release artifacts
-                    bdir = Path(dcfg.bundle)
-                    shutil.rmtree(bdir, ignore_errors=True)
-                    os.mkdir(bdir)
+                    shutil.rmtree(dcfg.bundle, ignore_errors=True)
+                    os.mkdir(dcfg.bundle)
 
     def build(self) -> CompletedProcess:
         print("\n")

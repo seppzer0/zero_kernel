@@ -2,21 +2,11 @@ import os
 import sys
 import json
 import argparse
-from pathlib import Path
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-
-from wrapper.modules.bundle_creator import BundleCreator
-from wrapper.modules.kernel_builder import KernelBuilder
-from wrapper.modules.assets_collector import AssetsCollector
-
-from wrapper.configs import ArgumentConfig
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
-from wrapper.engines.docker_engine import DockerEngine
-from wrapper.engines.podman_engine import PodmanEngine
-
+from wrapper.tools import cleaning as cm, messages as msg
+from wrapper.configs import ArgumentConfig, DirectoryConfig as dcfg
+from wrapper.engines import DockerEngine, PodmanEngine
+from wrapper.commands import KernelCommand, AssetsCommand, BundleCommand
 
 def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
@@ -24,7 +14,7 @@ def parse_args() -> argparse.Namespace:
     args = None if sys.argv[1:] else ["-h"]
     # parser and subparsers
     parser_parent = argparse.ArgumentParser(description="A custom wrapper for the zero kernel.")
-    subparsers = parser_parent.add_subparsers(dest="module")
+    subparsers = parser_parent.add_subparsers(dest="command")
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
     parser_bundle = subparsers.add_parser("bundle", help="build the kernel + collect assets")
@@ -235,14 +225,14 @@ def main(args: argparse.Namespace) -> None:
         sys.exit(0)
     os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
-    with open(Path(dcfg.root, "pyproject.toml")) as f:
+    with open(dcfg.root / "pyproject.toml") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # create a config for argument check and storage
     arguments = vars(args)
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
     # setup output stream
-    if args.module and args.outlog:
+    if args.command and args.outlog:
         msg.note(f"Writing output to {args.outlog}")
         if args.outlog in os.listdir():
             os.remove(args.outlog)
@@ -255,9 +245,9 @@ def main(args: argparse.Namespace) -> None:
         case "podman":
             PodmanEngine(**json.loads(acfg.model_dump_json())).run()
         case "local":
-            match args.module:
+            match args.command:
                 case "kernel":
-                    KernelBuilder(
+                    KernelCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         lkv = acfg.lkv,
@@ -265,7 +255,7 @@ def main(args: argparse.Namespace) -> None:
                         ksu = acfg.ksu,
                     ).run()
                 case "assets":
-                    AssetsCollector(
+                    AssetsCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         chroot = acfg.chroot,
@@ -274,7 +264,7 @@ def main(args: argparse.Namespace) -> None:
                         ksu = acfg.ksu,
                     ).run()
                 case "bundle":
-                    BundleCreator(
+                    BundleCommand(
                         codename = acfg.codename,
                         base = acfg.base,
                         lkv = acfg.lkv,

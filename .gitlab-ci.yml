@@ -9,12 +9,12 @@ job-build:
   tags:
     - docker
     - linux
-  image: docker:24.0-cli
+  image: docker:25.0.3-cli-alpine3.19
   services:
     - docker:dind
   script:
     - apk update && apk add python3 py3-pip
-    - python3 -m pip install poetry
+    - python3 -m pip install poetry --break-system-packages
     - python3 -m poetry config virtualenvs.create false
     - python3 -m poetry install --no-root
     - export PYTHONPATH=$(pwd)

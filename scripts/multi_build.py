@@ -30,8 +30,8 @@ def rmove(src: Path, dst: Path) -> None:
         for e in contents:
             # do not copy restricted files
             if e != src:
-                src_e = Path(src, e)
-                dst_e = Path(dst, e)
+                src_e = src / e
+                dst_e = dst / e
                 shutil.move(src_e, dst_e)
     # for a single file
     elif src.is_file():
@@ -40,44 +40,52 @@ def rmove(src: Path, dst: Path) -> None:
 
 def main(args: argparse.Namespace) -> None:
     """Run multi build."""
-    rootpath = Path(Path(__file__).absolute().parents[1])
+    rootpath = Path(__file__).absolute().parents[1]
     argsets = (
         {
-            "module": "kernel",
+            "command": "bundle",
+            "rom": "los",
+            "codename": "dumpling",
+            "lkv": "4.4",
+            "ksu": False
+        },
+        {
+            "command": "kernel",
+            "rom": "los",
+            "codename": "dumpling",
+            "lkv": "4.4",
+            "ksu": True
+        },
+        {
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": False
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.4",
             "ksu": True
         },
         {
-            "module": "kernel",
+            "command": "kernel",
             "rom": "x",
             "codename": "dumpling",
             "lkv": "4.14",
             "ksu": False
         },
         {
-            "module": "assets",
+            "command": "assets",
             "rom": "los",
-            "codename": "cheeseburger",
-            "ksu": True
-        },
-        {
-            "module": "assets",
-            "rom": "pa",
             "codename": "cheeseburger",
             "ksu": True
         },
     )
     os.chdir(rootpath)
-    dir_shared = Path(rootpath, "multi-build")
+    dir_shared = rootpath / "multi-build"
     shutil.rmtree(dir_shared, ignore_errors=True)
     os.mkdir(dir_shared)
     for count, argset in enumerate(argsets, 1):
@@ -85,19 +93,19 @@ def main(args: argparse.Namespace) -> None:
         benv = f"--build-env {args.env}"
         base = f'--base {argset["rom"]}'
         codename = f'--codename {argset["codename"]}'
-        lkv = f'--lkv {argset["lkv"]}' if argset["module"] in ("kernel", "bundle") else ""
+        lkv = f'--lkv {argset["lkv"]}' if argset["command"] in ("kernel", "bundle") else ""
         ksu = "--ksu" if argset["ksu"] else ""
-        size = f'--package-type {argset["size"]}' if argset["module"] == "bundle" else ""
-        extra = "--chroot minimal --rom-only --clean" if argset["module"] == "assets" else ""
+        size = "--package-type slim" if argset["command"] == "bundle" else ""
+        extra = "--chroot minimal --rom-only --clean" if argset["command"] == "assets" else ""
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 wrapper {argset['module']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
+        cmd = f"python3 wrapper {argset['command']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
         out = ""
-        match argset["module"]:
+        match argset["command"]:
             case "bundle":
                 out = "bundle"
             case "kernel":
@@ -110,5 +118,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    # launch the builds
     main(parse_args())

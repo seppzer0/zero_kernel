@@ -4,19 +4,13 @@ import time
 from pathlib import Path
 from pydantic import BaseModel
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-import wrapper.tools.fileoperations as fo
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
-
+from wrapper.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
 from wrapper.utils import ResourceManager
+from wrapper.configs import DirectoryConfig as dcfg
+from wrapper.interfaces import IKernelBuilder
 
-from wrapper.modules.interfaces import IModuleExecutor
 
-
-class KernelBuilder(BaseModel, IModuleExecutor):
+class KernelBuilder(BaseModel, IKernelBuilder):
     """Kernel builder.
 
     :param codename: Device codename.
@@ -32,59 +26,30 @@ class KernelBuilder(BaseModel, IModuleExecutor):
     clean_kernel: bool
     ksu: bool
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._rcs = ResourceManager(codename=self.codename, base=self.base, lkv=self.lkv)
-
-    def run(self) -> None:
-        os.chdir(dcfg.root)
-        msg.banner("zero kernel builder")
-        msg.note("Setting up tools and links..")
-        self._rcs.path_gen()
-        self._rcs.download()
-        self._rcs.export_path()
-        self._clean_build()
-        if self.clean_kernel:
-            sys.exit(0)
-        self._write_localversion()
-        msg.done("Done! Tools are configured!")
-        if self.lkv != self._linux_kernel_version:
-            msg.error("Linux kernel version in sources is different what was specified in arguments")
-        self._patch_all()
-        self._build()
-        self._create_zip()
 
     @staticmethod
     def _write_localversion() -> None:
-        """Write a localversion file."""
         with open("localversion", "w") as f:
             f.write("~zero-kernel")
 
     @property
     def _ucodename(self) -> str:
-        """A unified device codename to apply patches for.
-
-        E.g., "dumplinger", combining "dumpling" and "cheeseburger",
-        both of which share the same kernel source.
-        """
         return "dumplinger" if self.codename in ("dumpling", "cheeseburger") else self.codename
 
     @property
     def _defconfig(self) -> Path:
-        """Determine defconfig file name.
-
-        Depending on Linux kernel version (4.4 or 4.14)
-        the location for defconfig file may vary.
-        """
         defconfigs = {
-            "los": Path("lineage_oneplus5_defconfig"),
-            "pa": Path("vendor", "paranoid_defconfig") if self.lkv == "4.14" else Path("paranoid_defconfig"),
-            "x": Path("msm8998_oneplus_android_defconfig") if self.lkv == "4.14" else Path("oneplus5_defconfig")
+            "los": "lineage_oneplus5_defconfig",
+            "pa": "vendor/paranoid_defconfig" if self.lkv == "4.14" else "paranoid_defconfig",
+            "x": "msm8998_oneplus_android_defconfig" if self.lkv == "4.14" else "oneplus5_defconfig"
         }
-        return defconfigs[self.base]
+        # convert whatever output to path object
+        return Path(defconfigs[self.base])
 
     def _clean_build(self) -> None:
-        """Clean environment from potential artifacts."""
         print("\n", end="")
         msg.note("Cleaning the build environment..")
         cm.git(self._rcs.paths[self.codename]["path"])
@@ -96,7 +61,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         msg.done("Done!")
 
     def _patch_strict_prototypes(self) -> None:
-        """A patcher to add compatibility with Clang 15 '-Wstrict-prototype' mandatory rule."""
         msg.note("Patching sources for Clang 15+ compatibility..")
         data = {
             self._rcs.paths[self.codename]["path"] /\
@@ -265,7 +229,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         msg.done("Done!")
 
     def _patch_anykernel3(self) -> None:
-        """Patch AnyKernel3 sources."""
         cm.remove(self._rcs.paths["AnyKernel3"]["path"] / "ramdisk")
         cm.remove(self._rcs.paths["AnyKernel3"]["path"] / "models")
         fo.ucopy(
@@ -278,7 +241,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         )
 
     def _patch_rtl8812au_source_mod_v5642(self) -> None:
-        """Modifications specific to v5.6.4.2 driver version."""
         # Makefile
         fo.replace_lines(
             Path("Makefile").absolute(),
@@ -321,10 +283,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         )
 
     def _patch_rtl8812au(self) -> None:
-        """Patch RTL8812AU sources.
-
-        NOTE: .patch files are unreliable in this case, have to replace lines manually
-        """
         # copy RTL8812AU sources into kernel sources
         msg.note("Adding RTL8812AU drivers into the kernel..")
         fo.ucopy(
@@ -388,13 +346,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
             f.write("\n")
 
     def _patch_ksu(self) -> None:
-        """Patch KernelSU into the kernel.
-
-        During this process, a symlink is used to "place" KernelSU
-        source into the kernel sources. This is due to the fact that KernelSU
-        has an internal mechanism of getting it's version via accessing
-        .git data. And having .git data in kernel sources is not ideal.
-        """
         msg.note("Adding KernelSU into the kernel..")
         # extract KSU_GIT_VERSION environment variable manually
         goback = Path.cwd()
@@ -454,10 +405,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
             f.write("\n")
 
     def _patch_qcacld(self) -> None:
-        """Patch QCACLD-3.0 defconfig to add support for monitor mode.
-
-        Currently, this is required only for ParanoidAndroid.
-        """
         goback = Path.cwd()
         fo.ucopy(
             dcfg.root / "wrapper" / "modifications" / self._ucodename / self._linux_kernel_version / "qcacld_pa.patch",
@@ -468,7 +415,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         os.chdir(goback)
 
     def _patch_ioctl(self) -> None:
-        """Patch IOCTL buffer allocation."""
         ioctl = self._rcs.paths[self.codename]["path"] /\
                 "drivers" /\
                 "platform" /\
@@ -483,11 +429,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         )
 
     def _patch_kernel(self) -> None:
-        """Patch kernel sources.
-
-        Here only unrelated to KernelSU patches are applied.
-        For applying KernelSU changes to kernel source see "patch_ksu()".
-        """
         # -Wstrict-prototypes patch to build with Clang 15+
         clang_cmd = f'{self._rcs.paths["clang"]["path"] / "bin" / "clang"} --version'
         clang_ver = ccmd.launch(clang_cmd, get_output=True).split("clang version ")[1].split(".")[0]
@@ -518,7 +459,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         os.chdir(dcfg.root)
 
     def _patch_all(self) -> None:
-        """Apply all patches."""
         self._patch_anykernel3()
         self._patch_kernel()
         # optionally include KernelSU support
@@ -528,7 +468,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         msg.done("Patches added!")
 
     def _build(self) -> None:
-        """Build the kernel."""
         print("\n", end="")
         msg.note("Launching the build..")
         os.chdir(self._rcs.paths[self.codename]["path"])
@@ -570,7 +509,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
 
     @property
     def _linux_kernel_version(self) -> str:
-        """Extract Linux kernel version number from sources."""
         data = ""
         version = []
         with open(self._rcs.paths[self.codename]["path"] / "Makefile") as f:
@@ -587,7 +525,6 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         return ".".join(version)
 
     def _create_zip(self) -> None:
-        """Pack build artifacts into a .zip archive."""
         print("\n", end="")
         msg.note("Forming final ZIP file..")
         fo.ucopy(
@@ -614,3 +551,21 @@ class KernelBuilder(BaseModel, IModuleExecutor):
         ccmd.launch(cmd)
         os.chdir(dcfg.root)
         msg.done("Done!")
+
+    def run(self) -> None:
+        os.chdir(dcfg.root)
+        msg.banner("zero kernel builder")
+        msg.note("Setting up tools and links..")
+        self._rcs.path_gen()
+        self._rcs.download()
+        self._rcs.export_path()
+        self._clean_build()
+        if self.clean_kernel:
+            sys.exit(0)
+        self._write_localversion()
+        msg.done("Done! Tools are configured!")
+        if self.lkv != self._linux_kernel_version:
+            msg.error("Linux kernel version in sources is different what was specified in arguments")
+        self._patch_all()
+        self._build()
+        self._create_zip()

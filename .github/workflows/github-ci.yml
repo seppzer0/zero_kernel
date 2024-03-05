@@ -1,4 +1,4 @@
-name: Release
+name: build and release
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
-      - name: Build and assemble
+      - name: Build And Assemble
         run: |
           python3 -m pip install poetry
           python3 -m poetry config virtualenvs.create false

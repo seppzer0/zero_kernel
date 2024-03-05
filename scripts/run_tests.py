@@ -4,7 +4,7 @@ from typing import List
 from pathlib import Path
 from subprocess import CompletedProcess
 
-ROOTPATH: Path = Path(Path(__file__).absolute().parents[1])
+ROOTPATH: Path = Path(__file__).absolute().parents[1]
 
 
 class Tester:

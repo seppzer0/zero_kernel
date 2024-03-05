@@ -5,11 +5,8 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-import wrapper.tools.cleaning as cm
-import wrapper.tools.messages as msg
-import wrapper.tools.commands as ccmd
-
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
+from wrapper.tools import cleaning as cm, commands as ccmd, messages as msg
+from wrapper.configs import DirectoryConfig as dcfg
 
 
 class GitHubApi(BaseModel):
@@ -27,12 +24,12 @@ class GitHubApi(BaseModel):
     project: str
     file_filter: Optional[str] = None
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._endpoint = self._endpoint.format(self.project)
         self._direct_url = self._direct_url.format(self.project)
 
-    def run(self) -> str:
+    def run(self) -> str | None:
         """Get the latest version of an artifact from GitHub project."""
         response = requests.get(self._endpoint).json()
         # this will check whether the GitHub API usage is exceeded
@@ -72,5 +69,5 @@ class GitHubApi(BaseModel):
             os.chdir(dcfg.assets)
             shutil.make_archive(str(rdir), "zip", rdir)
             cm.remove(rdir)
-            return
+            return None
         return data

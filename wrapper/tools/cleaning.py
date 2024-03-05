@@ -1,15 +1,15 @@
 import os
+import stat
 import glob
 import shutil
-from typing import Union
 from pathlib import Path
+from typing import Optional
 
-import wrapper.tools.commands as ccmd
+from wrapper.tools import commands as ccmd
+from wrapper.configs import DirectoryConfig as dcfg
 
-from wrapper.configs.directory_config import DirectoryConfig as dcfg
 
-
-def remove(elements: Union[str, Path, list[Path]]) -> None:
+def remove(elements: str | Path | list[Path]) -> None:
     """An ultimate Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
@@ -26,13 +26,24 @@ def remove(elements: Union[str, Path, list[Path]]) -> None:
         # a simple list-through removal
         if "*" not in e:
             if os.path.isdir(e):
-                shutil.rmtree(e)
+                shutil.rmtree(e, onerror=on_rm_error)
             elif os.path.isfile(e):
                 os.remove(e)
         # a recursive "glob" removal
         else:
             for fn in glob.glob(e):
                 remove(fn)
+
+
+def on_rm_error(func, path: Path, exc_info):
+    """For Windows system to remove a .git folder.
+    
+    :param func: Function to be used along with.
+    :param path: Path that is being removed.
+    :exc_info param: Misc info.
+    """
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
 
 
 def git(directory: Path) -> None:
@@ -47,10 +58,8 @@ def git(directory: Path) -> None:
     os.chdir(goback)
 
 
-def root(extra: list[str] = []) -> None:
+def root(extra: Optional[list[str]] = []) -> None:
     """Fully clean the root directory.
-
-    .vscode is not cleaned, __pycache__ --> via py3clean
 
     :param extra: Extra elements to be removed.
     """
@@ -66,7 +75,7 @@ def root(extra: list[str] = []) -> None:
         "source",
         "localversion",
         "KernelSU",
-        "multi_build",
+        "multi-build",
         ".coverage",
         ".vscode",
         ".pytest_cache"
@@ -74,7 +83,7 @@ def root(extra: list[str] = []) -> None:
     # add extra elements to clean up from root directory
     if extra:
         for e in extra:
-            trsh.append(Path(dcfg.root, e))
+            trsh.append(dcfg.root / e)
     # clean
     remove(trsh)
-    ccmd.launch("py3clean .")
+    [remove(p) for p in Path(".").rglob("__pycache__")]
