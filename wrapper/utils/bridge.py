@@ -1,7 +1,8 @@
 import sys
 import argparse
 
-from wrapper.utils import messages as msg, ResourceManager
+from wrapper.tools import messages as msg
+from wrapper.utils import ResourceManager
 from wrapper.commands import KernelCommand, AssetsCommand, BundleCommand
 
 

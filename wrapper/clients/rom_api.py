@@ -1,7 +1,7 @@
 import requests
 from pydantic import BaseModel
 
-from wrapper.utils import messages as msg
+from wrapper.tools import messages as msg
 from wrapper.interfaces import IRomApi
 
 

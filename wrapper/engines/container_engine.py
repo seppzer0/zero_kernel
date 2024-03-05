@@ -5,8 +5,7 @@ from typing import Optional
 from pydantic import BaseModel
 from subprocess import CompletedProcess
 
-from wrapper.tools import commands as ccmd
-from wrapper.utils import messages as msg
+from wrapper.tools import commands as ccmd, messages as msg
 from wrapper.configs import DirectoryConfig as dcfg
 from wrapper.interfaces import IContainerEngine
 
@@ -70,7 +69,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
     @property
     def wrapper_cmd(self) -> str:
         # prepare launch command
-        cmd = f"python3 {Path('wrapper', 'bridge.py')}"
+        cmd = f"python3 {Path('wrapper', 'utils', 'bridge.py')}"
         arguments = {
             "--command": self.command,
             "--codename": self.codename,

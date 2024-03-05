@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from wrapper.tools import cleaning as cm, commands as ccmd
-from wrapper.utils import messages as msg
+from wrapper.tools import cleaning as cm, commands as ccmd, messages as msg
 from wrapper.configs import DirectoryConfig as dcfg
 
 
