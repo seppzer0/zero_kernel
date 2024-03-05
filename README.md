@@ -21,14 +21,18 @@ An advanced Android kernel builder with Kali NetHunter support.
 
 ## **Important**
 
-> [!IMPORTANT] Disclaimer
+> [!IMPORTANT]
+> **- Disclaimer -**
+>
 > **This kernel is made for educational purposes only.**
 >
 > **I am not responsible for anything that may or may not happen to your device by installing any custom ROMs, kernels and/or any other forms of software.**
 >
 > **Anything you do with this kernel and your device you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
-> [!NOTE] ROM artifacts in releases
+> [!NOTE]
+> \- ROM artifacts in releases -
+>
 > The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are <u>**unmodified and mirrored from official sources**</u>.
 >
 >This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
