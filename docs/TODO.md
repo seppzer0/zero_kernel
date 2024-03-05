@@ -62,4 +62,5 @@
 - [ ] break down (or create inheritance from) KernelBuilder into LineageOsKernelBuilder, ParanoidAndroidKernelBuilder, XKernelBuilder etc;
 - [ ] investigate project restructuring to avoid circular import;
 - [ ] consider creating a separate "errors" subpackage for all errors;
-- [ ] add GKI kernels support.
+- [ ] add GKI kernels support;
+- [ ] separate "standard" kernel building from NetHunter-specific modifications.
