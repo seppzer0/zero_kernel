@@ -28,7 +28,7 @@ class Tester:
         fmts = ("json", "html")
         cps = []
         for fmt in fmts:
-            cps.append(self._launch(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}"))
+            cps.append(self._launch_cmd(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}"))
         return cps
 
 
