@@ -1,6 +1,5 @@
 import os
 import subprocess
-from typing import List
 from pathlib import Path
 from subprocess import CompletedProcess
 
@@ -23,7 +22,7 @@ class Tester:
         """Run type (hint) checks with Pyright."""
         return self._launch_cmd("python3 -m pyright wrapper")
 
-    def bandit_checks(self) -> List[CompletedProcess]:
+    def bandit_checks(self) -> list[CompletedProcess]:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
         cps = []
