@@ -4,10 +4,10 @@ import shutil
 import itertools
 from pydantic import BaseModel
 
+from wrapper.core import KernelBuilder, AssetsCollector
 from wrapper.tools import cleaning as cm, commands as ccmd, fileoperations as fo
 from wrapper.utils import messages as msg
 from wrapper.configs import DirectoryConfig as dcfg
-from wrapper.core import KernelBuilder, AssetsCollector
 from wrapper.interfaces import IBundleCommand
 
 
