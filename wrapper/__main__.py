@@ -275,6 +275,6 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    # for print's to show in the right order in various build systems
+    # for print's to show in the right order in various build / CI/CD systems
     sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), "wb", 0), write_through=True)
     main(parse_args())
