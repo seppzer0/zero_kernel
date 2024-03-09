@@ -108,9 +108,9 @@ def main(args: argparse.Namespace) -> None:
         case _:
             # if no command was selected, then shared tools are (supposed to be) installed
             if args.shared:
-                tconf = ResourceManager()
-                tconf.path_gen()
-                tconf.download()
+                rm = ResourceManager()
+                rm.path_gen()
+                rm.download()
             else:
                 # technically this part of code cannot be reached and is just an extra precaution
                 msg.error("Invalid argument set specified, please review")
