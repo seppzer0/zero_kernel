@@ -6,11 +6,10 @@ An advanced Android kernel builder with Kali NetHunter support.
 
 - [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
-  - [**Disclaimer**](#disclaimer)
+  - [**Important**](#important)
   - [Description](#description)
   - [Kernel Features](#kernel-features)
-  - [Supported ROMs](#supported-roms)
-  - [ROM Artifacts in Releases](#rom-artifacts-in-releases)
+  - [Supported Devices \& ROMs](#supported-devices--roms)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
     - [Kernel](#kernel)
@@ -20,18 +19,29 @@ An advanced Android kernel builder with Kali NetHunter support.
   - [See also](#see-also)
   - [Credits](#credits)
 
-## **Disclaimer**
+## **Important**
 
 > [!IMPORTANT]
+> **\- Disclaimer \-**
+>
 > **This kernel is made for educational purposes only.**
 >
 > **I am not responsible for anything that may or may not happen to your device by installing any custom ROMs, kernels and/or any other forms of software.**
 >
 > **Anything you do with this kernel and your device you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
+> [!NOTE]
+> \- ROM artifacts in releases \-
+>
+> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are <u>**unmodified and mirrored from official sources**</u>.
+>
+>This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
+>
+>You can always download the same ROM file from official sources if you'd like. The mirroring in this repository is only done due to the fact that some ROM projects remove their older builds once they become too outdated.
+
 ## Description
 
-Technically speaking, the codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
+The codebase of this project is essentially an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
 
 The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
 
@@ -46,30 +56,31 @@ The kernel has the following features:
 - packet injection support for internal Wi-Fi chipset;
 - optional KernelSU support.
 
-## Supported ROMs
+## Supported Devices & ROMs
 
-For **OnePlus 5/T** devices:
+<details>
+<summary>OnePlus 5/T</summary>
 
-- 4.4 Linux kernel version:
-  - LineageOS;
-  - ParanoidAndroid;
-  - x_kernel supported (universal)*.
-- 4.14 Linux kernel version:
-  - ParanoidAndroid (unofficial & testing);
-  - x-ft_kernel supported (universal)**.
+<br>
+
+4.4 Linux kernel version:
+
+- LineageOS;
+- ParanoidAndroid;
+- x_kernel supported (universal)*.
+
+4.14 Linux kernel version:
+
+- ParanoidAndroid (unofficial & testing);
+- x-ft_kernel supported (universal)**.
+
+---
 
 \* -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
 
 \** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
-## ROM Artifacts in Releases
-
-> [!NOTE]
-> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
-
-This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
-
-You can always download the same ROM file from official sources if you'd like. The mirroring in this repository is done due to the fact that some ROM projects remove their older builds once they become too outdated.
+</details>
 
 ## Usage
 
