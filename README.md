@@ -31,7 +31,7 @@ An advanced Android kernel builder with Kali NetHunter support.
 > **Anything you do with this kernel and your device you do at your own risk. By using it, you take the responsibility upon yourself and in case of any issue you are not to blame me or other related contributors.**
 
 > [!NOTE]
-> \- ROM artifacts in releases -
+> \- ROM artifacts in releases \-
 >
 > The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are <u>**unmodified and mirrored from official sources**</u>.
 >
