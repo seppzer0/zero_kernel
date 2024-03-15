@@ -22,7 +22,7 @@ An advanced Android kernel builder with Kali NetHunter support.
 ## **Important**
 
 > [!IMPORTANT]
-> **- Disclaimer -**
+> **\- Disclaimer \-**
 >
 > **This kernel is made for educational purposes only.**
 >
