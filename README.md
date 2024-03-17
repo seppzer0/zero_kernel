@@ -1,6 +1,6 @@
 # zero_kernel
 
-An advanced Android kernel builder with Kali NetHunter support.
+An advanced Android kernel build wrapper with assets collection and Kali NetHunter support.
 
 ## Contents
 
@@ -41,7 +41,7 @@ An advanced Android kernel builder with Kali NetHunter support.
 
 ## Description
 
-The codebase of this project is essentially an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
+The codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
 
 The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
 
