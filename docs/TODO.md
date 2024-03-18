@@ -64,4 +64,5 @@
 - [ ] consider creating a separate "errors" subpackage for all errors;
 - [ ] add GKI kernels support;
 - [ ] separate "standard" kernel building from NetHunter-specific modifications;
-- [ ] add a differentiator/parameter to indicate whether the specified kernel source already has NetHunter patches.
+- [ ] add a differentiator/parameter to indicate whether the specified kernel source already has NetHunter patches;
+- [ ] use logging facility for logs.
