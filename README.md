@@ -84,11 +84,20 @@ The kernel has the following features:
 
 ## Usage
 
-The custom build wrapper consists of 3 main components:
+The custom build wrapper consists of 2 core components and 3 primary commands:
+
+Components:
 
 - kernel builder;
-- assets collector;
-- kernel + assets bundler.
+- assets collector.
+
+Commands:
+
+- `kernel`;
+- `assets`;
+- `bundle`.
+
+The `bundle` command is essentially a combined usage of kernel builder and assets collector core modules.
 
 ```help
 $ python3 wrapper --help
@@ -192,9 +201,9 @@ options:
 
 There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` commands into a single package.
 
-This is especially useful for linking the kernel version with the appropriate ROM version.
+This is especially useful for linking the kernel build with the appropriate ROM build.
 
-There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
+There are cases when an old kernel build is used with the newer ROM build. Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a *specific* kernel build with a corresponding ROM build.
 
 Currently, there are three types of packaging available:
 
@@ -204,7 +213,7 @@ Currently, there are three types of packaging available:
 
 Options `full` and `conan` collect all of the assets required to successfuly flash the kernel onto your device. The difference between the two is that `full` option places everything into a local directory, while `conan` organizes everything as a Conan package.
 
-An option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
+Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
 $ python3 wrapper bundle --help
