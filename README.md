@@ -22,7 +22,7 @@ An advanced Android kernel build wrapper with assets collection and Kali NetHunt
 ## **Important**
 
 > [!IMPORTANT]
-> **\- Disclaimer \-**
+> **\- DISCLAIMER \-**
 >
 > **This kernel is made for educational purposes only.**
 >
