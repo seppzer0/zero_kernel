@@ -33,7 +33,7 @@ An advanced Android kernel build wrapper with assets collection and Kali NetHunt
 > [!NOTE]
 > \- ROM artifacts in releases \-
 >
-> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are <u>**unmodified and mirrored from official sources**</u>.
+> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
 >
 >This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
 >
@@ -63,22 +63,18 @@ The kernel has the following features:
 
 <br>
 
-4.4 Linux kernel version:
+- 4.4 Linux kernel version:
+  - LineageOS;
+  - ParanoidAndroid;
+  - x_kernel supported (universal)`*`.
 
-- LineageOS;
-- ParanoidAndroid;
-- x_kernel supported (universal)*.
+- 4.14 Linux kernel version:
+  - ParanoidAndroid (unofficial & testing);
+  - x-ft_kernel supported (universal)`**`.
 
-4.14 Linux kernel version:
+`*` -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
 
-- ParanoidAndroid (unofficial & testing);
-- x-ft_kernel supported (universal)**.
-
----
-
-\* -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
-
-\** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
+`**` -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
 </details>
 
