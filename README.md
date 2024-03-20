@@ -61,8 +61,6 @@ The kernel has the following features:
 <details>
 <summary>OnePlus 5/T</summary>
 
-<br>
-
 - 4.4 Linux kernel version:
   - LineageOS;
   - ParanoidAndroid;
