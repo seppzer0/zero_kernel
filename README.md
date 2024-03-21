@@ -87,9 +87,9 @@ Components:
 
 Commands:
 
-- `kernel`;
-- `assets`;
-- `bundle`.
+- kernel;
+- assets;
+- bundle.
 
 The `bundle` command is essentially a combined usage of kernel builder and assets collector core modules.
 
