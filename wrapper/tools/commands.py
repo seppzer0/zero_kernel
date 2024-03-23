@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import Optional
 from subprocess import CompletedProcess
 
 from wrapper.tools import messages as msg
@@ -7,11 +8,10 @@ from wrapper.tools import messages as msg
 
 def launch(
         cmd: str,
-        get_output: bool = False,
+        get_output: Optional[bool] = False,
         loglvl: str = os.getenv("LOGLEVEL", "normal")
     ) -> str | CompletedProcess:
-    """
-    A custom subprocess wrapper to launch commands.
+    """A custom subprocess wrapper to launch commands.
 
     :param cmd: A command to launch.
     :param get_output: A switch to get the piped output of the command.
@@ -28,7 +28,6 @@ def launch(
         msg.error("Cannot run 'quiet' build with file logging")
     elif loglvl == "verbose":
         print(f"[cmd] {cmd}")
-    # avoid using shell
     try:
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
         # return only output if required
