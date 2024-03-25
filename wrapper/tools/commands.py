@@ -10,7 +10,7 @@ def launch(
         cmd: str,
         get_output: Optional[bool] = False,
         loglvl: str = os.getenv("LOGLEVEL", "normal")
-    ) -> str | CompletedProcess:
+    ) -> str | CompletedProcess | None:
     """A custom subprocess wrapper to launch commands.
 
     :param cmd: A command to launch.
