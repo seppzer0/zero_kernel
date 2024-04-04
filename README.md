@@ -91,8 +91,6 @@ Commands:
 - assets;
 - bundle.
 
-The `bundle` command is essentially a combined usage of kernel builder and assets collector core modules.
-
 ```help
 $ python3 builder --help
 usage: builder [-h] [--clean] {kernel,assets,bundle} ...
@@ -193,7 +191,7 @@ options:
 
 ### Bundle
 
-There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` commands into a single package.
+The `bundle` command is a combined usage of kernel builder and assets collector core modules.
 
 This is especially useful for linking the kernel build with the appropriate ROM build.
 
