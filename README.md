@@ -1,6 +1,6 @@
 # zero_kernel
 
-An advanced Android kernel build wrapper with assets collection and Kali NetHunter support.
+An advanced Android kernel builder with assets collection and Kali NetHunter support.
 
 ## Contents
 
@@ -41,7 +41,7 @@ An advanced Android kernel build wrapper with assets collection and Kali NetHunt
 
 ## Description
 
-The codebase of this project is an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
+The codebase of this project is an extensive build wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
 
 The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
 
@@ -78,7 +78,7 @@ The kernel has the following features:
 
 ## Usage
 
-The custom build wrapper consists of 2 core components and 3 primary commands:
+The custom build wrapper (aka "builder") consists of 2 core components and 3 primary commands:
 
 Components:
 
@@ -94,10 +94,10 @@ Commands:
 The `bundle` command is essentially a combined usage of kernel builder and assets collector core modules.
 
 ```help
-$ python3 wrapper --help
-usage: wrapper [-h] [--clean] {kernel,assets,bundle} ...
+$ python3 builder --help
+usage: builder [-h] [--clean] {kernel,assets,bundle} ...
 
-A custom wrapper for the zero_kernel.
+A custom builder for the zero_kernel.
 
 positional arguments:
   {kernel,assets,bundle}
@@ -132,11 +132,11 @@ export PYTHONPATH=$(pwd)
 
 ### Kernel
 
-Kernel build process can be launched using the `kernel` subcommand of the wrapper.
+Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
-$ python3 wrapper kernel --help
-usage: wrapper kernel [-h] --build-env {local,docker,podman} --base
+$ python3 builder kernel --help
+usage: builder kernel [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
                       [-o OUTLOG] [--ksu]
@@ -165,8 +165,8 @@ options:
 As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
-$ python3 wrapper assets --help
-usage: wrapper assets [-h] --build-env {local,docker,podman} --base
+$ python3 builder assets --help
+usage: builder assets [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --chroot
                       {full,minimal} [--rom-only] [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
@@ -210,8 +210,8 @@ Options `full` and `conan` collect all of the assets required to successfuly fla
 Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
-$ python3 wrapper bundle --help
-usage: wrapper bundle [-h] --build-env {local,docker,podman} --base
+$ python3 builder bundle --help
+usage: builder bundle [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV
                       --package-type {conan,slim,full} [--conan-upload]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
@@ -244,19 +244,19 @@ Here are some examples of commands:
 **(Recommended)** Build kernel and collect ROM via Docker:
 
 ```sh
-python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+python3 builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
 ```
 
 Build kernel locally:
 
 ```sh
-python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+python3 builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
 ```
 
 Collect all of the assets locally:
 
 ```sh
-python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full
+python3 builder assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
 ## See also

@@ -4,7 +4,7 @@ version = "0.4.2"
 description = "An advanced Android kernel builder with Kali NetHunter support."
 authors = ["seppzer0"]
 readme = "README.md"
-packages = [{include = "wrapper"}]
+packages = [{include = "builder"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -23,11 +23,11 @@ pyright = "^1.1"
 
 [tool.coverage.run]
 source = [
-    "wrapper/clients",
-    "wrapper/commands",
-    "wrapper/configs",
-    "wrapper/engines",
-    "wrapper/utils"
+    "builder/clients",
+    "builder/commands",
+    "builder/configs",
+    "builder/engines",
+    "builder/utils"
 ]
 
 [tool.coverage.report]
