@@ -113,7 +113,7 @@ optional arguments:
 **It is highly recommended to use `docker` option to run this tool.** For that you need Docker Engine or Docker Desktop, depending on your OS.
 
 > [!WARNING]
-> Because of how *specific* Linux kernel source is, building it on Windows even with Docker might be challenging.
+> Because of how *specific* Linux kernel source is, building it on Windows even with Docker (using WSL2 back-end) might be [challenging](https://stackoverflow.com/questions/76754956/how-to-clone-the-linux-kernel-repository-to-my-machine-i-keep-geting-errors).
 
 To run this tool in a `local` environment, you will need:
 
@@ -123,9 +123,9 @@ To run this tool in a `local` environment, you will need:
 You will also need to configure your Python installation, including some of the packages installation:
 
 ```sh
+export PYTHONPATH=$(pwd)
 python3 -m pip install poetry
 python3 -m poetry install --no-root
-export PYTHONPATH=$(pwd)
 ```
 
 ### Kernel
