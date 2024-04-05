@@ -29,7 +29,7 @@ def test__message_error__validate(capfd, dont_exit: bool) -> None:
 def test__message_done__validate(capfd) -> None:
     """Check "done" message construction."""
     m = "This is a test message."
-    expected_result = f"[ + ] {m}"
+    expected_result = f"[ \u2713 ] {m}"
     msg.done(m)
     out, err = capfd.readouterr()
     assert out.rstrip() == expected_result
