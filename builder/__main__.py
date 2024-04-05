@@ -226,7 +226,7 @@ def main(args: argparse.Namespace) -> None:
         sys.exit(0)
     os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
-    with open(dcfg.root / "pyproject.toml") as f:
+    with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # create a config for argument check and storage
     arguments = vars(args)

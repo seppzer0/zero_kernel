@@ -52,7 +52,7 @@ class ArgumentConfig(BaseModel):
                 except Exception:
                     msg.error("Detected Linux distribution is not Debian-based.")
         # check if specified device is supported
-        with open(Path(__file__).absolute().parents[2] / "builder" / "manifests" / "devices.json") as f:
+        with open(Path(__file__).absolute().parents[2] / "builder" / "manifests" / "devices.json", encoding="utf-8") as f:
             devices = json.load(f)
         if self.codename not in devices.keys():
             msg.error("Unsupported device codename specified.")

@@ -49,7 +49,7 @@ def download(url: str) -> None:
         else:
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
-                with open(fn, 'wb') as f:
+                with open(fn, "wb", encoding="utf-8") as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
     except Exception:
@@ -65,8 +65,8 @@ def replace_lines(filename: Path, og_lines: Tuple[str], nw_lines: Tuple[str]) ->
     :param nw_lines: New lines in place of original lines.
     """
     filename_new = Path(str(filename) + "_new")
-    with open(filename) as data:
-        with open(filename_new, 'w') as new_data:
+    with open(filename, encoding="utf-8") as data:
+        with open(filename_new, "w", encoding="utf-8") as new_data:
             for line in data:
                 for indx, key in enumerate(og_lines):
                     if key in line:
@@ -85,8 +85,8 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
     :param occurence: The index of occurence to replace.
     """
     filename_new = Path(str(filename) + "_new")
-    with open(filename) as data:
-        with open(filename_new, 'w') as new_data:
+    with open(filename, encoding="utf-8") as data:
+        with open(filename_new, "w", encoding="utf-8") as new_data:
             counter = 0
             for line in data:
                 if og_string in line:
@@ -105,7 +105,7 @@ def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
     :param pointer_line: The line before which new line will be inserted.
     :param new_line: The line being inserted.
     """
-    with open(filename, "r+") as f:
+    with open(filename, "r+", encoding="utf-8") as f:
         a = [x.rstrip() for x in f]
         index = 0
         for item in a:

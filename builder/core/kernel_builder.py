@@ -32,7 +32,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @staticmethod
     def _write_localversion() -> None:
-        with open("localversion", "w") as f:
+        with open("localversion", "w", encoding="utf-8") as f:
             f.write("~zero-kernel")
 
     @property
@@ -219,7 +219,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # start the patching process
         contents = ""
         for fname, funcnames in data.items():
-            with open(fname, "r") as f:
+            with open(fname, "r", encoding="utf-8") as f:
                 contents = f.read()
             # replace: "()" -> "(void)"
             for func in funcnames:
@@ -323,14 +323,14 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                     "arm64" /\
                     "configs" /\
                     self._defconfig
-        with open(makefile, "a") as f:
+        with open(makefile, "a", encoding="utf-8") as f:
             f.write("obj-$(CONFIG_88XXAU)		+= rtl8812au/")
         fo.insert_before_line(
             kconfig,
             "endif",
             "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\""
         )
-        with open(defconfig, "a") as f:
+        with open(defconfig, "a", encoding="utf-8") as f:
             extra_configs = (
                 "CONFIG_88XXAU=y",
                 "CONFIG_MODULE_FORCE_LOAD=y",
@@ -368,7 +368,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "drivers" /\
             "kernelsu"
         )
-        with open(makefile, "a") as f:
+        with open(makefile, "a", encoding="utf-8") as f:
             f.write("obj-$(CONFIG_KSU)		+= kernelsu/\n")
         fo.insert_before_line(
             kconfig,
@@ -390,7 +390,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                     "arm64" /\
                     "configs" /\
                     self._defconfig
-        with open(defconfig, "a") as f:
+        with open(defconfig, "a", encoding="utf-8") as f:
             extra_configs = (
                 "CONFIG_KSU=y",
                 "CONFIG_MODULES=y",
@@ -447,9 +447,9 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         data = ""
         files = ("tx.c", "mlme.c")
         for fn in files:
-            with open(Path("net", "mac80211", fn), "r") as f:
+            with open(Path("net", "mac80211", fn), "r", encoding="utf-8") as f:
                 data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
-            with open(Path("net", "mac80211", fn), "w") as f:
+            with open(Path("net", "mac80211", fn), "w", encoding="utf-8") as f:
                 f.write(data)
         # some patches only for ParanoidAndroid
         if self.base == "pa":
@@ -511,7 +511,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     def _linux_kernel_version(self) -> str:
         data = ""
         version = []
-        with open(self._rcs.paths[self.codename]["path"] / "Makefile") as f:
+        with open(self._rcs.paths[self.codename]["path"] / "Makefile", encoding="utf-8") as f:
             data = f.read()
         params = ("VERSION", "PATCHLEVEL")
         # find the required lines in a single data run-through
