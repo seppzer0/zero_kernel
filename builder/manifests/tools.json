@@ -1,0 +1,35 @@
+{
+    "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9": {
+        "type": "git",
+        "path": "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9",
+        "url": "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9",
+        "branch": "android-13.0.0_r0.52",
+        "commit": ""
+    },
+    "AnyKernel3": {
+        "type": "git",
+        "path": "AnyKernel3",
+        "url": "https://github.com/osm0sis/AnyKernel3",
+        "branch": "master",
+        "commit": ""
+    },
+    "rtl8812au": {
+        "type": "git",
+        "path": "rtl8812au",
+        "url": "https://github.com/aircrack-ng/rtl8812au",
+        "branch": "v5.6.4.2",
+        "commit": "04f600e"
+    },
+    "clang": {
+        "type": "generic",
+        "path": "clang",
+        "url": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/eed2fff8b93ce059eea7ccd8fc5eee37f8adb432/clang-r458507.tar.gz"
+    },
+    "KernelSU": {
+        "type": "git",
+        "path": "KernelSU",
+        "url": "https://github.com/tiann/KernelSU",
+        "branch": "v0.9.2",
+        "commit": ""
+    }
+}

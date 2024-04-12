@@ -29,7 +29,7 @@ Listed below files are required:
 - Kali NetHunter Chroot (you can do this later, but it would be easier to download this beforehand);
 - ~~`nhpatch.sh` script from this repo (fixes NetHunter permissions for Android 12+)~~ with recent NetHunter app versions, `nhpatch.sh` usage is no longer required.
 
-Currently, all of the mentioned assets can be collected via the `assets` subcommand in the wrapper (use `full` option).
+Currently, all of the mentioned assets can be collected via the `assets` subcommand (use `full` option).
 
 ## **2. Flashing**
 

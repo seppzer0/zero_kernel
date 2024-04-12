@@ -1,12 +1,12 @@
 # zero_kernel
 
-An advanced Android kernel builder with Kali NetHunter support.
+An advanced Android kernel builder with assets collection and Kali NetHunter support.
 
 ## Contents
 
 - [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
-  - [**Important**](#important)
+  - [**Important to Read**](#important-to-read)
   - [Description](#description)
   - [Kernel Features](#kernel-features)
   - [Supported Devices \& ROMs](#supported-devices--roms)
@@ -19,10 +19,10 @@ An advanced Android kernel builder with Kali NetHunter support.
   - [See also](#see-also)
   - [Credits](#credits)
 
-## **Important**
+## **Important to Read**
 
 > [!IMPORTANT]
-> **\- Disclaimer \-**
+> **\- DISCLAIMER \-**
 >
 > **This kernel is made for educational purposes only.**
 >
@@ -33,7 +33,7 @@ An advanced Android kernel builder with Kali NetHunter support.
 > [!NOTE]
 > \- ROM artifacts in releases \-
 >
-> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are <u>**unmodified and mirrored from official sources**</u>.
+> The contents of each release include ROM builds compatible with corresponding kernel builds. These ROM files are **unmodified and mirrored from official sources**.
 >
 >This can be verified via the checksums, which should be identical to the ones presented on the ROM project's official web page.
 >
@@ -41,7 +41,7 @@ An advanced Android kernel builder with Kali NetHunter support.
 
 ## Description
 
-The codebase of this project is essentially an extensive wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
+The codebase of this project is an extensive build wrapper automating the entire Android kernel build process, starting from kernel source collection and ending with artifact packaging.
 
 The key goal is to modify the kernel in such a way that enables unique features of [Kali NetHunter](https://www.kali.org/docs/nethunter) — a ROM layer designed to add extended functionality for penetration testing in a mobile form factor.
 
@@ -61,40 +61,41 @@ The kernel has the following features:
 <details>
 <summary>OnePlus 5/T</summary>
 
-<br>
+- 4.4 Linux kernel version:
+  - LineageOS;
+  - ParanoidAndroid;
+  - x_kernel supported (universal)`*`.
 
-4.4 Linux kernel version:
+- 4.14 Linux kernel version:
+  - ParanoidAndroid (unofficial & testing);
+  - x-ft_kernel supported (universal)`**`.
 
-- LineageOS;
-- ParanoidAndroid;
-- x_kernel supported (universal)*.
+`*` -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
 
-4.14 Linux kernel version:
-
-- ParanoidAndroid (unofficial & testing);
-- x-ft_kernel supported (universal)**.
-
----
-
-\* -- this is mostly relevant to ROMs based on LineageOS; however, technically speaking, this includes ParanoidAndroid as well, which makes x_kernel-based builds universal.
-
-\** -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
+`**` -- this, **in theory**, is relevant to all 4.14-based ROMs for this device in existence.
 
 </details>
 
 ## Usage
 
-The custom build wrapper consists of 3 main components:
+The custom build wrapper (aka "builder") consists of 2 core components and 3 primary commands:
+
+Components:
 
 - kernel builder;
-- assets collector;
-- kernel + assets bundler.
+- assets collector.
+
+Commands:
+
+- kernel;
+- assets;
+- bundle.
 
 ```help
-$ python3 wrapper --help
-usage: wrapper [-h] [--clean] {kernel,assets,bundle} ...
+$ python3 builder --help
+usage: builder [-h] [--clean] {kernel,assets,bundle} ...
 
-A custom wrapper for the zero_kernel.
+A custom builder for the zero_kernel.
 
 positional arguments:
   {kernel,assets,bundle}
@@ -112,7 +113,7 @@ optional arguments:
 **It is highly recommended to use `docker` option to run this tool.** For that you need Docker Engine or Docker Desktop, depending on your OS.
 
 > [!WARNING]
-> Because of how *specific* Linux kernel source is, building it on Windows even with Docker might be challenging.
+> Because of how *specific* Linux kernel source is, building it on Windows even with Docker (using WSL2 back-end) might be [challenging](https://stackoverflow.com/questions/76754956/how-to-clone-the-linux-kernel-repository-to-my-machine-i-keep-geting-errors).
 
 To run this tool in a `local` environment, you will need:
 
@@ -122,18 +123,18 @@ To run this tool in a `local` environment, you will need:
 You will also need to configure your Python installation, including some of the packages installation:
 
 ```sh
+export PYTHONPATH=$(pwd)
 python3 -m pip install poetry
 python3 -m poetry install --no-root
-export PYTHONPATH=$(pwd)
 ```
 
 ### Kernel
 
-Kernel build process can be launched using the `kernel` subcommand of the wrapper.
+Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
-$ python3 wrapper kernel --help
-usage: wrapper kernel [-h] --build-env {local,docker,podman} --base
+$ python3 builder kernel --help
+usage: builder kernel [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
                       [-o OUTLOG] [--ksu]
@@ -162,8 +163,8 @@ options:
 As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
-$ python3 wrapper assets --help
-usage: wrapper assets [-h] --build-env {local,docker,podman} --base
+$ python3 builder assets --help
+usage: builder assets [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --chroot
                       {full,minimal} [--rom-only] [--clean-image] [--clean]
                       [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
@@ -190,11 +191,11 @@ options:
 
 ### Bundle
 
-There is an option named `bundle` which combines build artifacts of both `kernel` and `assets` commands into a single package.
+The `bundle` command is a combined usage of kernel builder and assets collector core modules.
 
-This is especially useful for linking the kernel version with the appropriate ROM version.
+This is especially useful for linking the kernel build with the appropriate ROM build.
 
-There are cases when an old kernel version is used with the newer ROM version (adapted for the *newer* version of kernel). Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a specific kernel build with a corresponding ROM build.
+There are cases when an old kernel build is used with the newer ROM build. Such cases can ultimately lead to your system working improperly or breaking down completely, which is why it is important to use a *specific* kernel build with a corresponding ROM build.
 
 Currently, there are three types of packaging available:
 
@@ -204,11 +205,11 @@ Currently, there are three types of packaging available:
 
 Options `full` and `conan` collect all of the assets required to successfuly flash the kernel onto your device. The difference between the two is that `full` option places everything into a local directory, while `conan` organizes everything as a Conan package.
 
-An option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
+Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
-$ python3 wrapper bundle --help
-usage: wrapper bundle [-h] --build-env {local,docker,podman} --base
+$ python3 builder bundle --help
+usage: builder bundle [-h] --build-env {local,docker,podman} --base
                       {los,pa,x,aosp} --codename CODENAME --lkv LKV
                       --package-type {conan,slim,full} [--conan-upload]
                       [--clean-image] [--log-level {normal,verbose,quiet}]
@@ -241,19 +242,19 @@ Here are some examples of commands:
 **(Recommended)** Build kernel and collect ROM via Docker:
 
 ```sh
-python3 wrapper bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+python3 builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
 ```
 
 Build kernel locally:
 
 ```sh
-python3 wrapper kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+python3 builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
 ```
 
 Collect all of the assets locally:
 
 ```sh
-python3 wrapper assets --build-env=local --base=los --codename=dumpling --package-type=full
+python3 builder assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
 ## See also

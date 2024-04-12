@@ -16,11 +16,11 @@ class Tester:
     def pytest_checks(self) -> CompletedProcess:
         """Run unit tests with Pytest and coverage checks."""
         os.environ["PYTHONPATH"] = ROOTPATH
-        return self._launch_cmd("python3 -m pytest tests/ --cov")
+        return self._launch_cmd("python3 -m pytest -vv tests/ --cov")
 
     def pyright_checks(self) -> CompletedProcess:
         """Run type (hint) checks with Pyright."""
-        return self._launch_cmd("python3 -m pyright wrapper")
+        return self._launch_cmd("python3 -m pyright builder")
 
     def bandit_checks(self) -> list[CompletedProcess]:
         """Run SAST with Bandit."""
