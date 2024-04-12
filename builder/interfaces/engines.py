@@ -28,13 +28,24 @@ class IContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def build(self) -> None:
+    def build_image(self) -> None:
         """Build the image."""
         raise NotImplementedError()
 
+    @property
     @abstractmethod
-    def run(self) -> None:
-        """Execute the containerized build logic."""
+    def run_cmd(self) -> str:
+        """Form command for container launch."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def __enter__(self) -> None:
+        """Magic method for preparing the containerized build."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def __exit__(self) -> None:
+        """Magic method for post-build operations for the container engine."""
         raise NotImplementedError()
 
 

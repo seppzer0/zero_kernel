@@ -4,7 +4,7 @@ import sys
 import json
 import argparse
 
-from builder.tools import cleaning as cm, messages as msg
+from builder.tools import cleaning as cm, messages as msg, commands as ccmd
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
 from builder.engines import DockerEngine, PodmanEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
@@ -243,9 +243,11 @@ def main(args: argparse.Namespace) -> None:
     # determine the build
     match args.benv:
         case "docker":
-            DockerEngine(**json.loads(acfg.model_dump_json())).run()
+            with DockerEngine(**json.loads(acfg.model_dump_json())) as engine:
+                ccmd.launch(engine.run_cmd)
         case "podman":
-            PodmanEngine(**json.loads(acfg.model_dump_json())).run()
+            with PodmanEngine(**json.loads(acfg.model_dump_json())) as engine:
+                ccmd.launch(engine.run_cmd)
         case "local":
             match args.command:
                 case "kernel":

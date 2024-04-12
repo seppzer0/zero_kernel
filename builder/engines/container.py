@@ -19,10 +19,6 @@ class ContainerEngine(BaseModel, IContainerEngine):
     directory structure. We only need to specify directory
     names and not full paths.
 
-    :param name_image: Name of the Docker/Podman image.
-    :param name_container: Name of the Docker/Podman container.
-    :param wdir_container: Working directory in the container.
-    :param wdir_local: Working directory from the local environment (aka root of the repo).
     :param benv: Build environment.
     :param command: Builder command to be launched.
     :param codename: Device codename.
@@ -144,7 +140,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
                     shutil.rmtree(dcfg.bundle, ignore_errors=True)
                     os.mkdir(dcfg.bundle)
 
-    def build(self) -> CompletedProcess:
+    def build_image(self) -> CompletedProcess:
         print("\n")
         alias = self.benv.capitalize()
         msg.note(f"Building the {alias} image..")
@@ -160,18 +156,21 @@ class ContainerEngine(BaseModel, IContainerEngine):
         print("\n")
         return res
 
-    def run(self) -> None:
-        self.build()
-        # form the final command to create container
-        cmd = '{} run {} {} /bin/bash -c "{}"'.format(
+    @property
+    def run_cmd(self) -> str:
+        return '{} run {} {} /bin/bash -c "{}"'.format(
             self.benv,
             " ".join(self.container_options),
             self.name_image,
             self.builder_cmd
         )
-        # prepare directories
+
+    def __enter__(self) -> None:
+        # build the image and prepare directories
+        self.build_image()
         self.create_dirs()
-        ccmd.launch(cmd)
+
+    def __exit__(self) -> None:
         # navigate to root directory and clean image from host machine
         os.chdir(self.wdir_local)
         if self.clean_image:

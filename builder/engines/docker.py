@@ -10,6 +10,9 @@ from builder.engines.container_engine import ContainerEngine
 class DockerEngine(ContainerEngine, IDockerEngine):
     """Docker engine."""
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
     @staticmethod
     def _force_buildkit() -> None:
         os.environ["DOCKER_BUILDKIT"] = "1"
@@ -21,24 +24,11 @@ class DockerEngine(ContainerEngine, IDockerEngine):
         return check
 
     @override
-    def run(self) -> None:
+    def __enter__(self) -> None:
         self._force_buildkit()
         # build image only if it is not present in local cache
         if not self._check_cache():
-            self.build()
+            self.build_image()
         else:
             msg.note("\nDocker image already in local cache, skipping it's build..\n")
-        # form the final command to create container
-        cmd = '{} run {} {} /bin/bash -c "{}"'.format(
-            self.benv,
-            " ".join(self.container_options),
-            self.name_image,
-            self.builder_cmd
-        )
-        # prepare directories
         self.create_dirs()
-        ccmd.launch(cmd)
-        # navigate to root directory and clean image from host machine
-        os.chdir(self.wdir_local)
-        if self.clean_image:
-            ccmd.launch(f"{self.benv} rmi {self.name_image}")
