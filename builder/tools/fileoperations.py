@@ -49,11 +49,11 @@ def download(url: str) -> None:
         else:
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
-                with open(fn, "wb", encoding="utf-8") as f:
+                with open(fn, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
-    except Exception:
-        msg.error("Download failed.")
+    except Exception as e:
+        msg.error(f"Download failed: {e}")
     msg.done("Done!")
 
 
