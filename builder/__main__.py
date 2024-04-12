@@ -9,6 +9,7 @@ from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
 from builder.engines import DockerEngine, PodmanEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
+
 def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
     # show the 'help' message if no arguments supplied
