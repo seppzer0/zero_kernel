@@ -1,4 +1,6 @@
 import requests
+from typing import Any
+from requests import Response
 from pydantic import BaseModel
 
 from builder.tools import messages as msg
@@ -22,14 +24,13 @@ class RomApi(BaseModel, IRomApi):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.endpoint = self.endpoint.format(self.codename_mapper)
+        self.endpoint = self.endpoint.format(self.codename_mapper())
 
-    @property
     def codename_mapper(self) -> str:
         # by default, codename is devicename
         return self.codename
 
-    def run(self) -> str:
+    def run(self) -> Any | Response:
         data = requests.get(self.endpoint)
         try:
             data = data.json()[self.json_key][0]["url"]

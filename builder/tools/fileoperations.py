@@ -1,13 +1,13 @@
 import os
 import shutil
 import requests
-from typing import Tuple
 from pathlib import Path
+from typing import Optional
 
 from builder.tools import commands as ccmd, messages as msg
 
 
-def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
+def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = ()) -> None:
     """A universal method to copy files into desired destinations.
 
     :param src: Source path.

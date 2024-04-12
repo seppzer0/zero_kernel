@@ -10,9 +10,6 @@ from builder.engines.container_engine import ContainerEngine
 class DockerEngine(ContainerEngine, IDockerEngine):
     """Docker engine."""
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
     @staticmethod
     def _force_buildkit() -> None:
         os.environ["DOCKER_BUILDKIT"] = "1"

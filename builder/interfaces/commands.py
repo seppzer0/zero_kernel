@@ -1,3 +1,4 @@
+from typing import Literal
 from abc import ABC, abstractmethod
 
 
@@ -43,7 +44,7 @@ class IBundleCommand(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def _conan_package(self, options: list[str], reference: str) -> None:
+    def _conan_package(self, options: tuple[str, ...], reference: str) -> None:
         """Create the Conan package.
 
         :param options: Conan options.

@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import itertools
+from typing import Literal
 from pydantic import BaseModel
 
 from builder.core import KernelBuilder, AssetsCollector
@@ -76,7 +77,7 @@ class BundleCommand(BaseModel, IBundleCommand):
             json_data = json.load(f)
         return json_data
 
-    def _conan_package(self, options: list[str], reference: str) -> None:
+    def _conan_package(self, options: tuple[str, ...], reference: str) -> None:
         cmd = f"conan export-pkg . {reference}"
         for option_value in options:
             # not the best solution, but will work temporarily for 'rom' and 'chroot' options

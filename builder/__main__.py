@@ -244,7 +244,7 @@ def main(args: argparse.Namespace) -> None:
     match args.benv:
         case "docker":
             with DockerEngine(**json.loads(acfg.model_dump_json())) as engine:
-                ccmd.launch(engine.run_cmd)
+                ccmd.launch(engine.run_cmd) # type: ignore ; no idea why this is not an issue for Podman
         case "podman":
             with PodmanEngine(**json.loads(acfg.model_dump_json())) as engine:
                 ccmd.launch(engine.run_cmd)
@@ -252,28 +252,28 @@ def main(args: argparse.Namespace) -> None:
             match args.command:
                 case "kernel":
                     KernelCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        lkv = acfg.lkv,
-                        clean_kernel = acfg.clean_kernel,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        clean_kernel = args.clean_kernel,
+                        ksu = args.ksu,
                     ).run()
                 case "assets":
                     AssetsCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        chroot = acfg.chroot,
-                        clean_assets = acfg.clean_assets,
-                        rom_only = acfg.rom_only,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        chroot = args.chroot,
+                        clean_assets = args.clean_assets,
+                        rom_only = args.rom_only,
+                        ksu = args.ksu,
                     ).run()
                 case "bundle":
                     BundleCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        lkv = acfg.lkv,
-                        package_type = acfg.package_type,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        package_type = args.package_type,
+                        ksu = args.ksu,
                     ).run()
 
 
