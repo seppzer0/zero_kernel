@@ -4,10 +4,10 @@ from typing import override
 from builder.tools import commands as ccmd, messages as msg
 from builder.interfaces import IDockerEngine
 
-from builder.engines.container_engine import ContainerEngine
+from builder.engines.generic_container import GenericContainerEngine
 
 
-class DockerEngine(ContainerEngine, IDockerEngine):
+class DockerEngine(GenericContainerEngine, IDockerEngine):
     """Docker engine."""
 
     @staticmethod

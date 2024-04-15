@@ -1,5 +1,5 @@
-from builder.engines.container_engine import ContainerEngine
+from builder.engines.generic_container import GenericContainerEngine
 
 
-class PodmanEngine(ContainerEngine):
+class PodmanEngine(GenericContainerEngine):
     """Podman engine."""

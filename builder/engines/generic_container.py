@@ -7,10 +7,10 @@ from subprocess import CompletedProcess
 
 from builder.tools import commands as ccmd, messages as msg
 from builder.configs import DirectoryConfig as dcfg
-from builder.interfaces import IContainerEngine
+from builder.interfaces import IGenericContainerEngine
 
 
-class ContainerEngine(BaseModel, IContainerEngine):
+class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     """A generic container engine for containerized builds.
 
     Note that here paths from DirectoryConfig are not used
@@ -116,7 +116,7 @@ class ContainerEngine(BaseModel, IContainerEngine):
                         options.append(v_template.format(dcfg.bundle, self.wdir_container, dcfg.bundle.name))
                     case "conan":
                         if self.conan_upload:
-                            options.append('-e CONAN_UPLOAD_CUSTOM=1')
+                            options.append("-e CONAN_UPLOAD_CUSTOM=1")
                         # determine the path to local Conan cache and check if it exists
                         if self.dir_bundle_conan.is_dir():
                             options.append(f'-v {self.dir_bundle_conan}:/"/root/.conan"')

@@ -2,8 +2,8 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 
 
-class IContainerEngine(ABC):
-    """An interface for ContainerEngine."""
+class IGenericContainerEngine(ABC):
+    """An interface for GenericContainerEngine."""
 
     @property
     @abstractmethod
