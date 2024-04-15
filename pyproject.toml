@@ -33,6 +33,10 @@ source = [
 [tool.coverage.report]
 show_missing = true
 
+[tool.pyright]
+include=["builder"]
+pythonVersion = "3.12"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
