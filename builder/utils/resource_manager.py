@@ -1,6 +1,7 @@
 import os
 import json
 import tarfile
+from pathlib import Path
 from typing import Optional
 
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
@@ -10,7 +11,7 @@ from builder.configs import DirectoryConfig as dcfg
 class ResourceManager:
     """An entity for managing build resources."""
 
-    paths: list[str] = []
+    paths: dict[str, Path] = {}
 
     def __init__(
             self,
@@ -21,6 +22,10 @@ class ResourceManager:
         self._codename = codename
         self._lkv = lkv
         self._base = base
+
+    def __getitem__(self, arg: Path) -> slice:
+        """A custom getitem implementation for accessing data via Path-type indexes."""
+        return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (arg.split(":") + ["", "", ""])[:3]])
 
     def path_gen(self) -> dict[str]:
         """Generate paths from JSON data."""
@@ -48,7 +53,7 @@ class ResourceManager:
             msg.note("Only shared tools are installed.")
         for e in self.paths:
             # convert path into it's absolute form
-            self.paths[e]["path"] = dcfg.root / self.paths[e]["path"]
+            self.paths[e] = dcfg.root / self.paths[e]
 
     def download(self) -> None:
         """Download files from URLs."""

@@ -123,9 +123,10 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         msg.banner("zero asset collector")
         self._check()
         os.chdir(dcfg.assets)
-        for e in self.assets:
-            if e is not None:
-                fo.download(e)
+        if isinstance(self.assets, list):
+            for e in self.assets:
+                if e is not None:
+                    fo.download(e)
         print("\n", end="")
         msg.done("Assets collected!")
         os.chdir(dcfg.root)

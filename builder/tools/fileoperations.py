@@ -2,7 +2,8 @@ import os
 import shutil
 import requests
 from pathlib import Path
-from typing import Optional
+from requests import Response
+from typing import Optional, Any, Literal
 
 from builder.tools import commands as ccmd, messages as msg
 
@@ -33,7 +34,7 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
         shutil.copy(src, dst)
 
 
-def download(url: str) -> None:
+def download(url: Any | Response | str) -> None:
     """A simple file downloader.
 
     :param url: URL to the file.
@@ -57,7 +58,7 @@ def download(url: str) -> None:
     msg.done("Done!")
 
 
-def replace_lines(filename: Path, og_lines: Tuple[str], nw_lines: Tuple[str]) -> None:
+def replace_lines(filename: Path, og_lines: tuple[Literal[str], ...], nw_lines: tuple[Literal[str], ...]) -> None:
     """Replace lines in the specified file.
 
     :param filename: Path to the filename.
@@ -98,7 +99,7 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
     os.replace(filename_new, filename)
 
 
-def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
+def insert_before_line(filename: str | Path, pointer_line: str, new_line: str) -> None:
     """Insert new line before the specified one.
 
     :param filename: Name of the file.
@@ -119,7 +120,7 @@ def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
             f.write(line + "\n")
 
 
-def apply_patch(filename: str) -> None:
+def apply_patch(filename: str | Path) -> None:
     """Apply .patch file.
 
     :param filename: Name of the .patch file.

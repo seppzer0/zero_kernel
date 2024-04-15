@@ -17,8 +17,7 @@ class DockerEngine(ContainerEngine, IDockerEngine):
     def _check_cache(self) -> bool:
         img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
         img_cache = ccmd.launch(img_cache_cmd, get_output=True)
-        check = True if self.name_image in img_cache else False
-        return check
+        return True if self.name_image in img_cache else False
 
     @override
     def __enter__(self) -> None:

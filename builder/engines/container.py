@@ -55,12 +55,10 @@ class ContainerEngine(BaseModel, IContainerEngine):
 
     @property
     def dir_bundle_conan(self) -> Path:
-        res = ""
         if os.getenv("CONAN_USER_HOME"):
-            res = Path(os.getenv("CONAN_USER_HOME"))
+            return Path(os.getenv("CONAN_USER_HOME"))
         else:
-            res = Path(os.getenv("HOME"), ".conan")
-        return res
+            return Path(os.getenv("HOME"), ".conan")
 
     @property
     def builder_cmd(self) -> str:

@@ -46,7 +46,7 @@ def on_rm_error(func, path: Path, exc_info):
     os.unlink(path)
 
 
-def git(directory: Path) -> None:
+def git(directory: Path | str) -> None:
     """Clean up a git directory.
 
     :param directory: Path to the directory.
