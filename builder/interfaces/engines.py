@@ -1,5 +1,6 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
+from subprocess import CompletedProcess
 
 
 class IGenericContainerEngine(ABC):
@@ -28,7 +29,7 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def build_image(self) -> None:
+    def build_image(self) -> CompletedProcess:
         """Build the image."""
         raise NotImplementedError()
 

@@ -2,8 +2,7 @@ import os
 import shutil
 import requests
 from pathlib import Path
-from requests import Response
-from typing import Optional, Any, Literal
+from typing import Optional
 
 from builder.tools import commands as ccmd, messages as msg
 
@@ -34,7 +33,7 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
         shutil.copy(src, dst)
 
 
-def download(url: Any | Response | str) -> None:
+def download(url: str) -> None:
     """A simple file downloader.
 
     :param url: URL to the file.
@@ -58,7 +57,7 @@ def download(url: Any | Response | str) -> None:
     msg.done("Done!")
 
 
-def replace_lines(filename: Path, og_lines: tuple[Literal[str], ...], nw_lines: tuple[Literal[str], ...]) -> None:
+def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str, ...]) -> None:
     """Replace lines in the specified file.
 
     :param filename: Path to the filename.

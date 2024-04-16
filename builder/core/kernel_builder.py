@@ -431,7 +431,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     def _patch_kernel(self) -> None:
         # -Wstrict-prototypes patch to build with Clang 15+
         clang_cmd = f'{self._rcs.paths["clang"] / "bin" / "clang"} --version'
-        clang_ver = ccmd.launch(clang_cmd, get_output=True).split("clang version ")[1].split(".")[0]
+        clang_ver = str(ccmd.launch(clang_cmd, get_output=True)).split("clang version ")[1].split(".")[0]
         if int(clang_ver) >= 15:
             self._patch_strict_prototypes()
         # apply .patch files

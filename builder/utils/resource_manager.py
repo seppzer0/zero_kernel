@@ -25,7 +25,7 @@ class ResourceManager:
 
     def __getitem__(self, arg: Path) -> slice:
         """A custom getitem implementation for accessing data via Path-type indexes."""
-        return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (arg.split(":") + ["", "", ""])[:3]])
+        return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
 
     def path_gen(self) -> dict[str]:
         """Generate paths from JSON data."""
@@ -59,10 +59,10 @@ class ResourceManager:
         """Download files from URLs."""
         for e in self.paths:
             # break data into individual required vars
-            path = self.paths[e]["path"]
-            url = self.paths[e]["url"]
+            path = self.paths[e]["path"]            # type: ignore
+            url = self.paths[e]["url"]              # type: ignore
             # break further processing into "generic" and "git" groups
-            ftype = self.paths[e]["type"]
+            ftype = self.paths[e]["type"]           # type: ignore
             match ftype:
                 case "generic":
                     # download and unpack
@@ -81,8 +81,8 @@ class ResourceManager:
                         msg.note(f"Found an existing path: {path}")
                 case "git":
                     # break data into individual vars
-                    branch = self.paths[e]["branch"]
-                    commit = self.paths[e]["commit"]
+                    branch = self.paths[e]["branch"] # type: ignore
+                    commit = self.paths[e]["commit"] # type: ignore
                     cmd = f"git clone -b {branch} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {url} {path}"
                     # full commit history is required in two instances:
                     # - for KernelSU -- to define it's version based on *full* commit history;
@@ -105,6 +105,6 @@ class ResourceManager:
     def export_path(self) -> None:
         """Add path to PATH."""
         for elem in self.paths:
-            p = self.paths[elem]["path"]
+            p = self.paths[elem]
             pathenv = str(f"{p}/bin/")
             os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH")

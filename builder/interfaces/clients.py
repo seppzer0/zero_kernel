@@ -1,5 +1,3 @@
-from typing import Any
-from requests import Response
 from abc import ABC, abstractmethod
 
 
@@ -12,6 +10,6 @@ class IRomApi(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def run(self) -> Any | Response:
+    def run(self) -> str:
         """Execute the API interaction logic."""
         raise NotImplementedError()

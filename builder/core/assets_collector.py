@@ -1,6 +1,4 @@
 import os
-from typing import Any
-from requests import Response
 from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, fileoperations as fo, messages as msg
@@ -37,7 +35,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
 
     @property
-    def assets(self) -> tuple[Any | Response, str | None] | list[Any | Response | str] | None:
+    def assets(self) -> tuple[str, str | None] | list[str] | None:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
         dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"

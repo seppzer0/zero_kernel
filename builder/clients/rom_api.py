@@ -1,6 +1,4 @@
 import requests
-from typing import Any
-from requests import Response
 from pydantic import BaseModel
 
 from builder.tools import messages as msg
@@ -30,7 +28,7 @@ class RomApi(BaseModel, IRomApi):
         # by default, codename is devicename
         return self.codename
 
-    def run(self) -> Any | Response:
+    def run(self) -> str:
         data = requests.get(self.endpoint)
         try:
             data = data.json()[self.json_key][0]["url"]
@@ -40,4 +38,4 @@ class RomApi(BaseModel, IRomApi):
                 f"Could not connect to {self.rom_name} API, HTTP status code: {data.status_code}",
                 dont_exit=exit_flag
             )
-        return data
+        return str(data)

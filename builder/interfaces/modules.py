@@ -1,6 +1,4 @@
-from typing import Any
 from pathlib import Path
-from requests import Response
 from abc import ABC, abstractmethod
 
 from builder.clients import LineageOsApi, ParanoidAndroidApi
@@ -137,7 +135,7 @@ class IAssetsCollector(ABC):
 
     @property
     @abstractmethod
-    def assets(self) -> tuple[Any | Response, str | None] | list[Any | Response | str] | None:
+    def assets(self) -> tuple[str, str | None] | list[str] | None:
         """Form the full list of assets for collections."""
         raise NotImplementedError()
 
