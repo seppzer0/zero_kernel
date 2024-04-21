@@ -13,7 +13,7 @@ class Tester:
 
     @staticmethod
     def _launch_cmd(cmd: str) -> CompletedProcess:
-        """Launch specified command with STDERR."""
+        """Launch specified command."""
         return subprocess.run(cmd, shell=True, check=True)
 
     def pyright_checks(self) -> None:
