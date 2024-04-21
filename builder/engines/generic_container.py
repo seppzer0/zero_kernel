@@ -173,7 +173,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
             self.builder_cmd
         )
 
-    def __enter__(self) -> None:
+    def __enter__(self) -> str:
         # prepare Docker if selected
         if self.benv == "docker":
             self._force_buildkit()
@@ -183,6 +183,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         else:
             msg.note(f"\n{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
         self.create_dirs()
+        return self.run_cmd
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         # navigate to root directory and clean image from host machine

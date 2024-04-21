@@ -217,8 +217,8 @@ def main(args: argparse.Namespace) -> None:
     # determine the build
     match args.benv:
         case "docker" | "podman":
-            with GenericContainerEngine(**json.loads(acfg.model_dump_json())) as engine:
-                ccmd.launch(engine.run_cmd) # type: ignore
+            with GenericContainerEngine(**json.loads(acfg.model_dump_json())) as engined_cmd:
+                ccmd.launch(engined_cmd)
         case "local":
             match args.command:
                 case "kernel":

@@ -45,7 +45,7 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def __enter__(self) -> None:
+    def __enter__(self) -> str:
         """Magic method for preparing the containerized build."""
         raise NotImplementedError()
 

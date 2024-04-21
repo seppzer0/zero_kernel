@@ -29,7 +29,7 @@ class ResourceManager:
         return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
 
     def read_data(self) -> None:
-        """Read all data from all of the JSON files."""
+        """Read data from all of the JSON files."""
         os.chdir(dcfg.root)
         # define paths
         tools = ""
