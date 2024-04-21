@@ -28,9 +28,9 @@ job-build:
 job-tag:
   stage: build_and_tag
   script:
-    - USERNAME=$CUSTOM_CI_USERNAME
-    - PASSWORD=$CUSTOM_CI_PASSWORD
-    - EMAIL=$CUSTOM_CI_EMAIL
+    - USERNAME="$CUSTOM_CI_USERNAME"
+    - PASSWORD="$CUSTOM_CI_PASSWORD"
+    - EMAIL="$CUSTOM_CI_EMAIL"
     - TAGNAME="v$(sh scripts/get_version.sh)"
     - git config --global user.name "${USERNAME}"
     - git config --global user.email "${EMAIL}"
