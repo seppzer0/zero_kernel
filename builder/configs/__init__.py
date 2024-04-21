@@ -1,2 +1,2 @@
-from .arguments import ArgumentConfig
-from .directories import DirectoryConfig
+from .argument import ArgumentConfig
+from .directory import DirectoryConfig
