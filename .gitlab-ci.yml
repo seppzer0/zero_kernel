@@ -6,9 +6,6 @@ variables:
 
 job-build:
   stage: build_and_tag
-  tags:
-    - docker
-    - linux
   image: docker:25.0.3-cli-alpine3.19
   services:
     - docker:dind
@@ -34,7 +31,7 @@ job-tag:
     - USERNAME=$CUSTOM_CI_USERNAME
     - PASSWORD=$CUSTOM_CI_PASSWORD
     - EMAIL=$CUSTOM_CI_EMAIL
-    - TAGNAME=v$(sh scripts/get_version.sh)
+    - TAGNAME="v$(sh scripts/get_version.sh)"
     - git config --global user.name "${USERNAME}"
     - git config --global user.email "${EMAIL}"
     - git remote remove origin
