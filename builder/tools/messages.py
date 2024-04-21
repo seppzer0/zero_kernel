@@ -6,7 +6,7 @@ import sys
 def banner(text: str) -> None:
     """A custom simple banner.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     banner_len = len(text) + 6
     print("\n" + "*" * banner_len)
@@ -19,7 +19,7 @@ def banner(text: str) -> None:
 def note(text: str) -> None:
     """A "note" text wrapper.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     print(f"[ * ] {text}")
 
@@ -29,7 +29,7 @@ def error(text: str, dont_exit: bool = False) -> None:
 
     Includes system exit with an error code.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     print(f"[ ! ] {text}", file=sys.stderr)
     if not dont_exit:
@@ -39,7 +39,7 @@ def error(text: str, dont_exit: bool = False) -> None:
 def cancel(text: str) -> None:
     """A "cancel" text wrapper.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     print(f"[ ~ ] {text}")
     sys.exit(0)
@@ -48,7 +48,7 @@ def cancel(text: str) -> None:
 def done(text: str) -> None:
     """A "done" text wrapper.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     print(f"[ \u2713 ] {text}")
 
@@ -58,15 +58,6 @@ def debug(text: str) -> None:
 
     Intended for debugging sessions.
 
-    :param text: Text to wrap.
+    :param str text: Text to wrap.
     """
     print(f"[ DEBUG ] {text}")
-
-
-def outputstream() -> None:
-    """Stream output messages."""
-    stream = os.getenv("OSTREAM", "screen")
-    if stream != "screen":
-        sys.stdout = open(stream, "a")
-    else:
-        sys.stdout = io.TextIOWrapper(open(sys.stdout.fileno(), 'wb', 0), write_through=True)

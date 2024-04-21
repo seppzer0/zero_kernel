@@ -1,8 +1,8 @@
 import os
 import shutil
 from pathlib import Path
-from typing import Optional
 from pydantic import BaseModel
+from typing import Optional, Literal
 from subprocess import CompletedProcess
 
 from builder.tools import commands as ccmd, messages as msg
@@ -19,32 +19,32 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     directory structure. We only need to specify directory
     names and not full paths.
 
-    :param benv: Build environment.
-    :param command: Builder command to be launched.
-    :param codename: Device codename.
-    :param base: Kernel source base.
-    :param lkv: Linux kernel version.
-    :param chroot: Chroot type.
-    :param package_type: Package type.
-    :param clean_kernel: Flag to clean folder for kernel storage.
-    :param clean_assets: Flag to clean folder for assets storage.
-    :param clean_image: Flag to clean a Docker/Podman image from local cache.
-    :param rom_only: Flag indicating ROM-only asset collection.
-    :param conan_upload: Flag to enable Conan upload.
-    :param ksu: Flag to add KernelSU support into the kernel.
+    :param Literal["docker","podman"] benv: Build environment.
+    :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
+    :param str codename: Device codename.
+    :param str base: Kernel source base.
+    :param str lkv: Linux kernel version.
+    :param Optional[Literal["full","minimal"]]=None chroot: Chroot type.
+    :param Optional[bool]=False package_type: Package type.
+    :param Optional[bool]=False clean_kernel: Flag to clean folder for kernel storage.
+    :param Optional[bool]=False clean_assets: Flag to clean folder for assets storage.
+    :param Optional[bool]=False clean_image: Flag to clean a Docker/Podman image from local cache.
+    :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
+    :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
+    :param Optional[bool]=False ksu: Flag to add KernelSU support into the kernel.
     """
 
-    name_image: str = "zero-kernel-image"
-    name_container: str = "zero-kernel-container"
-    wdir_container: Path = Path("/", "zero_build")
-    wdir_local: Path = dcfg.root
+    _name_image: str = "zero-kernel-image"
+    _name_container: str = "zero-kernel-container"
+    _wdir_container: Path = Path("/", "zero_build")
+    _wdir_local: Path = dcfg.root
 
-    benv: str
-    command: str
+    benv: Literal["docker", "podman"]
+    command: Literal["kernel", "assets", "bundle"]
     codename: str
     base: str
     lkv: Optional[str] = None
-    chroot: Optional[str] = None
+    chroot: Optional[Literal["full", "minimal"]] = None
     package_type: Optional[str] = None
     clean_kernel: Optional[bool] = False
     clean_assets: Optional[bool] = False
@@ -53,12 +53,22 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
 
+    @staticmethod
+    def _force_buildkit() -> None:
+        """Force enable Docker BuildKit."""
+        os.environ["DOCKER_BUILDKIT"] = "1"
+
     @property
     def dir_bundle_conan(self) -> Path:
         if os.getenv("CONAN_USER_HOME"):
-            return Path(os.getenv("CONAN_USER_HOME"))
+            return Path(os.getenv("CONAN_USER_HOME")) # type: ignore
         else:
-            return Path(os.getenv("HOME"), ".conan")
+            return Path(os.getenv("HOME"), ".conan")  # type: ignore
+
+    def check_cache(self) -> bool:
+        img_cache_cmd = f'{self.benv} images --format {"{{.Repository}}"}'
+        img_cache = str(ccmd.launch(img_cache_cmd, get_output=True))
+        return True if self._name_image in img_cache else False
 
     @property
     def builder_cmd(self) -> str:
@@ -87,33 +97,33 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         # extend the command with the selected packaging option
         if self.command == "bundle":
             if self.package_type in ("slim", "full"):
-                cmd += f" && chmod 777 -R {self.wdir_container / dcfg.bundle.name}"
+                cmd += f" && chmod 777 -R {self._wdir_container / dcfg.bundle.name}"
             else:
                 cmd += " && chmod 777 -R /root/.conan"
         return cmd
 
     @property
     def container_options(self) -> list[str]:
-        # declare the base
+        # declare the base of options
         options = [
             "-i",
             "--rm",
             "-e KVERSION={}".format(os.getenv("KVERSION")),
             "-e LOGLEVEL={}".format(os.getenv("LOGLEVEL")),
-            "-w {}".format(self.wdir_container),
+            "-w {}".format(self._wdir_container),
         ]
         # define volume mounting template
         v_template = "-v {}:{}/{}"
         # mount directories
         match self.command:
             case "kernel":
-                options.append(v_template.format(dcfg.kernel, self.wdir_container, dcfg.kernel.name))
+                options.append(v_template.format(dcfg.kernel, self._wdir_container, dcfg.kernel.name))
             case "assets":
-                options.append(v_template.format(dcfg.assets, self.wdir_container, dcfg.assets.name))
+                options.append(v_template.format(dcfg.assets, self._wdir_container, dcfg.assets.name))
             case "bundle":
                 match self.package_type:
                     case "slim" | "full":
-                        options.append(v_template.format(dcfg.bundle, self.wdir_container, dcfg.bundle.name))
+                        options.append(v_template.format(dcfg.bundle, self._wdir_container, dcfg.bundle.name))
                     case "conan":
                         if self.conan_upload:
                             options.append("-e CONAN_UPLOAD_CUSTOM=1")
@@ -138,16 +148,16 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
                     shutil.rmtree(dcfg.bundle, ignore_errors=True)
                     os.mkdir(dcfg.bundle)
 
-    def build_image(self) -> CompletedProcess:
+    def build_image(self) -> str | None | CompletedProcess:
         print("\n")
         alias = self.benv.capitalize()
         msg.note(f"Building the {alias} image..")
-        os.chdir(self.wdir_local)
+        os.chdir(self._wdir_local)
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
         cmd = "{} build . -f {} -t {} --load".format(
             self.benv,
-            self.wdir_local / 'Dockerfile',
-            self.name_image
+            self._wdir_local / 'Dockerfile',
+            self._name_image
         )
         res = ccmd.launch(cmd)
         msg.done("Done!")
@@ -159,17 +169,23 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return '{} run {} {} /bin/bash -c "{}"'.format(
             self.benv,
             " ".join(self.container_options),
-            self.name_image,
+            self._name_image,
             self.builder_cmd
         )
 
     def __enter__(self) -> None:
+        # prepare Docker if selected
+        if self.benv == "docker":
+            self._force_buildkit()
         # build the image and prepare directories
-        self.build_image()
+        if not self.check_cache():
+            self.build_image()
+        else:
+            msg.note(f"\n{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
         self.create_dirs()
 
-    def __exit__(self) -> None:
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         # navigate to root directory and clean image from host machine
-        os.chdir(self.wdir_local)
+        os.chdir(self._wdir_local)
         if self.clean_image:
-            ccmd.launch(f"{self.benv} rmi {self.name_image}")
+            ccmd.launch(f"{self.benv} rmi {self._name_image}")

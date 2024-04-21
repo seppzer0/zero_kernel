@@ -19,8 +19,8 @@ def parse_args() -> argparse.Namespace:
 def rmove(src: Path, dst: Path) -> None:
     """Recursively move files from one directory to another.
 
-    :param src: Source path.
-    :param dst: Destination path.
+    :param Path src: Source path.
+    :param Path dst: Destination path.
     """
     # for a directory (it's contents)
     if src.is_dir():

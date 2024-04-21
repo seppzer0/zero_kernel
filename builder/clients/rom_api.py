@@ -8,10 +8,10 @@ from builder.interfaces import IRomApi
 class RomApi(BaseModel, IRomApi):
     """A generic class for interacting with ROMs' APIs.
 
-    :param endpoint: API endpoint to interact with.
-    :param json_key: A JSON key to look for in the response.
-    :param rom_name: ROM project's name.
-    :param rom_only: Flag indicating ROM-only asset collection.
+    :param str endpoint: API endpoint to interact with.
+    :param str json_key: A JSON key to look for in the response.
+    :param str rom_name: ROM project's name.
+    :param bool rom_only: Flag indicating ROM-only asset collection.
     """
 
     endpoint: str

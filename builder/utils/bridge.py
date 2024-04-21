@@ -117,5 +117,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    msg.outputstream()
     main(parse_args())

@@ -13,11 +13,11 @@ from builder.interfaces import IKernelBuilder
 class KernelBuilder(BaseModel, IKernelBuilder):
     """Kernel builder.
 
-    :param codename: Device codename.
-    :param base: Kernel source base.
-    :param lkv: Linux kernel version.
-    :param clean_kernel: Flag to clean folder with kernel sources.
-    :param ksu: Flag indicating KernelSU support.
+    :param str codename: Device codename.
+    :param str base: Kernel source base.
+    :param str lkv: Linux kernel version.
+    :param bool clean_kernel: Flag to clean folder with kernel sources.
+    :param bool ksu: Flag indicating KernelSU support.
     """
 
     codename: str

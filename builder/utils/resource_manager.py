@@ -27,7 +27,7 @@ class ResourceManager:
         """A custom getitem implementation for accessing data via Path-type indexes."""
         return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
 
-    def path_gen(self) -> dict[str]:
+    def path_gen(self) -> None:
         """Generate paths from JSON data."""
         os.chdir(dcfg.root)
         # define paths
@@ -107,4 +107,4 @@ class ResourceManager:
         for elem in self.paths:
             p = self.paths[elem]
             pathenv = str(f"{p}/bin/")
-            os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH")
+            os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH") # type: ignore

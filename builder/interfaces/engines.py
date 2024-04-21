@@ -12,6 +12,11 @@ class IGenericContainerEngine(ABC):
         """Determine path to Conan's local cache."""
         raise NotImplementedError()
 
+    @abstractmethod
+    def check_cache(self) -> bool:
+        """Check local cache for target image presence."""
+        raise NotImplementedError()
+
     @property
     def builder_cmd(self) -> str:
         """Return the launch command for the builder."""
@@ -29,7 +34,7 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def build_image(self) -> CompletedProcess:
+    def build_image(self) -> str | None | CompletedProcess:
         """Build the image."""
         raise NotImplementedError()
 
@@ -45,21 +50,6 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def __exit__(self) -> None:
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         """Magic method for post-build operations for the container engine."""
-        raise NotImplementedError()
-
-
-class IDockerEngine(ABC):
-    """An interface for Docker-specific operations."""
-
-    @staticmethod
-    @abstractmethod
-    def _force_buildkit() -> None:
-        """Force enable Docker BuildKit."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def _check_cache(self) -> bool:
-        """Check local Docker cache for the specified image."""
         raise NotImplementedError()

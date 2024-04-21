@@ -1,8 +1,8 @@
 import json
 import platform
 from pathlib import Path
-from typing import Optional
 from pydantic import BaseModel
+from typing import Optional, Literal
 
 from builder.tools import commands as ccmd, messages as msg
 
@@ -10,23 +10,23 @@ from builder.tools import commands as ccmd, messages as msg
 class ArgumentConfig(BaseModel):
     """A variable storage to use across the application.
 
-    :param benv: Build environment.
-    :param command: Builder command to be launched.
-    :param codename: Device codename.
-    :param base: Kernel source base.
-    :param lkv: Linux kernel version.
-    :param chroot: Chroot type.
-    :param package_type: Package type.
-    :param clean_kernel: Flag to clean folder with kernel sources.
-    :param clean_assets: Flag to clean folder for assets storage.
-    :param clean_image: Flag to clean a Docker/Podman image from local cache.
-    :param rom_only: Flag indicating ROM-only asset collection.
-    :param conan_upload: Flag to enable Conan upload.
-    :param ksu: Flag indicating KernelSU support.
+    :param Literal["docker","podman"] benv: Build environment.
+    :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
+    :param str codename: Device codename.
+    :param str base: Kernel source base.
+    :param str lkv: Linux kernel version.
+    :param Optional[str]=None chroot: Chroot type.
+    :param Optional[str]=None package_type: Package type.
+    :param Optional[bool]=False clean_kernel: Flag to clean folder with kernel sources.
+    :param Optional[bool]=False clean_assets: Flag to clean folder for assets storage.
+    :param Optional[bool]=False clean_image: Flag to clean a Docker/Podman image from local cache.
+    :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
+    :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
+    :param Optional[bool]=False ksu: Flag indicating KernelSU support.
     """
 
-    benv: str
-    command: str
+    benv: Literal["docker", "podman"]
+    command: Literal["kernel", "assets", "bundle"]
     codename: str
     base: str
     lkv: Optional[str] = None

@@ -6,7 +6,7 @@ import argparse
 
 from builder.tools import cleaning as cm, messages as msg, commands as ccmd
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
-from builder.engines import DockerEngine, PodmanEngine
+from builder.engines import GenericContainerEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
@@ -32,14 +32,11 @@ def parse_args() -> argparse.Namespace:
     help_codename = "select device codename"
     help_benv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
-    help_loglvl = "select log level"
     choices_benv = ("local", "docker", "podman")
-    choices_loglvl = ("normal", "verbose", "quiet")
     choices_base = ("los", "pa", "x", "aosp")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
     help_lkv = "select Linux Kernel Version"
-    default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
         "--build-env",
@@ -75,13 +72,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         dest="clean_image",
         help=help_clean
-    )
-    parser_kernel.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
     )
     parser_kernel.add_argument(
         "-o", "--output",
@@ -138,13 +128,6 @@ def parse_args() -> argparse.Namespace:
         help="autoclean 'assets' folder if it exists"
     )
     parser_assets.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
-    )
-    parser_assets.add_argument(
         "-o", "--output",
         dest="outlog",
         help=help_logfile
@@ -199,13 +182,6 @@ def parse_args() -> argparse.Namespace:
         help=help_clean
     )
     parser_bundle.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
-    )
-    parser_bundle.add_argument(
         "-o", "--output",
         dest="outlog",
         help=help_logfile
@@ -225,7 +201,6 @@ def main(args: argparse.Namespace) -> None:
     if args.clean_root:
         cm.root()
         sys.exit(0)
-    os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
     with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
@@ -239,15 +214,11 @@ def main(args: argparse.Namespace) -> None:
         if args.outlog in os.listdir():
             os.remove(args.outlog)
         os.environ["OSTREAM"] = args.outlog
-        msg.outputstream()
     # determine the build
     match args.benv:
-        case "docker":
-            with DockerEngine(**json.loads(acfg.model_dump_json())) as engine:
-                ccmd.launch(engine.run_cmd) # type: ignore ; no idea why this is not an issue for Podman
-        case "podman":
-            with PodmanEngine(**json.loads(acfg.model_dump_json())) as engine:
-                ccmd.launch(engine.run_cmd)
+        case "docker" | "podman":
+            with GenericContainerEngine(**json.loads(acfg.model_dump_json())) as engine:
+                ccmd.launch(engine.run_cmd) # type: ignore
         case "local":
             match args.command:
                 case "kernel":
