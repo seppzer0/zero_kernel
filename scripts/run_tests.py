@@ -22,7 +22,7 @@ class Tester:
         self._launch_cmd(f"{INTEPRETER} -m pyright")
         print("=== Pyright checks: Finish ===")
 
-    def pytest_checks(self) -> bool:
+    def pytest_checks(self) -> None:
         """Run unit tests with Pytest and coverage checks."""
         os.environ["PYTHONPATH"] = str(ROOTPATH)
         print("\n=== Pytest checks: Start ===")
@@ -32,10 +32,8 @@ class Tester:
     def bandit_checks(self) -> None:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
-        cps = []
         for fmt in fmts:
-            cps.append(self._launch_cmd(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}"))
-        return cps
+            self._launch_cmd(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}")
 
 
 def main() -> None:
