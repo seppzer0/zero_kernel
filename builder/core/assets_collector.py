@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, fileoperations as fo, messages as msg
@@ -10,34 +11,32 @@ from builder.interfaces import IAssetsCollector
 class AssetsCollector(BaseModel, IAssetsCollector):
     """Assets collector.
 
-    :param codename: Device codename.
-    :param base: Kernel source base.
-    :param chroot: Chroot type.
-    :param rom_only: Flag indicating ROM-only asset collection.
-    :param ksu: Flag indicating KernelSU support.
+    :param str codename: Device codename.
+    :param str base: Kernel source base.
+    :param Literal["full","minimal"] chroot: Chroot type.
+    :param bool rom_only: Flag indicating ROM-only asset collection.
+    :param bool ksu: Flag indicating KernelSU support.
     """
 
     codename: str
     base: str
-    chroot: str
+    chroot: Literal["full", "minimal"]
     clean_assets: bool
     rom_only: bool
     ksu: bool
 
     @property
     def rom_collector_dto(self) -> LineageOsApi | ParanoidAndroidApi | None:
-        rom_collector_dto = ""
         match self.base:
             case "los":
-                rom_collector_dto = LineageOsApi(codename=self.codename, rom_only=self.rom_only)
+                return LineageOsApi(codename=self.codename, rom_only=self.rom_only)
             case "pa":
-                rom_collector_dto = ParanoidAndroidApi(codename=self.codename, rom_only=self.rom_only)
+                return ParanoidAndroidApi(codename=self.codename, rom_only=self.rom_only)
             case "x" | "aosp":
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
-        return rom_collector_dto
 
     @property
-    def assets(self) -> tuple[str | None] | list[str | None]:
+    def assets(self) -> tuple[str, str | None] | list[str] | None:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
         dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
@@ -47,9 +46,9 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 msg.cancel("Cancelling ROM-only asset collection")
             else:
                 # add DFD alongside the ROM
-                assets = (self.rom_collector_dto.run(), dfd)
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
+                return (self.rom_collector_dto.run(), dfd)
         # process the non-"RON-only" download
         else:
             assets = [
@@ -93,7 +92,8 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run())
-        return assets
+            return assets
+        return None
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
@@ -122,9 +122,10 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         msg.banner("zero asset collector")
         self._check()
         os.chdir(dcfg.assets)
-        for e in self.assets:
-            if e is not None:
-                fo.download(e)
+        if isinstance(self.assets, list):
+            for e in self.assets:
+                if e is not None:
+                    fo.download(e)
         print("\n", end="")
         msg.done("Assets collected!")
         os.chdir(dcfg.root)

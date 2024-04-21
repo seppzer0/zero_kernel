@@ -12,10 +12,8 @@ from builder.configs import DirectoryConfig as dcfg
 class GitHubApi(BaseModel):
     """Limited interaction with GitHub API.
 
-    :param _endpoint: API endpoint to interact with.
-    :param _direct_url: Direct URL for the specified repo.
-    :param project: GitHub project name (owner/repo).
-    :param file_filter: A filter to select specific files from project's artifacts.
+    :param str project: GitHub project name (owner/repo).
+    :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.
     """
 
     _endpoint = "https://api.github.com/repos/{}/releases/latest"

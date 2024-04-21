@@ -109,7 +109,8 @@ def main(args: argparse.Namespace) -> None:
             # if no command was selected, then shared tools are (supposed to be) installed
             if args.shared:
                 rm = ResourceManager()
-                rm.path_gen()
+                rm.read_data()
+                rm.generate_paths()
                 rm.download()
             else:
                 # technically this part of code cannot be reached and is just an extra precaution
@@ -117,5 +118,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    msg.outputstream()
     main(parse_args())

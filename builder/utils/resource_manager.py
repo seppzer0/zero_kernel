@@ -1,6 +1,7 @@
 import os
 import json
 import tarfile
+from pathlib import Path
 from typing import Optional
 
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
@@ -10,20 +11,25 @@ from builder.configs import DirectoryConfig as dcfg
 class ResourceManager:
     """An entity for managing build resources."""
 
-    paths: list[str] = []
+    _data: dict[str, dict[str, str]] = {}
+    paths: dict[str, Path] = {}
 
     def __init__(
-            self,
-            codename: Optional[str] = None,
-            lkv: Optional[str] = None,
-            base: Optional[str] = None
-        ) -> None:
+        self,
+        codename: Optional[str] = None,
+        lkv: Optional[str] = None,
+        base: Optional[str] = None
+    ) -> None:
         self._codename = codename
         self._lkv = lkv
         self._base = base
 
-    def path_gen(self) -> dict[str]:
-        """Generate paths from JSON data."""
+    def __getitem__(self, arg: Path) -> slice:
+        """A custom getitem implementation for accessing data via Path-type indexes."""
+        return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
+
+    def read_data(self) -> None:
+        """Read data from all of the JSON files."""
         os.chdir(dcfg.root)
         # define paths
         tools = ""
@@ -42,22 +48,25 @@ class ResourceManager:
                     msg.error("Arguments were specified for an unsupported build, exiting..")
                 device = {self._codename: data[self._codename][self._lkv][self._base]}
             # join tools and devices manifests
-            self.paths = {**tools, **device}
+            self._data = {**tools, **device}
         else:
-            self.paths = tools
+            self._data = tools
             msg.note("Only shared tools are installed.")
-        for e in self.paths:
+
+    def generate_paths(self) -> None:
+        """Generate paths with Path objects."""
+        for e in self._data:
             # convert path into it's absolute form
-            self.paths[e]["path"] = dcfg.root / self.paths[e]["path"]
+            self.paths[e] = dcfg.root / self._data[e]["path"]
 
     def download(self) -> None:
         """Download files from URLs."""
-        for e in self.paths:
+        for e in self._data:
             # break data into individual required vars
-            path = self.paths[e]["path"]
-            url = self.paths[e]["url"]
+            path = Path(self._data[e]["path"])    # type: ignore
+            url = self._data[e]["url"]            # type: ignore
             # break further processing into "generic" and "git" groups
-            ftype = self.paths[e]["type"]
+            ftype = self._data[e]["type"]         # type: ignore
             match ftype:
                 case "generic":
                     # download and unpack
@@ -76,8 +85,8 @@ class ResourceManager:
                         msg.note(f"Found an existing path: {path}")
                 case "git":
                     # break data into individual vars
-                    branch = self.paths[e]["branch"]
-                    commit = self.paths[e]["commit"]
+                    branch = self._data[e]["branch"] # type: ignore
+                    commit = self._data[e]["commit"] # type: ignore
                     cmd = f"git clone -b {branch} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {url} {path}"
                     # full commit history is required in two instances:
                     # - for KernelSU -- to define it's version based on *full* commit history;
@@ -100,6 +109,6 @@ class ResourceManager:
     def export_path(self) -> None:
         """Add path to PATH."""
         for elem in self.paths:
-            p = self.paths[elem]["path"]
+            p = self.paths[elem]
             pathenv = str(f"{p}/bin/")
-            os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH")
+            os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH") # type: ignore

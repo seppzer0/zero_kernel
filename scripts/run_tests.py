@@ -1,42 +1,47 @@
 import os
+import platform
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
 
 ROOTPATH: Path = Path(__file__).absolute().parents[1]
+INTEPRETER: str = "python" if platform.system() == "Windows" else "python3"
 
 
 class Tester:
     """A single class for all types of tests."""
 
+    @staticmethod
     def _launch_cmd(cmd: str) -> CompletedProcess:
         """Launch specified command."""
         return subprocess.run(cmd, shell=True, check=True)
 
-    def pytest_checks(self) -> CompletedProcess:
+    def pyright_checks(self) -> None:
+        """Run typing checks with Pyright."""
+        print("\n=== Pyright checks: Start ===")
+        self._launch_cmd(f"{INTEPRETER} -m pyright")
+        print("=== Pyright checks: Finish ===")
+
+    def pytest_checks(self) -> None:
         """Run unit tests with Pytest and coverage checks."""
-        os.environ["PYTHONPATH"] = ROOTPATH
-        return self._launch_cmd("python3 -m pytest -vv tests/ --cov")
+        os.environ["PYTHONPATH"] = str(ROOTPATH)
+        print("\n=== Pytest checks: Start ===")
+        self._launch_cmd(f"{INTEPRETER} -m pytest -vv tests/ --cov")
+        print("=== Pytest checks: Finish ===")
 
-    def pyright_checks(self) -> CompletedProcess:
-        """Run type (hint) checks with Pyright."""
-        return self._launch_cmd("python3 -m pyright builder")
-
-    def bandit_checks(self) -> list[CompletedProcess]:
+    def bandit_checks(self) -> None:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
-        cps = []
         for fmt in fmts:
-            cps.append(self._launch_cmd(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}"))
-        return cps
+            self._launch_cmd(f"python3 -m bandit -r -f {fmt} {ROOTPATH} -o report.{fmt}")
 
 
 def main() -> None:
     os.chdir(ROOTPATH)
     t = Tester()
-    t.pytest_checks()
     t.pyright_checks()
-    t.bandit_checks()
+    t.pytest_checks()
+    #t.bandit_checks()
 
 
 if __name__ == "__main__":

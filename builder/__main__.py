@@ -4,10 +4,11 @@ import sys
 import json
 import argparse
 
-from builder.tools import cleaning as cm, messages as msg
+from builder.tools import cleaning as cm, messages as msg, commands as ccmd
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
-from builder.engines import DockerEngine, PodmanEngine
+from builder.engines import GenericContainerEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
+
 
 def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
@@ -31,14 +32,11 @@ def parse_args() -> argparse.Namespace:
     help_codename = "select device codename"
     help_benv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
-    help_loglvl = "select log level"
     choices_benv = ("local", "docker", "podman")
-    choices_loglvl = ("normal", "verbose", "quiet")
     choices_base = ("los", "pa", "x", "aosp")
     help_logfile = "save logs to a file"
     help_ksu = "add KernelSU support"
     help_lkv = "select Linux Kernel Version"
-    default_loglvl = "normal"
     # kernel
     parser_kernel.add_argument(
         "--build-env",
@@ -74,13 +72,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         dest="clean_image",
         help=help_clean
-    )
-    parser_kernel.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
     )
     parser_kernel.add_argument(
         "-o", "--output",
@@ -137,13 +128,6 @@ def parse_args() -> argparse.Namespace:
         help="autoclean 'assets' folder if it exists"
     )
     parser_assets.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
-    )
-    parser_assets.add_argument(
         "-o", "--output",
         dest="outlog",
         help=help_logfile
@@ -198,13 +182,6 @@ def parse_args() -> argparse.Namespace:
         help=help_clean
     )
     parser_bundle.add_argument(
-        "--log-level",
-        dest="loglvl",
-        choices=choices_loglvl,
-        default=default_loglvl,
-        help=help_loglvl
-    )
-    parser_bundle.add_argument(
         "-o", "--output",
         dest="outlog",
         help=help_logfile
@@ -224,7 +201,6 @@ def main(args: argparse.Namespace) -> None:
     if args.clean_root:
         cm.root()
         sys.exit(0)
-    os.environ["LOGLEVEL"] = args.loglvl
     # define env variable with kernel version
     with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
@@ -238,39 +214,37 @@ def main(args: argparse.Namespace) -> None:
         if args.outlog in os.listdir():
             os.remove(args.outlog)
         os.environ["OSTREAM"] = args.outlog
-        msg.outputstream()
     # determine the build
     match args.benv:
-        case "docker":
-            DockerEngine(**json.loads(acfg.model_dump_json())).run()
-        case "podman":
-            PodmanEngine(**json.loads(acfg.model_dump_json())).run()
+        case "docker" | "podman":
+            with GenericContainerEngine(**json.loads(acfg.model_dump_json())) as engined_cmd:
+                ccmd.launch(engined_cmd)
         case "local":
             match args.command:
                 case "kernel":
                     KernelCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        lkv = acfg.lkv,
-                        clean_kernel = acfg.clean_kernel,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        clean_kernel = args.clean_kernel,
+                        ksu = args.ksu,
                     ).run()
                 case "assets":
                     AssetsCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        chroot = acfg.chroot,
-                        clean_assets = acfg.clean_assets,
-                        rom_only = acfg.rom_only,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        chroot = args.chroot,
+                        clean_assets = args.clean_assets,
+                        rom_only = args.rom_only,
+                        ksu = args.ksu,
                     ).run()
                 case "bundle":
                     BundleCommand(
-                        codename = acfg.codename,
-                        base = acfg.base,
-                        lkv = acfg.lkv,
-                        package_type = acfg.package_type,
-                        ksu = acfg.ksu,
+                        codename = args.codename,
+                        base = args.base,
+                        lkv = args.lkv,
+                        package_type = args.package_type,
+                        ksu = args.ksu,
                     ).run()
 
 

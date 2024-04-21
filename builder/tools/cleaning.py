@@ -9,13 +9,13 @@ from builder.tools import commands as ccmd
 from builder.configs import DirectoryConfig as dcfg
 
 
-def remove(elements: str | Path | list[Path]) -> None:
+def remove(elements: str | Path | list[Path | str]) -> None:
     """An ultimate Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
     Because of such specific as directories starting with a "." (e.g., .github).
 
-    :param elements: Files and/or directories to remove.
+    :param str/Path/list[Path] elements: Files and/or directories to remove.
     """
     # if a given argument is a string --> convert it into a one-element list
     if isinstance(elements, str) or isinstance(elements, Path):
@@ -35,21 +35,21 @@ def remove(elements: str | Path | list[Path]) -> None:
                 remove(fn)
 
 
-def on_rm_error(func, path: Path, exc_info):
+def on_rm_error(func, path: str, exc_info):
     """For Windows system to remove a .git folder.
     
     :param func: Function to be used along with.
-    :param path: Path that is being removed.
+    :param Path path: Path that is being removed.
     :exc_info param: Misc info.
     """
     os.chmod(path, stat.S_IWRITE)
     os.unlink(path)
 
 
-def git(directory: Path) -> None:
+def git(directory: Path | str) -> None:
     """Clean up a git directory.
 
-    :param directory: Path to the directory.
+    :param Path/str directory: Path to the directory.
     """
     goback = Path.cwd()
     os.chdir(directory)
@@ -61,7 +61,7 @@ def git(directory: Path) -> None:
 def root(extra: Optional[list[str]] = []) -> None:
     """Fully clean the root directory.
 
-    :param extra: Extra elements to be removed.
+    :param Optional[list[str]]=[] extra: Extra elements to be removed.
     """
     trsh = [
         dcfg.kernel,

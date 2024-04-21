@@ -1,4 +1,4 @@
 from .clients import IRomApi
 from .modules import IKernelBuilder, IAssetsCollector
-from .engines import IContainerEngine, IDockerEngine
+from .engines import IGenericContainerEngine
 from .commands import IBundleCommand

@@ -1,18 +1,18 @@
 import os
 import shutil
 import requests
-from typing import Tuple
 from pathlib import Path
+from typing import Optional
 
 from builder.tools import commands as ccmd, messages as msg
 
 
-def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
+def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = ()) -> None:
     """A universal method to copy files into desired destinations.
 
-    :param src: Source path.
-    :param dst: Destination path.
-    :param exceptions: Elements that will not be removed.
+    :param Path src: Source path.
+    :param Path dst: Destination path.
+    :param Optional[tuple[str/Path,...]]=() exceptions: Elements that will not be removed.
     """
     # for a directory (it's contents)
     if src.is_dir():
@@ -21,7 +21,7 @@ def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
         contents = os.listdir(src)
         for e in contents:
             # do not copy restricted files
-            if e not in exceptions and e != src:
+            if e not in exceptions and e != src: # type: ignore
                 src_e = src / e
                 dst_e = dst / e
                 if src_e.is_dir():
@@ -36,7 +36,7 @@ def ucopy(src: Path, dst: Path, exceptions: Tuple[str] = ()) -> None:
 def download(url: str) -> None:
     """A simple file downloader.
 
-    :param url: URL to the file.
+    :param str url: URL to the file.
     """
     fn = url.split("/")[-1]
     msg.note(f"Downloading {fn} ..")
@@ -57,12 +57,12 @@ def download(url: str) -> None:
     msg.done("Done!")
 
 
-def replace_lines(filename: Path, og_lines: Tuple[str], nw_lines: Tuple[str]) -> None:
+def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str, ...]) -> None:
     """Replace lines in the specified file.
 
-    :param filename: Path to the filename.
-    :param og_lines: Original lines to be replaced.
-    :param nw_lines: New lines in place of original lines.
+    :param Path filename: Path to the filename.
+    :param tuple[str,...] og_lines: Original lines to be replaced.
+    :param tuple[str,...] nw_lines: New lines in place of original lines.
     """
     filename_new = Path(str(filename) + "_new")
     with open(filename, encoding="utf-8") as data:
@@ -79,10 +79,10 @@ def replace_lines(filename: Path, og_lines: Tuple[str], nw_lines: Tuple[str]) ->
 def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) -> None:
     """Replace the n-th occurence of subtring in specified file.
 
-    :param filename: Path to the filename.
-    :param og_string: Original string to be replaced.
-    :param nw_string: New string used to replace the original one.
-    :param occurence: The index of occurence to replace.
+    :param Path filename: Path to the filename.
+    :param str og_string: Original string to be replaced.
+    :param str nw_string: New string used to replace the original one.
+    :param int occurence: The index of occurence to replace.
     """
     filename_new = Path(str(filename) + "_new")
     with open(filename, encoding="utf-8") as data:
@@ -98,12 +98,12 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
     os.replace(filename_new, filename)
 
 
-def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
+def insert_before_line(filename: str | Path, pointer_line: str, new_line: str) -> None:
     """Insert new line before the specified one.
 
-    :param filename: Name of the file.
-    :param pointer_line: The line before which new line will be inserted.
-    :param new_line: The line being inserted.
+    :param str/Path filename: Name of the file.
+    :param str pointer_line: The line before which new line will be inserted.
+    :param str new_line: The line being inserted.
     """
     with open(filename, "r+", encoding="utf-8") as f:
         a = [x.rstrip() for x in f]
@@ -119,10 +119,10 @@ def insert_before_line(filename: str, pointer_line: str, new_line: str) -> None:
             f.write(line + "\n")
 
 
-def apply_patch(filename: str) -> None:
+def apply_patch(filename: str | Path) -> None:
     """Apply .patch file.
 
-    :param filename: Name of the .patch file.
+    :param str/Path filename: Name of the .patch file.
     """
     msg.note(f"Applying patch: {filename}")
     ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {filename}")

@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import itertools
+from typing import Literal
 from pydantic import BaseModel
 
 from builder.core import KernelBuilder, AssetsCollector
@@ -14,10 +15,10 @@ class BundleCommand(BaseModel, IBundleCommand):
     """A command that packages the artifacts produced both
     by 'kernel_builder' and 'assets_collector' core modules.
 
-    :param base: Kernel source base.
-    :param lkv: Linux kernel version.
-    :param package_type: Package type.
-    :param ksu: Flag indicating KernelSU support.
+    :param str base: Kernel source base.
+    :param str lkv: Linux kernel version.
+    :param str package_type: Package type.
+    :param bool ksu: Flag indicating KernelSU support.
     """
 
     codename: str
@@ -26,7 +27,7 @@ class BundleCommand(BaseModel, IBundleCommand):
     package_type: str
     ksu: bool
 
-    def _build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
+    def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         if not dcfg.kernel.is_dir() or clean_only is True:
             KernelBuilder(
                 codename = self.codename,
@@ -40,7 +41,7 @@ class BundleCommand(BaseModel, IBundleCommand):
     def _rom_only_flag(self) -> bool:
         return True if "full" not in self.package_type else False
 
-    def _collect_assets(self, rom_name: str, chroot: str) -> None:
+    def collect_assets(self, rom_name: str, chroot: Literal["full", "minimal"]) -> None:
         AssetsCollector(
             codename = self.codename,
             base = rom_name,
@@ -50,7 +51,7 @@ class BundleCommand(BaseModel, IBundleCommand):
             ksu = self.ksu,
         ).run()
 
-    def _conan_sources(self) -> None:
+    def conan_sources(self) -> None:
         sourcedir = dcfg.root / "source"
         print("\n", end="")
         msg.note("Copying sources for Conan packaging..")
@@ -71,12 +72,12 @@ class BundleCommand(BaseModel, IBundleCommand):
         msg.done("Done!")
 
     @staticmethod
-    def _conan_options(json_file: str) -> dict:
+    def conan_options(json_file: str) -> dict:
         with open(json_file, encoding="utf-8") as f:
             json_data = json.load(f)
         return json_data
 
-    def _conan_package(self, options: list[str], reference: str) -> None:
+    def conan_package(self, options: tuple[str, ...], reference: str) -> None:
         cmd = f"conan export-pkg . {reference}"
         for option_value in options:
             # not the best solution, but will work temporarily for 'rom' and 'chroot' options
@@ -87,7 +88,7 @@ class BundleCommand(BaseModel, IBundleCommand):
         ccmd.launch(cmd)
 
     @staticmethod
-    def _conan_upload(reference: str) -> None:
+    def conan_upload(reference: str) -> None:
         # configure Conan client and upload packages
         url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
         alias = "zero-kernel-conan"
@@ -101,9 +102,9 @@ class BundleCommand(BaseModel, IBundleCommand):
         # determine the bundle type and process it
         match self.package_type:
             case "slim" | "full":
-                self._build_kernel(self.base)
+                self.build_kernel(self.base)
                 # "full" chroot is hardcoded here
-                self._collect_assets(self.base, "full")
+                self.collect_assets(self.base, "full")
                 # clean up
                 if dcfg.bundle.is_dir():
                     contents = dcfg.bundle.glob("*")
@@ -134,13 +135,13 @@ class BundleCommand(BaseModel, IBundleCommand):
                 option_sets = list(itertools.product([self.base], chroot))
                 # build and upload Conan packages
                 for opset in option_sets:
-                    self._build_kernel(opset[0])
-                    self._build_kernel(opset[0], True)
-                    self._conan_sources()
-                    self._collect_assets(opset[0], opset[1])
-                    self._conan_package(opset, reference)
+                    self.build_kernel(opset[0])
+                    self.build_kernel(opset[0], True)
+                    self.conan_sources()
+                    self.collect_assets(opset[0], opset[1])
+                    self.conan_package(opset, reference)
                 # upload packages
                 if os.getenv("CONAN_UPLOAD_CUSTOM") == "1":
-                    self._conan_upload(reference)
+                    self.conan_upload(reference)
         # navigate back to root directory
         os.chdir(dcfg.root)

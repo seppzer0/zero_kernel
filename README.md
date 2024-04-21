@@ -82,14 +82,14 @@ The custom build wrapper (aka "builder") consists of 2 core components and 3 pri
 
 Components:
 
-- kernel builder;
-- assets collector.
+- `kernel_builder`;
+- `assets_collector`.
 
 Commands:
 
-- kernel;
-- assets;
-- bundle.
+- `kernel`;
+- `assets`;
+- `bundle`.
 
 ```help
 $ python3 builder --help

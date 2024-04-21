@@ -20,6 +20,7 @@ bandit = "^1.7"
 pytest = "^8.0"
 pytest-cov = "^4.1"
 pyright = "^1.1"
+pylint = "^3.1"
 
 [tool.coverage.run]
 source = [
@@ -32,6 +33,10 @@ source = [
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.pyright]
+include=["builder"]
+pythonVersion = "3.12"
 
 [build-system]
 requires = ["poetry-core"]

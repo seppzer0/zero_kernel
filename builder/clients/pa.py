@@ -11,7 +11,6 @@ class ParanoidAndroidApi(RomApi):
     rom_name: str = "PA"
 
     @override
-    @property
     def codename_mapper(self) -> str:
         # specific rules for PA's API
         specials = {

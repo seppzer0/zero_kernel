@@ -1,14 +1,20 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
+from subprocess import CompletedProcess
 
 
-class IContainerEngine(ABC):
-    """An interface for ContainerEngine."""
+class IGenericContainerEngine(ABC):
+    """An interface for GenericContainerEngine."""
 
     @property
     @abstractmethod
     def dir_bundle_conan(self) -> Path:
         """Determine path to Conan's local cache."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def check_cache(self) -> bool:
+        """Check local cache for target image presence."""
         raise NotImplementedError()
 
     @property
@@ -28,26 +34,22 @@ class IContainerEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def build(self) -> None:
+    def build_image(self) -> str | None | CompletedProcess:
         """Build the image."""
         raise NotImplementedError()
 
+    @property
     @abstractmethod
-    def run(self) -> None:
-        """Execute the containerized build logic."""
-        raise NotImplementedError()
-
-
-class IDockerEngine(ABC):
-    """An interface for Docker-specific methods."""
-
-    @staticmethod
-    @abstractmethod
-    def _force_buildkit() -> None:
-        """Force enable Docker BuildKit."""
+    def run_cmd(self) -> str:
+        """Form command for container launch."""
         raise NotImplementedError()
 
     @abstractmethod
-    def _check_cache(self) -> bool:
-        """Check local Docker cache for the specified image."""
+    def __enter__(self) -> str:
+        """Magic method for preparing the containerized build."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        """Magic method for post-build operations for the container engine."""
         raise NotImplementedError()

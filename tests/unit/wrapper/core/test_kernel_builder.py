@@ -21,7 +21,7 @@ from builder.core import KernelBuilder
         )
     )
 )
-def test__defconfig__check(config: dict[str], expected_defconfig: Path) -> bool:
+def test__defconfig__check(config: dict[str, str], expected_defconfig: Path) -> None:
     """Test defconfig path definition."""
     t = KernelBuilder(**config)
     res_actual = t._defconfig
