@@ -9,13 +9,11 @@ COPY . ${WDIR}
 WORKDIR ${WDIR}
 ENV PYTHONPATH ${WDIR}
 
-# install system packages;
-# NeoVim is added for debugging sessions.
+# install system packages
 RUN \
     apt-get update \
     && \
     apt-get install -y \
-        neovim \
         curl \
         wget \
         git \
