@@ -37,6 +37,7 @@ jobs:
           python3 -m poetry config virtualenvs.create false
           python3 -m poetry install --no-root
           export PYTHONPATH=$(pwd)
+          python3 scripts/run_tests.py
           python3 scripts/multi_build.py
       - name: Publish Artifacts
         uses: actions/upload-artifact@v3
