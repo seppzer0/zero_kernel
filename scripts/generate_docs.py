@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOTPATH: Path = Path(__file__).absolute().parents[1]
 DOCSPATH: Path = ROOTPATH / "docs" / "architecture"
-APPPATH: Path = ROOTPATH / "builder"
+APPPATH: Path = ROOTPATH / "devciai"
 
 
 def run_cmd(cmd: str) -> subprocess.CompletedProcess:
@@ -31,9 +31,7 @@ def generate_docs() -> None:
         if full_path.is_dir() and "__init__.py" in os.listdir(full_path):
             package_docs_path = DOCSPATH / elem
             os.makedirs(package_docs_path, exist_ok=True)
-            os.chdir(package_docs_path)
-            run_cmd(f"pyreverse {APPPATH / elem} -o puml")
-            os.chdir(ROOTPATH)
+            run_cmd(f"pyreverse {APPPATH / elem} -o puml -d {package_docs_path}")
 
 
 def main() -> None:
