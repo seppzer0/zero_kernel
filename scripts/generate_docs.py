@@ -32,6 +32,14 @@ def generate_docs() -> None:
             package_docs_path = DOCSPATH / elem
             os.makedirs(package_docs_path, exist_ok=True)
             run_cmd(f"pyreverse {APPPATH / elem} -o puml -d {package_docs_path}")
+            # edit "class" into "interface" for interfaces
+            if elem == "interfaces":
+                data = ""
+                with open(package_docs_path / "classes.puml", "r") as f:
+                    data = f.read()
+                data = data.replace("class ", "interface ")
+                with open(package_docs_path / "classes.puml", "w") as f:
+                    f.write(data)
 
 
 def main() -> None:

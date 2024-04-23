@@ -1,11 +1,11 @@
 @startuml classes
 set namespaceSeparator none
-class "IAssetsCollector" as interfaces.modules.IAssetsCollector {
+interface "IAssetsCollector" as interfaces.modules.IAssetsCollector {
   assets
   rom_collector_dto
   {abstract}run() -> None
 }
-class "IBundleCommand" as interfaces.commands.IBundleCommand {
+interface "IBundleCommand" as interfaces.commands.IBundleCommand {
   {abstract}build_kernel(rom_name: str, clean_only: bool) -> None
   {abstract}collect_assets(rom_name: str, chroot: Literal['full', 'minimal']) -> None
   {abstract}conan_options(json_file: str) -> dict
@@ -14,7 +14,7 @@ class "IBundleCommand" as interfaces.commands.IBundleCommand {
   {abstract}conan_upload(reference: str) -> None
   {abstract}run() -> None
 }
-class "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
+interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
   builder_cmd
   container_options
   dir_bundle_conan
@@ -23,10 +23,10 @@ class "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
   {abstract}check_cache() -> bool
   {abstract}create_dirs() -> None
 }
-class "IKernelBuilder" as interfaces.modules.IKernelBuilder {
+interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
   {abstract}run() -> None
 }
-class "IRomApi" as interfaces.clients.IRomApi {
+interface "IRomApi" as interfaces.clients.IRomApi {
   {abstract}codename_mapper() -> str
   {abstract}run() -> str
 }
