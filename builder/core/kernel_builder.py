@@ -544,7 +544,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         name_full = f"{os.getenv('KNAME', 'zero')}-{ver_int}-{self._ucodename}-{self.base}-{verbase}{name_suffix}"
         kdir = dcfg.root / dcfg.kernel
         if not kdir.is_dir():
-            os.mkdir(kdir)
+            os.makedirs(kdir)
         os.chdir(self._rcs.paths["AnyKernel3"])
         # this is not the best solution, but is the easiest
         cmd = f"zip -r9 {kdir / name_full}.zip . -x *.git* *README* *LICENSE* *placeholder"

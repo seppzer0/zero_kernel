@@ -138,15 +138,15 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         match self.command:
             case "kernel":
                 if not dcfg.kernel.is_dir():
-                    os.mkdir(dcfg.kernel)
+                    os.makedirs(dcfg.kernel)
             case "assets":
                 if not dcfg.assets.is_dir():
-                    os.mkdir(dcfg.assets)
+                    os.makedirs(dcfg.assets)
             case "bundle":
                 if self.package_type in ("slim", "full"):
                     # mount directory with release artifacts
                     shutil.rmtree(dcfg.bundle, ignore_errors=True)
-                    os.mkdir(dcfg.bundle)
+                    os.makedirs(dcfg.bundle)
 
     def build_image(self) -> str | None | CompletedProcess:
         print("\n")

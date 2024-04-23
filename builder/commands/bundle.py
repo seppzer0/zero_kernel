@@ -111,7 +111,7 @@ class BundleCommand(BaseModel, IBundleCommand):
                     for f in contents:
                         os.remove(f)
                 else:
-                    os.mkdir(dcfg.bundle)
+                    os.makedirs(dcfg.bundle)
                 # copy kernel
                 kfn = "".join(os.listdir(dcfg.kernel))
                 shutil.copy(dcfg.kernel / kfn, dcfg.bundle / kfn)

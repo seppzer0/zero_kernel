@@ -17,7 +17,7 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
     # for a directory (it's contents)
     if src.is_dir():
         if not dst.is_dir():
-            os.mkdir(dst)
+            os.makedirs(dst)
         contents = os.listdir(src)
         for e in contents:
             # do not copy restricted files
