@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOTPATH: Path = Path(__file__).absolute().parents[1]
 DOCSPATH: Path = ROOTPATH / "docs" / "architecture"
-APPPATH: Path = ROOTPATH / "devciai"
+APPPATH: Path = ROOTPATH / "builder"
 
 
 def run_cmd(cmd: str) -> subprocess.CompletedProcess:
