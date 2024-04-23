@@ -1,0 +1,22 @@
+@startuml classes
+set namespaceSeparator none
+class "AssetsCollector" as core.assets_collector.AssetsCollector {
+  assets
+  base : str
+  chroot : Literal['full', 'minimal']
+  clean_assets : bool
+  codename : str
+  ksu : bool
+  rom_collector_dto
+  rom_only : bool
+  run() -> None
+}
+class "KernelBuilder" as core.kernel_builder.KernelBuilder {
+  base : str
+  clean_kernel : bool
+  codename : str
+  ksu : bool
+  lkv : str
+  run() -> None
+}
+@enduml

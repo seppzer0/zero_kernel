@@ -1,0 +1,17 @@
+@startuml packages
+set namespaceSeparator none
+package "interfaces" as interfaces {
+}
+package "interfaces.clients" as interfaces.clients {
+}
+package "interfaces.commands" as interfaces.commands {
+}
+package "interfaces.engines" as interfaces.engines {
+}
+package "interfaces.modules" as interfaces.modules {
+}
+interfaces --> interfaces.clients
+interfaces --> interfaces.commands
+interfaces --> interfaces.engines
+interfaces --> interfaces.modules
+@enduml

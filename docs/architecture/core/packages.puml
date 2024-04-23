@@ -1,0 +1,11 @@
+@startuml packages
+set namespaceSeparator none
+package "core" as core {
+}
+package "core.assets_collector" as core.assets_collector {
+}
+package "core.kernel_builder" as core.kernel_builder {
+}
+core --> core.assets_collector
+core --> core.kernel_builder
+@enduml

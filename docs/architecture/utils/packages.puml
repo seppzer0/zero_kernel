@@ -1,0 +1,10 @@
+@startuml packages
+set namespaceSeparator none
+package "utils" as utils {
+}
+package "utils.bridge" as utils.bridge {
+}
+package "utils.resource_manager" as utils.resource_manager {
+}
+utils --> utils.resource_manager
+@enduml

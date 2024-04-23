@@ -1,0 +1,21 @@
+@startuml classes
+set namespaceSeparator none
+class "AssetsCommand" as commands.assets.AssetsCommand {
+}
+class "BundleCommand" as commands.bundle.BundleCommand {
+  base : str
+  codename : str
+  ksu : bool
+  lkv : str
+  package_type : str
+  build_kernel(rom_name: str, clean_only: bool) -> None
+  collect_assets(rom_name: str, chroot: Literal['full', 'minimal']) -> None
+  conan_options(json_file: str) -> dict
+  conan_package(options: tuple[str, ...], reference: str) -> None
+  conan_sources() -> None
+  conan_upload(reference: str) -> None
+  run() -> None
+}
+class "KernelCommand" as commands.kernel.KernelCommand {
+}
+@enduml
