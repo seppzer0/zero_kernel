@@ -16,20 +16,20 @@ class GitHubApi(BaseModel):
     :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.
     """
 
-    _endpoint: str = "https://api.github.com/repos/{}/releases/latest"
-    _direct_url: str = "https://github.com/{}"
-
     project: str
     file_filter: Optional[str] = None
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self._endpoint = self._endpoint.format(self.project)
-        self._direct_url = self._direct_url.format(self.project)
+    @property
+    def endpoint(self) -> str:
+        return f"https://api.github.com/repos/{self.project}/releases/latest"
+
+    @property
+    def direct_url(self) -> str:
+        return f"https://github.com/{self.project}"
 
     def run(self) -> str | None:
         """Get the latest version of an artifact from GitHub project."""
-        response = requests.get(self._endpoint).json()
+        response = requests.get(self.endpoint).json()
         # this will check whether the GitHub API usage is exceeded
         try:
             data = response["message"]
@@ -58,10 +58,10 @@ class GitHubApi(BaseModel):
                 data = "".join(browser_download_urls)
         except Exception:
             # if not available via API -- use regular "git clone"
-            rdir = Path(dcfg.assets, self._direct_url.rsplit("/", 1)[1])
+            rdir = Path(dcfg.assets, self.direct_url.rsplit("/", 1)[1])
             msg.note(f"Non-API GitHub resolution for {self.project}")
             cm.remove(rdir)
-            ccmd.launch(f"git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {self._direct_url} {rdir}")
+            ccmd.launch(f"git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {self.direct_url} {rdir}")
             os.chdir(rdir)
             cm.remove(".git*")
             os.chdir(dcfg.assets)
