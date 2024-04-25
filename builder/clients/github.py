@@ -16,8 +16,8 @@ class GitHubApi(BaseModel):
     :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.
     """
 
-    _endpoint = "https://api.github.com/repos/{}/releases/latest"
-    _direct_url = "https://github.com/{}"
+    _endpoint: str = "https://api.github.com/repos/{}/releases/latest"
+    _direct_url: str = "https://github.com/{}"
 
     project: str
     file_filter: Optional[str] = None
