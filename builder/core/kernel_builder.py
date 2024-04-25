@@ -31,7 +31,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         self._rcs = ResourceManager(codename=self.codename, base=self.base, lkv=self.lkv)
 
     @staticmethod
-    def _write_localversion() -> None:
+    def write_localversion() -> None:
         with open("localversion", "w", encoding="utf-8") as f:
             f.write("~zero-kernel")
 
@@ -49,7 +49,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # convert whatever output to path object
         return Path(defconfigs[self.base])
 
-    def _clean_build(self) -> None:
+    def clean_build(self) -> None:
         print("\n", end="")
         msg.note("Cleaning the build environment..")
         cm.git(self._rcs.paths[self.codename])
@@ -60,7 +60,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 cm.remove(fn)
         msg.done("Done!")
 
-    def _patch_strict_prototypes(self) -> None:
+    def patch_strict_prototypes(self) -> None:
         msg.note("Patching sources for Clang 15+ compatibility..")
         data = {
             self._rcs.paths[self.codename] /\
@@ -228,7 +228,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 f.write(contents)
         msg.done("Done!")
 
-    def _patch_anykernel3(self) -> None:
+    def patch_anykernel3(self) -> None:
         cm.remove(self._rcs.paths["AnyKernel3"] / "ramdisk")
         cm.remove(self._rcs.paths["AnyKernel3"] / "models")
         fo.ucopy(
@@ -240,7 +240,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             self._rcs.paths["AnyKernel3"] / "anykernel.sh"
         )
 
-    def _patch_rtl8812au_source_mod_v5642(self) -> None:
+    def patch_rtl8812au_source_mod_v5642(self) -> None:
         # Makefile
         fo.replace_lines(
             Path("Makefile").absolute(),
@@ -282,7 +282,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             )
         )
 
-    def _patch_rtl8812au(self) -> None:
+    def patch_rtl8812au(self) -> None:
         # copy RTL8812AU sources into kernel sources
         msg.note("Adding RTL8812AU drivers into the kernel..")
         fo.ucopy(
@@ -303,7 +303,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "realtek" /\
             "rtl8812au"
         )
-        self._patch_rtl8812au_source_mod_v5642()
+        self.patch_rtl8812au_source_mod_v5642()
         cm.remove(".git*")
         os.chdir(dcfg.root)
         # include the driver into build process
@@ -345,7 +345,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             f.write("\n".join(extra_configs))
             f.write("\n")
 
-    def _patch_ksu(self) -> None:
+    def patch_ksu(self) -> None:
         msg.note("Adding KernelSU into the kernel..")
         # extract KSU_GIT_VERSION environment variable manually
         goback = Path.cwd()
@@ -404,7 +404,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             f.write("\n".join(extra_configs))
             f.write("\n")
 
-    def _patch_qcacld(self) -> None:
+    def patch_qcacld(self) -> None:
         goback = Path.cwd()
         fo.ucopy(
             dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version / "qcacld_pa.patch",
@@ -414,7 +414,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         fo.apply_patch("qcacld_pa.patch")
         os.chdir(goback)
 
-    def _patch_ioctl(self) -> None:
+    def patch_ioctl(self) -> None:
         ioctl = self._rcs.paths[self.codename] /\
                 "drivers" /\
                 "platform" /\
@@ -428,12 +428,12 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             ("	u8 header[512] = { 0 };",),
         )
 
-    def _patch_kernel(self) -> None:
+    def patch_kernel(self) -> None:
         # -Wstrict-prototypes patch to build with Clang 15+
         clang_cmd = f'{self._rcs.paths["clang"] / "bin" / "clang"} --version'
         clang_ver = str(ccmd.launch(clang_cmd, get_output=True)).split("clang version ")[1].split(".")[0]
         if int(clang_ver) >= 15:
-            self._patch_strict_prototypes()
+            self.patch_strict_prototypes()
         # apply .patch files
         fo.ucopy(
             dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version,
@@ -454,20 +454,20 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # some patches only for ParanoidAndroid
         if self.base == "pa":
             if self._linux_kernel_version == "4.4":
-                self._patch_qcacld()
-            self._patch_ioctl()
+                self.patch_qcacld()
+            self.patch_ioctl()
         os.chdir(dcfg.root)
 
-    def _patch_all(self) -> None:
-        self._patch_anykernel3()
-        self._patch_kernel()
+    def patch_all(self) -> None:
+        self.patch_anykernel3()
+        self.patch_kernel()
         # optionally include KernelSU support
         if self.ksu:
-            self._patch_ksu()
-        self._patch_rtl8812au()
+            self.patch_ksu()
+        self.patch_rtl8812au()
         msg.done("Patches added!")
 
-    def _build(self) -> None:
+    def build(self) -> None:
         print("\n", end="")
         msg.note("Launching the build..")
         os.chdir(self._rcs.paths[self.codename])
@@ -524,7 +524,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 break
         return ".".join(version)
 
-    def _create_zip(self) -> None:
+    def create_zip(self) -> None:
         print("\n", end="")
         msg.note("Forming final ZIP file..")
         fo.ucopy(
@@ -560,13 +560,13 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         self._rcs.generate_paths()
         self._rcs.download()
         self._rcs.export_path()
-        self._clean_build()
+        self.clean_build()
         if self.clean_kernel:
             sys.exit(0)
-        self._write_localversion()
+        self.write_localversion()
         msg.done("Done! Tools are configured!")
         if self.lkv != self._linux_kernel_version:
             msg.error("Linux kernel version in sources is different what was specified in arguments")
-        self._patch_all()
-        self._build()
-        self._create_zip()
+        self.patch_all()
+        self.build()
+        self.create_zip()

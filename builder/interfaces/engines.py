@@ -4,7 +4,7 @@ from subprocess import CompletedProcess
 
 
 class IGenericContainerEngine(ABC):
-    """An interface for GenericContainerEngine."""
+    """Interface for GenericContainerEngine."""
 
     @property
     @abstractmethod

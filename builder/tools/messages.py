@@ -1,10 +1,8 @@
-import io
-import os
 import sys
 
 
 def banner(text: str) -> None:
-    """A custom simple banner.
+    """Custom simple banner.
 
     :param str text: Text to wrap.
     """

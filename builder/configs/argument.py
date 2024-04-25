@@ -8,7 +8,7 @@ from builder.tools import commands as ccmd, messages as msg
 
 
 class ArgumentConfig(BaseModel):
-    """A variable storage to use across the application.
+    """Variable storage for use across the app.
 
     :param Literal["docker","podman"] benv: Build environment.
     :param Literal["kernel","assets","bundle"] command: Builder command to be launched.

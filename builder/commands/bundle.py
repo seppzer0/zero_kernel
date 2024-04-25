@@ -12,7 +12,7 @@ from builder.interfaces import IBundleCommand
 
 
 class BundleCommand(BaseModel, IBundleCommand):
-    """A command that packages the artifacts produced both
+    """Command that packages the artifacts produced both
     by 'kernel_builder' and 'assets_collector' core modules.
 
     :param str base: Kernel source base.

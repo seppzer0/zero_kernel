@@ -24,7 +24,20 @@ interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngin
   {abstract}create_dirs() -> None
 }
 interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
+  {abstract}build() -> None
+  {abstract}clean_build() -> None
+  {abstract}create_zip() -> None
+  {abstract}patch_all() -> None
+  {abstract}patch_anykernel3() -> None
+  {abstract}patch_ioctl() -> None
+  {abstract}patch_kernel() -> None
+  {abstract}patch_ksu() -> None
+  {abstract}patch_qcacld() -> None
+  {abstract}patch_rtl8812au() -> None
+  {abstract}patch_rtl8812au_source_mod_v5642() -> None
+  {abstract}patch_strict_prototypes() -> None
   {abstract}run() -> None
+  {abstract}write_localversion() -> None
 }
 interface "IRomApi" as interfaces.clients.IRomApi {
   {abstract}codename_mapper() -> str
