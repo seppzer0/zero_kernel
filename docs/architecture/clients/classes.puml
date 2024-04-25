@@ -1,6 +1,8 @@
 @startuml classes
 set namespaceSeparator none
 class "GitHubApi" as clients.github.GitHubApi {
+  direct_url
+  endpoint
   file_filter : Optional[str]
   project : str
   run() -> str | None
