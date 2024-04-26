@@ -3,7 +3,7 @@ from conans import ConanFile
 
 class ZeroKernelConan(ConanFile):
     name = "zero"
-    version = "0.4.2"
+    version = "0.4.4"
     author = "seppzer0"
     url = "https://gitlab.com/api/v4/projects/40803264/packages/conan"
     description = "An advanced Android kernel builder with Kali NetHunter support."
