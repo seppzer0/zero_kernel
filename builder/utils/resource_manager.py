@@ -9,7 +9,7 @@ from builder.configs import DirectoryConfig as dcfg
 
 
 class ResourceManager:
-    """An entity for managing build resources."""
+    """Build resource manager."""
 
     _data: dict[str, dict[str, str]] = {}
     paths: dict[str, Path] = {}
@@ -25,7 +25,7 @@ class ResourceManager:
         self._base = base
 
     def __getitem__(self, arg: Path) -> slice:
-        """A custom getitem implementation for accessing data via Path-type indexes."""
+        """Custom getitem implementation for accessing data via Path-type indexes."""
         return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
 
     def read_data(self) -> None:

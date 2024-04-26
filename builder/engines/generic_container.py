@@ -11,7 +11,7 @@ from builder.interfaces import IGenericContainerEngine
 
 
 class GenericContainerEngine(BaseModel, IGenericContainerEngine):
-    """A generic container engine for containerized builds.
+    """Generic container engine for containerized builds.
 
     Note that here paths from DirectoryConfig are not used
     directly. Because the build will run in a container,

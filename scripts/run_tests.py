@@ -9,7 +9,7 @@ INTEPRETER: str = "python" if platform.system() == "Windows" else "python3"
 
 
 class Tester:
-    """A single class for all types of tests."""
+    """Single class for all types of tests."""
 
     @staticmethod
     def _launch_cmd(cmd: str) -> CompletedProcess:
