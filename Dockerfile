@@ -38,7 +38,7 @@ RUN python3 -m pip install pip --upgrade && \
 # install shared tools from tools.json;
 #
 # The idea here is that we pre-pack all the tools into the Docker/Podman image that can be used for any device:
-# (which are toolchains, binutils -- everything except device-specific kernel source);
+# (toolchains, binutils -- everything except device-specific kernel source);
 # 
 # This significantly reduces the total build time, as each time we make a build call for a device,
 # only device-specific kernel source is being downloaded into the container.
