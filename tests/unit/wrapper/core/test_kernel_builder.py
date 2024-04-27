@@ -2,6 +2,7 @@ import pytest
 from pathlib import Path
 
 from builder.core import KernelBuilder
+from builder.managers import ResourceManager
 
 
 @pytest.mark.parametrize(
@@ -23,7 +24,7 @@ from builder.core import KernelBuilder
 )
 def test__defconfig__check(config: dict[str, str], expected_defconfig: Path) -> None:
     """Test defconfig path definition."""
-    t = KernelBuilder(**config)
+    t = KernelBuilder(**config, rm=ResourceManager())
     res_actual = t._defconfig
     res_expected = expected_defconfig
     assert res_actual == res_expected
