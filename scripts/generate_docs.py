@@ -3,6 +3,7 @@ Script to generate class diagrams of all modules im plantuml (.puml) format.
 """
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -16,12 +17,10 @@ def run_cmd(cmd: str) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, shell=True, check=True)
 
 
-def check_docs_dir() -> None:
-    """Check the state of docs directory with architecture documentation."""
-    try:
-        os.listdir(DOCSPATH)
-    except Exception:
-        os.makedirs(DOCSPATH, exist_ok=True)
+def clean_dir() -> None:
+    """Create a clean docs directory."""
+    shutil.rmtree(DOCSPATH, ignore_errors=True)
+    os.makedirs(DOCSPATH)
 
 
 def generate_docs() -> None:
@@ -43,7 +42,7 @@ def generate_docs() -> None:
 
 
 def main() -> None:
-    check_docs_dir()
+    clean_dir()
     generate_docs()
 
 
