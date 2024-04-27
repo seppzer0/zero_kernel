@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
 from builder.configs import DirectoryConfig as dcfg
+from builder.managers import ResourceManager
 from builder.interfaces import ICommand, IBundleCommand
 
 
@@ -35,6 +36,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 lkv = self.lkv,
                 clean_kernel = clean_only,
                 ksu = self.ksu,
+                rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
             )
             kb.run()
 

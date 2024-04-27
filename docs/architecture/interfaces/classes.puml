@@ -12,7 +12,9 @@ interface "IBundleCommand" as interfaces.commands.IBundleCommand {
   {abstract}conan_package(options: tuple[str, ...], reference: str) -> None
   {abstract}conan_sources() -> None
   {abstract}conan_upload(reference: str) -> None
-  {abstract}run() -> None
+}
+interface "ICommand" as interfaces.commands.ICommand {
+  {abstract}execute() -> None
 }
 interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
   builder_cmd

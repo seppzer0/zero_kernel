@@ -1,0 +1,10 @@
+@startuml classes
+set namespaceSeparator none
+class "ResourceManager" as managers.resource.ResourceManager {
+  paths : dict[str, Path]
+  download() -> None
+  export_path() -> None
+  generate_paths() -> None
+  read_data() -> None
+}
+@enduml

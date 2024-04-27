@@ -2,7 +2,7 @@ import sys
 import argparse
 
 from builder.tools import messages as msg
-from builder.utils import ResourceManager
+from builder.managers import ResourceManager
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
 

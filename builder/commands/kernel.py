@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from builder.core import KernelBuilder
+from builder.managers import ResourceManager
 from builder.interfaces import ICommand
 
 class KernelCommand(BaseModel, ICommand):
@@ -20,5 +21,9 @@ class KernelCommand(BaseModel, ICommand):
     ksu: bool
 
     def execute(self) -> None:
-        kb = KernelBuilder(**self.__dict__)
+        # create resource manager and pass it to the builder
+        kb = KernelBuilder(
+            **self.__dict__,
+            rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
+        )
         kb.run()

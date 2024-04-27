@@ -1,0 +1,8 @@
+@startuml packages
+set namespaceSeparator none
+package "managers" as managers {
+}
+package "managers.resource" as managers.resource {
+}
+managers --> managers.resource
+@enduml
