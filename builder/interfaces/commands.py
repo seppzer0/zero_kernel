@@ -2,8 +2,17 @@ from typing import Literal
 from abc import ABC, abstractmethod
 
 
+class ICommand(ABC):
+    """Interface for builder's commands."""
+
+    @abstractmethod
+    def execute(self) -> None:
+        """Execute command's logic."""
+        raise NotImplementedError()
+
+
 class IBundleCommand(ABC):
-    """An interface for the bundle creator."""
+    """Extended interface for the bundle creation."""
 
     @abstractmethod
     def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
@@ -54,8 +63,3 @@ class IBundleCommand(ABC):
         :param str reference: Conan reference.
         """
         raise NotImplementedError()
-
-    @abstractmethod
-    def run(self) -> None:
-         """Execute the bundle creator logic."""
-         raise NotImplementedError()
