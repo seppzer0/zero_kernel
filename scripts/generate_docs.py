@@ -1,5 +1,5 @@
 """
-Script to generate class diagrams of all modules im plantuml (.puml) format.
+Script to generate class diagrams of all packages in plantuml (.puml) format.
 """
 
 import os
