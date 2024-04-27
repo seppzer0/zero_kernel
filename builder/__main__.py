@@ -222,30 +222,33 @@ def main(args: argparse.Namespace) -> None:
         case "local":
             match args.command:
                 case "kernel":
-                    KernelCommand(
+                    kc = KernelCommand(
                         codename = args.codename,
                         base = args.base,
                         lkv = args.lkv,
                         clean_kernel = args.clean_kernel,
                         ksu = args.ksu,
-                    ).run()
+                    )
+                    kc.execute()
                 case "assets":
-                    AssetsCommand(
+                    ac = AssetsCommand(
                         codename = args.codename,
                         base = args.base,
                         chroot = args.chroot,
                         clean_assets = args.clean_assets,
                         rom_only = args.rom_only,
                         ksu = args.ksu,
-                    ).run()
+                    )
+                    ac.execute()
                 case "bundle":
-                    BundleCommand(
+                    bc = BundleCommand(
                         codename = args.codename,
                         base = args.base,
                         lkv = args.lkv,
                         package_type = args.package_type,
                         ksu = args.ksu,
-                    ).run()
+                    )
+                    bc.execute()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,30 @@
+@startuml classes
+set namespaceSeparator none
+class "GitHubApi" as clients.github.GitHubApi {
+  direct_url
+  endpoint
+  file_filter : Optional[str]
+  project : str
+  run() -> str | None
+}
+class "LineageOsApi" as clients.los.LineageOsApi {
+  endpoint : str
+  json_key : str
+  rom_name : str
+}
+class "ParanoidAndroidApi" as clients.pa.ParanoidAndroidApi {
+  endpoint : str
+  json_key : str
+  rom_name : str
+  codename_mapper() -> str
+}
+class "RomApi" as clients.rom_api.RomApi {
+  codename : str
+  endpoint : str
+  json_key : str
+  rom_name : str
+  rom_only : bool
+  codename_mapper() -> str
+  run() -> str
+}
+@enduml

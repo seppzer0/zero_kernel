@@ -1,0 +1,36 @@
+@startuml classes
+set namespaceSeparator none
+class "AssetsCollector" as core.assets_collector.AssetsCollector {
+  assets
+  base : str
+  chroot : Literal['full', 'minimal']
+  clean_assets : bool
+  codename : str
+  ksu : bool
+  rom_collector_dto
+  rom_only : bool
+  run() -> None
+}
+class "KernelBuilder" as core.kernel_builder.KernelBuilder {
+  base : str
+  clean_kernel : bool
+  codename : str
+  ksu : bool
+  lkv : str
+  rm
+  build() -> None
+  clean_build() -> None
+  create_zip() -> None
+  patch_all() -> None
+  patch_anykernel3() -> None
+  patch_ioctl() -> None
+  patch_kernel() -> None
+  patch_ksu() -> None
+  patch_qcacld() -> None
+  patch_rtl8812au() -> None
+  patch_rtl8812au_source_mod_v5642() -> None
+  patch_strict_prototypes() -> None
+  run() -> None
+  write_localversion() -> None
+}
+@enduml

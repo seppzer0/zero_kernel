@@ -99,7 +99,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         os.chdir(dcfg.root)
         # directory check
         if not dcfg.assets.is_dir():
-            os.mkdir(dcfg.assets)
+            os.makedirs(dcfg.assets)
         else:
             if len(os.listdir(dcfg.assets)) != 0:
                 cmsg = f'[ ? ] Found an existing "{dcfg.assets.name}" folder, clean it? [Y/n]: '

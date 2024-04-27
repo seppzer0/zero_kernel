@@ -11,10 +11,10 @@ def launch(
         get_output: Optional[bool] = False,
         loglvl: Optional[Literal["normal", "quiet"]] = "normal"
     ) -> str | CompletedProcess | None:
-    """A custom subprocess wrapper to launch commands.
+    """Custom subprocess wrapper to launch commands.
 
-    :param str cmd: A command to launch.
-    :param Optional[bool]=False get_output: A switch to get the piped output of the command.
+    :param str cmd: Command to launch.
+    :param Optional[bool]=False get_output: Switch to get the piped output of the command.
     :param str loglvl: Log level.
     """
     # determine stdout and check some of the cases

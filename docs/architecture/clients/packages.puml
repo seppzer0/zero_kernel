@@ -1,0 +1,16 @@
+@startuml packages
+set namespaceSeparator none
+package "clients" as clients {
+}
+package "clients.github" as clients.github {
+}
+package "clients.los" as clients.los {
+}
+package "clients.pa" as clients.pa {
+}
+package "clients.rom_api" as clients.rom_api {
+}
+clients --> clients.github
+clients --> clients.los
+clients --> clients.pa
+@enduml

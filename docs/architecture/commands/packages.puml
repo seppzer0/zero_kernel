@@ -1,0 +1,14 @@
+@startuml packages
+set namespaceSeparator none
+package "commands" as commands {
+}
+package "commands.assets" as commands.assets {
+}
+package "commands.bundle" as commands.bundle {
+}
+package "commands.kernel" as commands.kernel {
+}
+commands --> commands.assets
+commands --> commands.bundle
+commands --> commands.kernel
+@enduml

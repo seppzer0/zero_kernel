@@ -8,11 +8,12 @@ from pydantic import BaseModel
 from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
 from builder.configs import DirectoryConfig as dcfg
-from builder.interfaces import IBundleCommand
+from builder.managers import ResourceManager
+from builder.interfaces import ICommand, IBundleCommand
 
 
-class BundleCommand(BaseModel, IBundleCommand):
-    """A command that packages the artifacts produced both
+class BundleCommand(BaseModel, ICommand, IBundleCommand):
+    """Command that packages the artifacts produced both
     by 'kernel_builder' and 'assets_collector' core modules.
 
     :param str base: Kernel source base.
@@ -29,27 +30,30 @@ class BundleCommand(BaseModel, IBundleCommand):
 
     def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         if not dcfg.kernel.is_dir() or clean_only is True:
-            KernelBuilder(
+            kb = KernelBuilder(
                 codename = self.codename,
                 base = rom_name,
                 lkv = self.lkv,
                 clean_kernel = clean_only,
                 ksu = self.ksu,
-            ).run()
+                rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
+            )
+            kb.run()
 
     @property
     def _rom_only_flag(self) -> bool:
         return True if "full" not in self.package_type else False
 
     def collect_assets(self, rom_name: str, chroot: Literal["full", "minimal"]) -> None:
-        AssetsCollector(
+        ac = AssetsCollector(
             codename = self.codename,
             base = rom_name,
             chroot = chroot,
             clean_assets = True,
             rom_only = self._rom_only_flag,
             ksu = self.ksu,
-        ).run()
+        )
+        ac.run()
 
     def conan_sources(self) -> None:
         sourcedir = dcfg.root / "source"
@@ -97,7 +101,7 @@ class BundleCommand(BaseModel, IBundleCommand):
               f"conan upload -f {reference} -r {alias}"
         ccmd.launch(cmd)
 
-    def run(self) -> None:
+    def execute(self) -> None:
         os.chdir(dcfg.root)
         # determine the bundle type and process it
         match self.package_type:
@@ -111,7 +115,7 @@ class BundleCommand(BaseModel, IBundleCommand):
                     for f in contents:
                         os.remove(f)
                 else:
-                    os.mkdir(dcfg.bundle)
+                    os.makedirs(dcfg.bundle)
                 # copy kernel
                 kfn = "".join(os.listdir(dcfg.kernel))
                 shutil.copy(dcfg.kernel / kfn, dcfg.bundle / kfn)

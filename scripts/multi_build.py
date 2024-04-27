@@ -25,7 +25,7 @@ def rmove(src: Path, dst: Path) -> None:
     # for a directory (it's contents)
     if src.is_dir():
         if not dst.is_dir():
-            os.mkdir(dst)
+            os.makedirs(dst)
         contents = os.listdir(src)
         for e in contents:
             # do not copy restricted files
@@ -87,7 +87,7 @@ def main(args: argparse.Namespace) -> None:
     os.chdir(rootpath)
     dir_shared = rootpath / "multi-build"
     shutil.rmtree(dir_shared, ignore_errors=True)
-    os.mkdir(dir_shared)
+    os.makedirs(dir_shared)
     for count, argset in enumerate(argsets, 1):
         # define some of the values individually
         benv = f"--build-env {args.env}"

@@ -1,0 +1,7 @@
+@startuml packages
+set namespaceSeparator none
+package "utils" as utils {
+}
+package "utils.bridge" as utils.bridge {
+}
+@enduml

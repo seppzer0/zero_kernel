@@ -1,0 +1,54 @@
+@startuml classes
+set namespaceSeparator none
+interface "IAssetsCollector" as interfaces.modules.IAssetsCollector {
+  assets
+  rom_collector_dto
+  {abstract}run() -> None
+}
+interface "IBundleCommand" as interfaces.commands.IBundleCommand {
+  {abstract}build_kernel(rom_name: str, clean_only: bool) -> None
+  {abstract}collect_assets(rom_name: str, chroot: Literal['full', 'minimal']) -> None
+  {abstract}conan_options(json_file: str) -> dict
+  {abstract}conan_package(options: tuple[str, ...], reference: str) -> None
+  {abstract}conan_sources() -> None
+  {abstract}conan_upload(reference: str) -> None
+}
+interface "ICommand" as interfaces.commands.ICommand {
+  {abstract}execute() -> None
+}
+interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
+  builder_cmd
+  container_options
+  dir_bundle_conan
+  run_cmd
+  {abstract}build_image() -> str | None | CompletedProcess
+  {abstract}check_cache() -> bool
+  {abstract}create_dirs() -> None
+}
+interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
+  {abstract}build() -> None
+  {abstract}clean_build() -> None
+  {abstract}create_zip() -> None
+  {abstract}patch_all() -> None
+  {abstract}patch_anykernel3() -> None
+  {abstract}patch_ioctl() -> None
+  {abstract}patch_kernel() -> None
+  {abstract}patch_ksu() -> None
+  {abstract}patch_qcacld() -> None
+  {abstract}patch_rtl8812au() -> None
+  {abstract}patch_rtl8812au_source_mod_v5642() -> None
+  {abstract}patch_strict_prototypes() -> None
+  {abstract}run() -> None
+  {abstract}write_localversion() -> None
+}
+interface "IResourceManager" as interfaces.managers.IResourceManager {
+  {abstract}download() -> None
+  {abstract}export_path() -> None
+  {abstract}generate_paths() -> None
+  {abstract}read_data() -> None
+}
+interface "IRomApi" as interfaces.clients.IRomApi {
+  {abstract}codename_mapper() -> str
+  {abstract}run() -> str
+}
+@enduml

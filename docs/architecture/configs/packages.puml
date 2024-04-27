@@ -1,0 +1,11 @@
+@startuml packages
+set namespaceSeparator none
+package "configs" as configs {
+}
+package "configs.argument" as configs.argument {
+}
+package "configs.directory" as configs.directory {
+}
+configs --> configs.argument
+configs --> configs.directory
+@enduml

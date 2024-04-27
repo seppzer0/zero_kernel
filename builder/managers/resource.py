@@ -3,33 +3,34 @@ import json
 import tarfile
 from pathlib import Path
 from typing import Optional
+from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
 from builder.configs import DirectoryConfig as dcfg
+from builder.interfaces import IResourceManager
 
 
-class ResourceManager:
-    """An entity for managing build resources."""
+class ResourceManager(BaseModel, IResourceManager):
+    """Build resource manager.
+
+    :param Optional[str]=None codename: Device codename.
+    :param Optional[str]=None base: Kernel source base.
+    :param Optional[str]=None lkv: Linux kernel version.
+    """
 
     _data: dict[str, dict[str, str]] = {}
+
     paths: dict[str, Path] = {}
 
-    def __init__(
-        self,
-        codename: Optional[str] = None,
-        lkv: Optional[str] = None,
-        base: Optional[str] = None
-    ) -> None:
-        self._codename = codename
-        self._lkv = lkv
-        self._base = base
+    codename: Optional[str] = None
+    lkv: Optional[str] = None
+    base: Optional[str] = None
 
     def __getitem__(self, arg: Path) -> slice:
-        """A custom getitem implementation for accessing data via Path-type indexes."""
+        """Custom getitem implementation for accessing data via Path-type indexes."""
         return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
 
     def read_data(self) -> None:
-        """Read data from all of the JSON files."""
         os.chdir(dcfg.root)
         # define paths
         tools = ""
@@ -38,15 +39,15 @@ class ResourceManager:
         with open(dcfg.root / "builder" / "manifests" / "tools.json", encoding="utf-8") as f:
             tools = json.load(f)
         # codename and ROM are undefined only when the Docker/Podman image is being prepared
-        if self._codename and self._base:
+        if self.codename and self.base:
             with open(dcfg.root / "builder" / "manifests" / "devices.json", encoding="utf-8") as f:
                 data = json.load(f)
                 # load data only for the required codename + linux kernel version combination
                 try:
-                    data[self._codename][self._lkv][self._base]
+                    data[self.codename][self.lkv][self.base]
                 except Exception:
                     msg.error("Arguments were specified for an unsupported build, exiting..")
-                device = {self._codename: data[self._codename][self._lkv][self._base]}
+                device = {self.codename: data[self.codename][self.lkv][self.base]}
             # join tools and devices manifests
             self._data = {**tools, **device}
         else:
@@ -54,13 +55,11 @@ class ResourceManager:
             msg.note("Only shared tools are installed.")
 
     def generate_paths(self) -> None:
-        """Generate paths with Path objects."""
         for e in self._data:
             # convert path into it's absolute form
             self.paths[e] = dcfg.root / self._data[e]["path"]
 
     def download(self) -> None:
-        """Download files from URLs."""
         for e in self._data:
             # break data into individual required vars
             path = Path(self._data[e]["path"])    # type: ignore
@@ -107,7 +106,6 @@ class ResourceManager:
                     msg.error("Invalid resource type detected. Use only: generic, git.")
 
     def export_path(self) -> None:
-        """Add path to PATH."""
         for elem in self.paths:
             p = self.paths[elem]
             pathenv = str(f"{p}/bin/")

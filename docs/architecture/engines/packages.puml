@@ -1,0 +1,8 @@
+@startuml packages
+set namespaceSeparator none
+package "engines" as engines {
+}
+package "engines.generic_container" as engines.generic_container {
+}
+engines --> engines.generic_container
+@enduml
