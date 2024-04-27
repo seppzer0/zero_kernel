@@ -1,6 +1,9 @@
 @startuml classes
 set namespaceSeparator none
 class "ResourceManager" as managers.resource.ResourceManager {
+  base : Optional[str]
+  codename : Optional[str]
+  lkv : Optional[str]
   paths : dict[str, Path]
   download() -> None
   export_path() -> None

@@ -41,6 +41,12 @@ interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
   {abstract}run() -> None
   {abstract}write_localversion() -> None
 }
+interface "IResourceManager" as interfaces.managers.IResourceManager {
+  {abstract}download() -> None
+  {abstract}export_path() -> None
+  {abstract}generate_paths() -> None
+  {abstract}read_data() -> None
+}
 interface "IRomApi" as interfaces.clients.IRomApi {
   {abstract}codename_mapper() -> str
   {abstract}run() -> str
