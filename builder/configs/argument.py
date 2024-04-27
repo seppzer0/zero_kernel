@@ -10,7 +10,7 @@ from builder.tools import commands as ccmd, messages as msg
 class ArgumentConfig(BaseModel):
     """Variable storage for use across the app.
 
-    :param Literal["docker","podman"] benv: Build environment.
+    :param Literal["docker","podman","local"] benv: Build environment.
     :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
     :param str codename: Device codename.
     :param str base: Kernel source base.
@@ -25,7 +25,7 @@ class ArgumentConfig(BaseModel):
     :param Optional[bool]=False ksu: Flag indicating KernelSU support.
     """
 
-    benv: Literal["docker", "podman"]
+    benv: Literal["docker", "podman", "local"]
     command: Literal["kernel", "assets", "bundle"]
     codename: str
     base: str
