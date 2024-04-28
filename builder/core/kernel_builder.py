@@ -538,7 +538,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         ver_int = os.getenv("KVERSION")
         # create the final ZIP file
         name_suffix = "-ksu" if self.ksu else ""
-        name_full = f"{os.getenv('KNAME', 'zero')}-{ver_int}-{self._ucodename}-{self.base}-{verbase}{name_suffix}"
+        name_full = f'{os.getenv("KNAME", "zero")}-{ver_int}-{self._ucodename}-{self.base}-{verbase}{name_suffix}'
         kdir = dcfg.root / dcfg.kernel
         if not kdir.is_dir():
             os.makedirs(kdir)

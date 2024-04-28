@@ -28,7 +28,7 @@ source = [
     "builder/commands",
     "builder/configs",
     "builder/engines",
-    "builder/utils"
+    "builder/managers"
 ]
 
 [tool.coverage.report]
