@@ -9,7 +9,7 @@ from builder.tools import cleaning as cm, commands as ccmd, messages as msg
 from builder.configs import DirectoryConfig as dcfg
 
 
-class GitHubApi(BaseModel):
+class GithubApiClient(BaseModel):
     """Limited interaction with GitHub API.
 
     :param str project: GitHub project name (owner/repo).

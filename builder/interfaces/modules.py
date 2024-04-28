@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from builder.clients import LineageOsApi, ParanoidAndroidApi
+from builder.clients import LineageOsApiClient, ParanoidAndroidApiClient
 
 
 class IKernelBuilder(ABC):
@@ -103,7 +103,7 @@ class IAssetsCollector(ABC):
 
     @property
     @abstractmethod
-    def rom_collector_dto(self) -> LineageOsApi | ParanoidAndroidApi | None:
+    def rom_collector_dto(self) -> LineageOsApiClient | ParanoidAndroidApiClient | None:
         """Determine the ROM for collection."""
         raise NotImplementedError()
 

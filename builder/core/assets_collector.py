@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, fileoperations as fo, messages as msg
-from builder.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
+from builder.clients import GithubApiClient, LineageOsApiClient, ParanoidAndroidApiClient
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
 
@@ -26,19 +26,19 @@ class AssetsCollector(BaseModel, IAssetsCollector):
     ksu: bool
 
     @property
-    def rom_collector_dto(self) -> LineageOsApi | ParanoidAndroidApi | None:
+    def rom_collector_dto(self) -> LineageOsApiClient | ParanoidAndroidApiClient | None:
         match self.base:
             case "los":
-                return LineageOsApi(codename=self.codename, rom_only=self.rom_only)
+                return LineageOsApiClient(codename=self.codename, rom_only=self.rom_only)
             case "pa":
-                return ParanoidAndroidApi(codename=self.codename, rom_only=self.rom_only)
+                return ParanoidAndroidApiClient(codename=self.codename, rom_only=self.rom_only)
             case "x" | "aosp":
                 msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
 
     @property
     def assets(self) -> tuple[str, str | None] | list[str] | None:
         # define dm-verity and forceencrypt disabler (DFD) and SU manager
-        dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
+        dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
@@ -55,27 +55,27 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 # DFD
                 dfd,
                 # files from GitHub projects
-                GitHubApi(
+                GithubApiClient(
                     project=su_manager,
                     file_filter=".apk"
                 ).run(),
-                GitHubApi(
+                GithubApiClient(
                     project="klausw/hackerskeyboard",
                     file_filter=".apk"
                 ).run(),
-                GitHubApi(
+                GithubApiClient(
                     project="aleksey-saenko/TTLChanger",
                     file_filter=".apk"
                 ).run(),
-                GitHubApi(
+                GithubApiClient(
                     project="ukanth/afwall",
                     file_filter=".apk"
                 ).run(),
-                GitHubApi(
+                GithubApiClient(
                     project="emanuele-f/PCAPdroid",
                     file_filter=".apk"
                 ).run(),
-                GitHubApi(
+                GithubApiClient(
                     project="nfcgate/nfcgate",
                     file_filter=".apk"
                 ).run(),

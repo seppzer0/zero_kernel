@@ -1,24 +1,24 @@
 @startuml classes
 set namespaceSeparator none
-class "GitHubApi" as clients.github.GitHubApi {
+class "GithubApiClient" as clients.github.GithubApiClient {
   direct_url
   endpoint
   file_filter : Optional[str]
   project : str
   run() -> str | None
 }
-class "LineageOsApi" as clients.los.LineageOsApi {
+class "LineageOsApiClient" as clients.los.LineageOsApiClient {
   endpoint : str
   json_key : str
   rom_name : str
 }
-class "ParanoidAndroidApi" as clients.pa.ParanoidAndroidApi {
+class "ParanoidAndroidApiClient" as clients.pa.ParanoidAndroidApiClient {
   endpoint : str
   json_key : str
   rom_name : str
   codename_mapper() -> str
 }
-class "RomApi" as clients.rom_api.RomApi {
+class "RomApiClient" as clients.rom_api.RomApiClient {
   codename : str
   endpoint : str
   json_key : str

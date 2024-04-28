@@ -1,7 +1,7 @@
-from builder.clients.rom_api import RomApi
+from builder.clients.rom_api import RomApiClient
 
 
-class LineageOsApi(RomApi):
+class LineageOsApiClient(RomApiClient):
     """Limited interaction with Lineage API."""
 
     endpoint: str = "https://download.lineageos.org/api/v1/{}/nightly/ro.build.version.incremental"

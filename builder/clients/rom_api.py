@@ -2,10 +2,10 @@ import requests
 from pydantic import BaseModel
 
 from builder.tools import messages as msg
-from builder.interfaces import IRomApi
+from builder.interfaces import IRomApiClient
 
 
-class RomApi(BaseModel, IRomApi):
+class RomApiClient(BaseModel, IRomApiClient):
     """Generic class for interacting with ROMs' APIs.
 
     :param str endpoint: API endpoint to interact with.

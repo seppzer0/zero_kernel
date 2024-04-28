@@ -1,9 +1,9 @@
 from typing import override
 
-from builder.clients.rom_api import RomApi
+from builder.clients.rom_api import RomApiClient
 
 
-class ParanoidAndroidApi(RomApi):
+class ParanoidAndroidApiClient(RomApiClient):
     """Limited interaction with ParanoidAndroid API."""
 
     endpoint: str = "https://api.paranoidandroid.co/updates/{}"

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class IRomApi(ABC):
+class IRomApiClient(ABC):
     """Interface for interacting with ROM projects' APIs."""
 
     @abstractmethod
