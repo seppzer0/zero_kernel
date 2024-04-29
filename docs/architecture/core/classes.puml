@@ -17,7 +17,7 @@ class "KernelBuilder" as core.kernel_builder.KernelBuilder {
   codename : str
   ksu : bool
   lkv : str
-  rm
+  rmanager
   build() -> None
   clean_build() -> None
   create_zip() -> None

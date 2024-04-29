@@ -36,7 +36,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 lkv = self.lkv,
                 clean_kernel = clean_only,
                 ksu = self.ksu,
-                rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
+                rmanager=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
             )
             kb.run()
 

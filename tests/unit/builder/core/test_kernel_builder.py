@@ -24,7 +24,7 @@ from builder.managers import ResourceManager
 )
 def test__defconfig__check(config: dict[str, str], expected_defconfig: Path) -> None:
     """Test defconfig path definition."""
-    t = KernelBuilder(**config, rm=ResourceManager())
+    t = KernelBuilder(**config, rmanager=ResourceManager())
     res_actual = t._defconfig
     res_expected = expected_defconfig
     assert res_actual == res_expected

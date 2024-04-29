@@ -24,6 +24,6 @@ class KernelCommand(BaseModel, ICommand):
         # create resource manager and pass it to the builder
         kb = KernelBuilder(
             **self.__dict__,
-            rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
+            rmanager=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
         )
         kb.run()

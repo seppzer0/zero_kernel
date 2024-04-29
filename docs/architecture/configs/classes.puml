@@ -2,7 +2,7 @@
 set namespaceSeparator none
 class "ArgumentConfig" as configs.argument.ArgumentConfig {
   base : str
-  benv : Literal['docker', 'podman']
+  benv : Literal['docker', 'podman', 'local']
   chroot : Optional[str]
   clean_assets : Optional[bool]
   clean_image : Optional[bool]
