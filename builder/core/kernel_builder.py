@@ -488,7 +488,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                "AS=llvm-as"\
                 .format(punits)
         # for PA's 4.14, extend the "make" command with additional variables
-        if self.base == "pa" and self._linux_kernel_version == "4.14":
+        if (self.base, self._linux_kernel_version) == ("pa", "4.14"):
             cmd2 = f"{cmd2} LEX=flex YACC=bison"
         # launch and time the build process
         time_start = time.time()
