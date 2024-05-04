@@ -17,7 +17,7 @@ An advanced Android kernel builder with assets collection and Kali NetHunter sup
     - [Bundle](#bundle)
   - [Examples](#examples)
   - [See also](#see-also)
-  - [Credits](#credits)
+  - [Acknowledgements](#acknowledgements)
 
 ## **Important to Read**
 
@@ -263,7 +263,7 @@ python3 builder assets --build-env=local --base=los --codename=dumpling --packag
 - [TODO List](docs/TODO.md);
 - [Kernel Flashing Instructions](docs/FLASHING.md).
 
-## Credits
+## Acknowledgements
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
 - [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
