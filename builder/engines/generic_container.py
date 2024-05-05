@@ -16,8 +16,8 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     Note that here paths from DirectoryConfig are not used
     directly. Because the build will run in a container,
     these paths will be redefined according to container's
-    directory structure. We only need to specify directory
-    names and not full paths.
+    directory structure. We don't need to pass full paths
+    relevant to local environment, only directories names.
 
     :param Literal["docker","podman"] benv: Build environment.
     :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
