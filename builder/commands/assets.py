@@ -23,5 +23,5 @@ class AssetsCommand(BaseModel, ICommand):
     ksu: bool
 
     def execute(self) -> None:
-        kb = AssetsCollector(**self.__dict__)
-        kb.run()
+        ac = AssetsCollector(**self.__dict__)
+        ac.run()
