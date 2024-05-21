@@ -33,61 +33,62 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             case "pa":
                 return ParanoidAndroidApiClient(codename=self.codename, rom_only=self.rom_only)
             case "x" | "aosp":
-                msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
+                # selected kernel base is ROM-universal, no specific ROM image will be collected
+                return None
 
     @property
-    def assets(self) -> tuple[str, str | None] | list[str] | None:
-        # define dm-verity and forceencrypt disabler (DFD) and SU manager
-        dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
+    def assets(self) -> str | list[str] | None:
+        # define Disable_Dm-Verity_ForceEncrypt and SU manager
+        dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
             if not self.rom_collector_dto:
-                msg.cancel("Cancelling ROM-only asset collection")
+                return (dfd,)
             else:
                 # add DFD alongside the ROM
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
-                return (self.rom_collector_dto.run(), dfd)
-        # process the non-"RON-only" download
+                return (self.rom_collector_dto, dfd)
+        # process the full download
         else:
             assets = [
-                # DFD
+                # Disable_Dm-Verity_ForceEncrypt
                 dfd,
                 # files from GitHub projects
                 GithubApiClient(
                     project=su_manager,
                     file_filter=".apk"
-                ).run(),
-                GithubApiClient(
-                    project="klausw/hackerskeyboard",
-                    file_filter=".apk"
-                ).run(),
-                GithubApiClient(
-                    project="aleksey-saenko/TTLChanger",
-                    file_filter=".apk"
-                ).run(),
-                GithubApiClient(
-                    project="ukanth/afwall",
-                    file_filter=".apk"
-                ).run(),
-                GithubApiClient(
-                    project="emanuele-f/PCAPdroid",
-                    file_filter=".apk"
-                ).run(),
-                GithubApiClient(
-                    project="nfcgate/nfcgate",
-                    file_filter=".apk"
-                ).run(),
-                # files from direct URLs
-                "https://store.nethunter.com/NetHunter.apk",
-                "https://store.nethunter.com/NetHunterKeX.apk",
-                "https://store.nethunter.com/NetHunterStore.apk",
-                "https://store.nethunter.com/NetHunterTerminal.apk",
-                "https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download",
-                "https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self.chroot),
-                "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
-                "https://f-droid.org/F-Droid.apk",
+                ),
+                #GithubApiClient(
+                #    project="klausw/hackerskeyboard",
+                #    file_filter=".apk"
+                #),
+                #GithubApiClient(
+                #    project="aleksey-saenko/TTLChanger",
+                #    file_filter=".apk"
+                #),
+                #GithubApiClient(
+                #    project="ukanth/afwall",
+                #    file_filter=".apk"
+                #),
+                #GithubApiClient(
+                #    project="emanuele-f/PCAPdroid",
+                #    file_filter=".apk"
+                #),
+                #GithubApiClient(
+                #    project="nfcgate/nfcgate",
+                #    file_filter=".apk"
+                #),
+                ## files from direct URLs
+                #"https://store.nethunter.com/NetHunter.apk",
+                #"https://store.nethunter.com/NetHunterKeX.apk",
+                #"https://store.nethunter.com/NetHunterStore.apk",
+                #"https://store.nethunter.com/NetHunterTerminal.apk",
+                #"https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download",
+                #"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self.chroot),
+                #"https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
+                #"https://f-droid.org/F-Droid.apk",
             ]
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
@@ -122,9 +123,13 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         msg.banner("zero asset collector")
         self._check()
         os.chdir(dcfg.assets)
-        if isinstance(self.assets, list):
+        # NOTE: call "self.assets" only once!
+        assets = self.assets
+        if isinstance(assets, list) or isinstance(assets, tuple):
             for e in self.assets:
-                if e is not None:
+                if isinstance(e, GithubApiClient):
+                    e.run()
+                else:
                     fo.download(e)
         print("\n", end="")
         msg.done("Assets collected!")
