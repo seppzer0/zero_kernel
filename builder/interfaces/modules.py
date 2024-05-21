@@ -109,7 +109,7 @@ class IAssetsCollector(ABC):
 
     @property
     @abstractmethod
-    def assets(self) -> tuple[str, str | None] | list[str] | None:
+    def assets(self) -> list:
         """Form the full list of assets for collections."""
         raise NotImplementedError()
 

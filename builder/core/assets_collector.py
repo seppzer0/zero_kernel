@@ -37,19 +37,19 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 return None
 
     @property
-    def assets(self) -> str | list[str] | None:
+    def assets(self) -> list:
         # define Disable_Dm-Verity_ForceEncrypt and SU manager
         dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
             if not self.rom_collector_dto:
-                return (dfd,)
+                return [dfd,]
             else:
                 # add DFD alongside the ROM
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
-                return (self.rom_collector_dto, dfd)
+                return [self.rom_collector_dto, dfd]
         # process the full download
         else:
             assets = [
@@ -60,39 +60,39 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                     project=su_manager,
                     file_filter=".apk"
                 ),
-                #GithubApiClient(
-                #    project="klausw/hackerskeyboard",
-                #    file_filter=".apk"
-                #),
-                #GithubApiClient(
-                #    project="aleksey-saenko/TTLChanger",
-                #    file_filter=".apk"
-                #),
-                #GithubApiClient(
-                #    project="ukanth/afwall",
-                #    file_filter=".apk"
-                #),
-                #GithubApiClient(
-                #    project="emanuele-f/PCAPdroid",
-                #    file_filter=".apk"
-                #),
-                #GithubApiClient(
-                #    project="nfcgate/nfcgate",
-                #    file_filter=".apk"
-                #),
-                ## files from direct URLs
-                #"https://store.nethunter.com/NetHunter.apk",
-                #"https://store.nethunter.com/NetHunterKeX.apk",
-                #"https://store.nethunter.com/NetHunterStore.apk",
-                #"https://store.nethunter.com/NetHunterTerminal.apk",
-                #"https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download",
-                #"https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self.chroot),
-                #"https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
-                #"https://f-droid.org/F-Droid.apk",
+                GithubApiClient(
+                    project="klausw/hackerskeyboard",
+                    file_filter=".apk"
+                ),
+                GithubApiClient(
+                    project="aleksey-saenko/TTLChanger",
+                    file_filter=".apk"
+                ),
+                GithubApiClient(
+                    project="ukanth/afwall",
+                    file_filter=".apk"
+                ),
+                GithubApiClient(
+                    project="emanuele-f/PCAPdroid",
+                    file_filter=".apk"
+                ),
+                GithubApiClient(
+                    project="nfcgate/nfcgate",
+                    file_filter=".apk"
+                ),
+                # files from direct URLs
+                "https://store.nethunter.com/NetHunter.apk",
+                "https://store.nethunter.com/NetHunterKeX.apk",
+                "https://store.nethunter.com/NetHunterStore.apk",
+                "https://store.nethunter.com/NetHunterTerminal.apk",
+                "https://sourceforge.net/projects/op5-5t/files/Android-12/TWRP/twrp-3.7.0_12-5-dyn-cheeseburger_dumpling.img/download",
+                "https://kali.download/nethunter-images/current/rootfs/kalifs-arm64-{}.tar.xz".format(self.chroot),
+                "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
+                "https://f-droid.org/F-Droid.apk",
             ]
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
-                assets.append(self.rom_collector_dto.run())
+                assets.append(self.rom_collector_dto.run()) # type: ignore
             return assets
         return None
 
