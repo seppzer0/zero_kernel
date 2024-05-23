@@ -4,6 +4,7 @@ from builder.core import KernelBuilder
 from builder.managers import ResourceManager
 from builder.interfaces import ICommand
 
+
 class KernelCommand(BaseModel, ICommand):
     """Command responsible for launching the 'kernel_builder' core module directly.
 
