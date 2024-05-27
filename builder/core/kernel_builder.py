@@ -34,17 +34,33 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @property
     def _ucodename(self) -> str:
-        return "dumplinger" if self.codename in ("dumpling", "cheeseburger") else self.codename
+        """Unified codename for devices series with identical kernels."""
+        if self.codename in ("dumpling", "cheeseburger"):
+            return "dumplinger"
+        elif "guacamole" in self.codename:
+            return "guacamoles"
+        else:
+            return self.codename
 
     @property
     def _defconfig(self) -> Path:
-        defconfigs = {
+        """Define defconfig."""
+        # list the defconfigs used
+        op7_defconfigs = {
+            "los": "lineage_sm8150_defconfig",
+        }
+        op5_defconfigs = {
             "los": "lineage_oneplus5_defconfig",
             "pa": "vendor/paranoid_defconfig" if self.lkv == "4.14" else "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self.lkv == "4.14" else "oneplus5_defconfig"
         }
-        # convert whatever output to path object
-        return Path(defconfigs[self.base])
+        # convert output to path object
+        if "guacamole" in self.codename:
+            return Path(op7_defconfigs[self.base])
+        elif self.codename in ("dumpling", "cheeseburger"):
+            return Path(op5_defconfigs[self.base])
+        else:
+            return Path()
 
     def clean_build(self) -> None:
         print("\n", end="")
