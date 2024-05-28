@@ -74,11 +74,6 @@ def parse_args() -> argparse.Namespace:
         help=help_clean
     )
     parser_kernel.add_argument(
-        "-o", "--output",
-        dest="outlog",
-        help=help_logfile
-    )
-    parser_kernel.add_argument(
         "--ksu",
         action="store_true",
         dest="ksu",
@@ -128,11 +123,6 @@ def parse_args() -> argparse.Namespace:
         help="autoclean 'assets' folder if it exists"
     )
     parser_assets.add_argument(
-        "-o", "--output",
-        dest="outlog",
-        help=help_logfile
-    )
-    parser_assets.add_argument(
         "--ksu",
         action="store_true",
         dest="ksu",
@@ -180,11 +170,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         dest="clean_image",
         help=help_clean
-    )
-    parser_bundle.add_argument(
-        "-o", "--output",
-        dest="outlog",
-        help=help_logfile
     )
     parser_bundle.add_argument(
         "--ksu",

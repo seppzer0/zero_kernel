@@ -134,10 +134,8 @@ Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
 $ python3 builder kernel --help
-usage: builder kernel [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
-                      [--clean-image] [--log-level {normal,verbose,quiet}]
-                      [-o OUTLOG] [--ksu]
+usage: builder kernel [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --lkv LKV [-c] [--clean-image] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -150,12 +148,7 @@ options:
   -c, --clean           don't build anything, only clean kernel directories
   --clean-image         remove Docker/Podman image from the host machine after
                         build
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
-
 ```
 
 ### Assets
@@ -164,10 +157,9 @@ As mentioned, there is also an asset downloader, which can collect latest versio
 
 ```help
 $ python3 builder assets --help
-usage: builder assets [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --chroot
-                      {full,minimal} [--rom-only] [--clean-image] [--clean]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
+usage: builder assets [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --chroot {full,minimal} [--rom-only]
+                      [--clean-image] [--clean] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -182,10 +174,6 @@ options:
   --clean-image         remove Docker/Podman image from the host machine after
                         build
   --clean               autoclean 'assets' folder if it exists
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
 ```
 
@@ -209,11 +197,9 @@ Option named `slim` is a much lighter version of `full` packaging, as only the R
 
 ```help
 $ python3 builder bundle --help
-usage: builder bundle [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --lkv LKV
-                      --package-type {conan,slim,full} [--conan-upload]
-                      [--clean-image] [--log-level {normal,verbose,quiet}]
-                      [-o OUTLOG] [--ksu]
+usage: builder bundle [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --lkv LKV --package-type
+                      {conan,slim,full} [--conan-upload] [--clean-image] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -228,10 +214,6 @@ options:
   --conan-upload        upload Conan packages to remote
   --clean-image         remove Docker/Podman image from the host machine after
                         build
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
 ```
 
