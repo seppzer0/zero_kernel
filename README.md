@@ -17,7 +17,7 @@ An advanced Android kernel builder with assets collection and Kali NetHunter sup
     - [Bundle](#bundle)
   - [Examples](#examples)
   - [See also](#see-also)
-  - [Acknowledgements](#acknowledgements)
+  - [Credits](#credits)
 
 ## **Important to Read**
 
@@ -54,7 +54,7 @@ The kernel has the following features:
 - Kali NetHunter support;
 - RTL8812/21AU + RTL8814AU + RTL8187 Wi-Fi drivers;
 - packet injection support for internal Wi-Fi chipset;
-- optional KernelSU support.
+- optional KernelSU support (v0.9.5, max compatible version for non-GKI kernels).
 
 ## Supported Devices & ROMs
 
@@ -245,9 +245,8 @@ python3 builder assets --build-env=local --base=los --codename=dumpling --packag
 - [TODO List](docs/TODO.md);
 - [Kernel Flashing Instructions](docs/FLASHING.md).
 
-## Acknowledgements
+## Credits
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
-- [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
 - [4.14-kernel-oneplus-msm8998](https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998): a base of 4.14 kernels for OnePlus 5/T, with KernelSU patches;
 - [kali-nethunter-kernel](https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel): official kernel patches from Kali NetHunter project.
