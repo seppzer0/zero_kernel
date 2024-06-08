@@ -51,7 +51,7 @@ class GithubApiClient(BaseModel):
             # if there is more than one fitting response -- throw an error
             if len(browser_download_urls) > 1:
                 msg.error(
-                    "Found more than one suitable assets for the given paramenters.\n"\
+                    "Found more than one suitable assets for the given parameters.\n"\
                     "      Please adjust the file filter."
                 )
             else:
