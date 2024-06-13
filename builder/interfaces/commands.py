@@ -15,7 +15,7 @@ class IBundleCommand(ABC):
     """Extended interface for the bundle creation."""
 
     @abstractmethod
-    def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
+    def build_kernel(self, rom_name: str, clean_only: bool) -> None:
         """Build the kernel.
 
         :param str rom_name: Name of the ROM.
@@ -28,7 +28,7 @@ class IBundleCommand(ABC):
         """Collect assets.
 
         :param str rom_name: Name of the ROM.
-        :param bool chroot: Type of chroot.
+        :param Literal["full","minimal"] chroot: Type of chroot.
         """
         raise NotImplementedError()
 
