@@ -221,12 +221,6 @@ def main(args: argparse.Namespace) -> None:
     arguments = vars(args)
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
-    # setup output stream
-    if args.command and args.outlog:
-        msg.note(f"Writing output to {args.outlog}")
-        if args.outlog in os.listdir():
-            os.remove(args.outlog)
-        os.environ["OSTREAM"] = args.outlog
     # determine the build
     match args.benv:
         case "docker" | "podman":
