@@ -32,6 +32,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
     :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
     :param Optional[bool]=False ksu: Flag to add KernelSU support into the kernel.
+    :param Optional[Path]=None defconfig: Path to custom defconfig.
     """
 
     _name_image: str = "zero-kernel-image"
@@ -52,6 +53,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     rom_only: Optional[bool] = False
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
+    defconfig: Optional[Path] = None
 
     @staticmethod
     def _force_buildkit() -> None:
@@ -85,6 +87,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
             "--ksu": self.ksu,
             "--clean-kernel": self.clean_kernel,
             "--clean-assets": self.clean_assets,
+            "--defconfig": self.defconfig,
         }
         # extend the command with given arguments
         for arg, value in arguments.items():

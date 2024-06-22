@@ -12,6 +12,7 @@ class "AssetsCommand" as commands.assets.AssetsCommand {
 class "BundleCommand" as commands.bundle.BundleCommand {
   base : str
   codename : str
+  defconfig : Optional[Path]
   ksu : bool
   lkv : str
   package_type : str
@@ -27,6 +28,7 @@ class "KernelCommand" as commands.kernel.KernelCommand {
   base : str
   clean_kernel : bool
   codename : str
+  defconfig : Optional[Path]
   ksu : bool
   lkv : str
   execute() -> None

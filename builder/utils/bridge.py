@@ -70,6 +70,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true"
     )
     parser.add_argument(
+        "--defconfig",
+        dest="defconfig",
+        help="specify path to custom defconfig",
+    )
+    parser.add_argument(
         "--shared",
         help="only setup the shared tools in the environment",
         action="store_true"
@@ -86,6 +91,7 @@ def main(args: argparse.Namespace) -> None:
                 lkv = args.lkv,
                 clean_kernel = args.clean_kernel,
                 ksu = args.ksu,
+                defconfig = args.defconfig,
             )
             kc.execute()
         case "assets":
@@ -105,6 +111,7 @@ def main(args: argparse.Namespace) -> None:
                 lkv = args.lkv,
                 package_type = args.package_type,
                 ksu = args.ksu,
+                defconfig = args.defconfig,
             )
             bc.execute()
         case _:

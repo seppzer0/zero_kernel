@@ -10,6 +10,7 @@ class "ArgumentConfig" as configs.argument.ArgumentConfig {
   codename : str
   command : Literal['kernel', 'assets', 'bundle']
   conan_upload : Optional[bool]
+  defconfig : Optional[Path]
   ksu : Optional[bool]
   lkv : Optional[str]
   package_type : Optional[str]

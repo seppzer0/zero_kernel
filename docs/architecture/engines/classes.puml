@@ -12,6 +12,7 @@ class "GenericContainerEngine" as engines.generic_container.GenericContainerEngi
   command : Literal['kernel', 'assets', 'bundle']
   conan_upload : Optional[bool]
   container_options
+  defconfig : Optional[Path]
   dir_bundle_conan
   ksu : Optional[bool]
   lkv : Optional[str]

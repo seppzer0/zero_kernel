@@ -3,6 +3,7 @@ import io
 import sys
 import json
 import argparse
+from pathlib import Path
 
 from builder.tools import cleaning as cm, messages as msg, commands as ccmd
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
@@ -34,12 +35,13 @@ def parse_args() -> argparse.Namespace:
     help_clean = "remove Docker/Podman image from the host machine after build"
     choices_benv = ("local", "docker", "podman")
     choices_base = ("los", "pa", "x", "aosp")
-    help_logfile = "save logs to a file"
+    help_defconfig = "specify path to custom defconfig"
     help_ksu = "add KernelSU support"
     help_lkv = "select Linux Kernel Version"
     # kernel
     parser_kernel.add_argument(
         "--build-env",
+        type=str,
         dest="benv",
         required=True,
         choices=choices_benv,
@@ -47,17 +49,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser_kernel.add_argument(
         "--base",
+        type=str,
         required=True,
         help=help_base,
         choices=choices_base
     )
     parser_kernel.add_argument(
         "--codename",
+        type=str,
         required=True,
         help=help_codename
     )
     parser_kernel.add_argument(
         "--lkv",
+        type=str,
         required=True,
         help=help_lkv
     )
@@ -79,9 +84,16 @@ def parse_args() -> argparse.Namespace:
         dest="ksu",
         help=help_ksu
     )
+    parser_kernel.add_argument(
+        "--defconfig",
+        type=Path,
+        dest="defconfig",
+        help=help_defconfig
+    )
     # assets
     parser_assets.add_argument(
         "--build-env",
+        type=str,
         dest="benv",
         required=True,
         choices=choices_benv,
@@ -89,17 +101,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser_assets.add_argument(
         "--base",
+        type=str,
         required=True,
         help=help_base,
         choices=choices_base
     )
     parser_assets.add_argument(
         "--codename",
+        type=str,
         required=True,
         help=help_codename
     )
     parser_assets.add_argument(
         "--chroot",
+        type=str,
         required=True,
         choices=("full", "minimal"),
         help="select Kali chroot type"
@@ -131,6 +146,7 @@ def parse_args() -> argparse.Namespace:
     # bundle
     parser_bundle.add_argument(
         "--build-env",
+        type=str,
         dest="benv",
         required=True,
         choices=choices_benv,
@@ -138,22 +154,26 @@ def parse_args() -> argparse.Namespace:
     )
     parser_bundle.add_argument(
         "--base",
+        type=str,
         required=True,
         help=help_base,
         choices=choices_base
     )
     parser_bundle.add_argument(
         "--codename",
+        type=str,
         required=True,
         help=help_codename
     )
     parser_bundle.add_argument(
         "--lkv",
+        type=str,
         required=True,
         help=help_lkv
     )
     parser_bundle.add_argument(
         "--package-type",
+        type=str,
         required=True,
         dest="package_type",
         choices=("conan", "slim", "full"),
@@ -177,6 +197,12 @@ def parse_args() -> argparse.Namespace:
         dest="ksu",
         help=help_ksu
     )
+    parser_bundle.add_argument(
+        "--defconfig",
+        type=Path,
+        dest="defconfig",
+        help=help_defconfig
+    )
     return parser_parent.parse_args(args)
 
 
@@ -189,7 +215,8 @@ def main(args: argparse.Namespace) -> None:
     # define env variable with kernel version
     with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
-    # create a config for argument check and storage
+    # create a config for checking and storing arguments
+    args.defconfig = args.defconfig if args.defconfig.is_absolute() else Path.cwd() / args.defconfig
     arguments = vars(args)
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
@@ -213,6 +240,7 @@ def main(args: argparse.Namespace) -> None:
                         lkv = args.lkv,
                         clean_kernel = args.clean_kernel,
                         ksu = args.ksu,
+                        defconfig = args.defconfig,
                     )
                     kc.execute()
                 case "assets":
@@ -232,6 +260,7 @@ def main(args: argparse.Namespace) -> None:
                         lkv = args.lkv,
                         package_type = args.package_type,
                         ksu = args.ksu,
+                        defconfig = args.defconfig,
                     )
                     bc.execute()
 

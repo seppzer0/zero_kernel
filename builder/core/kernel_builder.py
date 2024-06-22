@@ -2,6 +2,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
@@ -18,6 +19,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     :param str lkv: Linux kernel version.
     :param bool clean_kernel: Flag to clean folder with kernel sources.
     :param bool ksu: Flag indicating KernelSU support.
+    :param Optional[Path]=None defconfig: Path to custom defconfig.
     """
 
     codename: str
@@ -26,6 +28,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     clean_kernel: bool
     ksu: bool
     rmanager: ResourceManager
+    defconfig: Optional[Path] = None
 
     @staticmethod
     def write_localversion() -> None:
@@ -295,6 +298,42 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             )
         )
 
+    def update_defconfig(self) -> None:
+        """Update defconfig file."""
+        defconfig = self.rmanager.paths[self.codename] /\
+                    "arch" /\
+                    "arm64" /\
+                    "configs" /\
+                    self._defconfig
+        # base changes (Wi-Fi + RTL8812AU)
+        extra_configs = [
+                "CONFIG_88XXAU=y",
+                "CONFIG_MODULE_FORCE_LOAD=y",
+                "CONFIG_MODULE_FORCE_UNLOAD=y",
+                "CONFIG_CFG80211_WEXT=y",
+                "CONFIG_CFG80211_WEXT_EXPORT=y",
+                "CONFIG_CONCURRENT_MODE=n",
+                "CONFIG_MAC80211=y",
+                "CONFIG_RTL8187=y",
+                "CONFIG_RTLWIFI=y",
+            ]
+        # KernelSU changes
+        if self.ksu:
+            extra_configs.extend([
+                "CONFIG_KSU=y",
+                "CONFIG_MODULES=y",
+                "CONFIG_MODULE_UNLOAD=y",
+                "CONFIG_MODVERSIONS=y",
+                "CONFIG_DIAG_CHAR=y",
+                "CONFIG_KPROBES=y",
+                "CONFIG_HAVE_KPROBES=y",
+                "CONFIG_KPROBE_EVENTS=y",
+            ])
+        # apply changes
+        with open(defconfig, "a", encoding="utf-8") as f:
+            f.write("\n".join(extra_configs))
+            f.write("\n")
+
     def patch_rtl8812au(self) -> None:
         # copy RTL8812AU sources into kernel sources
         msg.note("Adding RTL8812AU drivers into the kernel..")
@@ -331,11 +370,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                   "net" /\
                   "wireless" /\
                   "Kconfig"
-        defconfig = self.rmanager.paths[self.codename] /\
-                    "arch" /\
-                    "arm64" /\
-                    "configs" /\
-                    self._defconfig
         with open(makefile, "a", encoding="utf-8") as f:
             f.write("obj-$(CONFIG_88XXAU)		+= rtl8812au/")
         fo.insert_before_line(
@@ -343,20 +377,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "endif",
             "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\""
         )
-        with open(defconfig, "a", encoding="utf-8") as f:
-            extra_configs = (
-                "CONFIG_88XXAU=y",
-                "CONFIG_MODULE_FORCE_LOAD=y",
-                "CONFIG_MODULE_FORCE_UNLOAD=y",
-                "CONFIG_CFG80211_WEXT=y",
-                "CONFIG_CFG80211_WEXT_EXPORT=y",
-                "CONFIG_CONCURRENT_MODE=n",
-                "CONFIG_MAC80211=y",
-                "CONFIG_RTL8187=y",
-                "CONFIG_RTLWIFI=y",
-            )
-            f.write("\n".join(extra_configs))
-            f.write("\n")
 
     def patch_ksu(self) -> None:
         msg.note("Adding KernelSU into the kernel..")
@@ -397,25 +417,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         os.chdir(target_dir)
         fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
-        # add configs into defconfig
-        defconfig = self.rmanager.paths[self.codename] /\
-                    "arch" /\
-                    "arm64" /\
-                    "configs" /\
-                    self._defconfig
-        with open(defconfig, "a", encoding="utf-8") as f:
-            extra_configs = (
-                "CONFIG_KSU=y",
-                "CONFIG_MODULES=y",
-                "CONFIG_MODULE_UNLOAD=y",
-                "CONFIG_MODVERSIONS=y",
-                "CONFIG_DIAG_CHAR=y",
-                "CONFIG_KPROBES=y",
-                "CONFIG_HAVE_KPROBES=y",
-                "CONFIG_KPROBE_EVENTS=y",
-            )
-            f.write("\n".join(extra_configs))
-            f.write("\n")
 
     def patch_qcacld(self) -> None:
         goback = Path.cwd()
@@ -478,6 +479,18 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         if self.ksu:
             self.patch_ksu()
         self.patch_rtl8812au()
+        if self.defconfig:
+            msg.note("Custom defconfig provided, copying..")
+            fo.ucopy(
+                self.defconfig, 
+                self.rmanager.paths[self.codename] /\
+                "arch" /\
+                "arm64" /\
+                "configs" /\
+                self.defconfig.name
+            )
+        else:
+            self.update_defconfig()
         msg.done("Patches added!")
 
     def build(self) -> None:
