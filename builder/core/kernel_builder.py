@@ -48,7 +48,10 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     @property
     def _defconfig(self) -> Path:
         """Define defconfig."""
-        # list the defconfigs used
+        # return custom defconfig if it is specified
+        if self.defconfig:
+            return Path(self.defconfig.name)
+        # list of the available defconfigs
         op7_defconfigs = {
             "los": "lineage_sm8150_defconfig",
         }
@@ -487,7 +490,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 "arch" /\
                 "arm64" /\
                 "configs" /\
-                self.defconfig.name
+                self._defconfig
             )
         else:
             self.update_defconfig()
