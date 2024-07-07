@@ -153,8 +153,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
 
     def build_image(self) -> str | None | CompletedProcess:
         print("\n")
-        alias = self.benv.capitalize()
-        msg.note(f"Building the {alias} image..")
+        msg.note(f"Building the {self.benv.capitalize()} image..")
         os.chdir(self._wdir_local)
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
         cmd = "{} build . -f {} -t {} --load".format(
