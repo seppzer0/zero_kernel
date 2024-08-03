@@ -3,7 +3,6 @@ set namespaceSeparator none
 class "GenericContainerEngine" as engines.generic_container.GenericContainerEngine {
   base : str
   benv : Literal['docker', 'podman']
-  builder_cmd
   chroot : Optional[Literal['full', 'minimal']]
   clean_assets : Optional[bool]
   clean_image : Optional[bool]
@@ -11,14 +10,15 @@ class "GenericContainerEngine" as engines.generic_container.GenericContainerEngi
   codename : str
   command : Literal['kernel', 'assets', 'bundle']
   conan_upload : Optional[bool]
-  container_options
   defconfig : Optional[Path]
   dir_bundle_conan
+  get_builder_cmd
+  get_container_cmd
+  get_container_options
   ksu : Optional[bool]
   lkv : Optional[str]
   package_type : Optional[str]
   rom_only : Optional[bool]
-  run_cmd
   build_image() -> str | None | CompletedProcess
   check_cache() -> bool
   create_dirs() -> None

@@ -16,7 +16,7 @@ class "ParanoidAndroidApiClient" as clients.pa.ParanoidAndroidApiClient {
   endpoint : str
   json_key : str
   rom_name : str
-  codename_mapper() -> str
+  map_codename() -> str
 }
 class "RomApiClient" as clients.rom_api.RomApiClient {
   codename : str
@@ -24,7 +24,7 @@ class "RomApiClient" as clients.rom_api.RomApiClient {
   json_key : str
   rom_name : str
   rom_only : bool
-  codename_mapper() -> str
+  map_codename() -> str
   run() -> str
 }
 @enduml
