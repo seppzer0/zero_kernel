@@ -4,7 +4,7 @@ from subprocess import CompletedProcess
 
 
 class IGenericContainerEngine(ABC):
-    """Interface for GenericContainerEngine."""
+    """Interface for containerized builds."""
 
     @property
     @abstractmethod
@@ -18,14 +18,14 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @property
-    def builder_cmd(self) -> str:
-        """Return the launch command for the builder."""
+    def get_builder_cmd(self) -> str:
+        """Form the launch command for the builder."""
         raise NotImplementedError()
 
     @property
     @abstractmethod
-    def container_options(self) -> list[str]:
-        """Form the arguments for container launch."""
+    def get_container_options(self) -> list[str]:
+        """Form the options for container launch."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -40,16 +40,6 @@ class IGenericContainerEngine(ABC):
 
     @property
     @abstractmethod
-    def run_cmd(self) -> str:
+    def get_container_cmd(self) -> str:
         """Form command for container launch."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def __enter__(self) -> str:
-        """Magic method for preparing the containerized build."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
-        """Magic method for post-build operations for the container engine."""
         raise NotImplementedError()

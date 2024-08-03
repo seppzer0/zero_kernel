@@ -13,7 +13,7 @@ class IKernelBuilder(ABC):
     @staticmethod
     @abstractmethod
     def write_localversion() -> None:
-        """Write a localversion file."""
+        """Write a .localversion file."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -23,7 +23,7 @@ class IKernelBuilder(ABC):
 
     @abstractmethod
     def patch_strict_prototypes(self) -> None:
-        """A patcher to add compatibility with Clang 15 '-Wstrict-prototype' mandatory rule."""
+        """Patch source to comply with Clang 15 '-Wstrict-prototype' rule."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -33,7 +33,7 @@ class IKernelBuilder(ABC):
 
     @abstractmethod
     def patch_rtl8812au_source_mod_v5642(self) -> None:
-        """Modifications specific to v5.6.4.2 driver version."""
+        """Modify the v5.6.4.2 version version of the driver."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -99,7 +99,7 @@ class IKernelBuilder(ABC):
 
 
 class IAssetsCollector(ABC):
-    """An interface for the assets collector."""
+    """Interface for the assets collector."""
 
     @property
     @abstractmethod
@@ -111,11 +111,6 @@ class IAssetsCollector(ABC):
     @abstractmethod
     def assets(self) -> list:
         """Form the full list of assets for collections."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def _check(self) -> None:
-        """Initiate some checks before execution."""
         raise NotImplementedError()
 
     @abstractmethod

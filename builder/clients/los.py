@@ -2,7 +2,7 @@ from builder.clients.rom_api import RomApiClient
 
 
 class LineageOsApiClient(RomApiClient):
-    """Limited interaction with Lineage API."""
+    """Client for limited interaction with Lineage API."""
 
     endpoint: str = "https://download.lineageos.org/api/v1/{}/nightly/ro.build.version.incremental"
     json_key: str = "response"

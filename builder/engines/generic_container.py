@@ -73,7 +73,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return True if self._name_image in img_cache else False
 
     @property
-    def builder_cmd(self) -> str:
+    def get_builder_cmd(self) -> str:
         # prepare launch command
         cmd = f"python3 {Path('builder', 'utils', 'bridge.py')}"
         arguments = {
@@ -106,7 +106,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return cmd
 
     @property
-    def container_options(self) -> list[str]:
+    def get_container_options(self) -> list[str]:
         # declare the base of options
         options = [
             "-i",
@@ -167,12 +167,12 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return res
 
     @property
-    def run_cmd(self) -> str:
+    def get_container_cmd(self) -> str:
         return '{} run {} {} /bin/bash -c "{}"'.format(
             self.benv,
-            " ".join(self.container_options),
+            " ".join(self.get_container_options),
             self._name_image,
-            self.builder_cmd
+            self.get_builder_cmd
         )
 
     def __enter__(self) -> str:
@@ -185,7 +185,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         else:
             msg.note(f"\n{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
         self.create_dirs()
-        return self.run_cmd
+        return self.get_container_cmd
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         # navigate to root directory and clean image from host machine

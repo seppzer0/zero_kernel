@@ -5,8 +5,8 @@ class IRomApiClient(ABC):
     """Interface for interacting with ROM projects' APIs."""
 
     @abstractmethod
-    def codename_mapper(self) -> str:
-        """Codename-to-devicename mapper."""
+    def map_codename(self) -> str:
+        """Map the device's codename to it's devicename."""
         raise NotImplementedError()
 
     @abstractmethod

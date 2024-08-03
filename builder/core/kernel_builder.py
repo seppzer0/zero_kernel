@@ -37,7 +37,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @property
     def _ucodename(self) -> str:
-        """Unified codename for devices series with identical kernels."""
+        """Define unified codename for devices series with same kernels."""
         if self.codename in ("dumpling", "cheeseburger"):
             return "dumplinger"
         elif "guacamole" in self.codename:

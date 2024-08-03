@@ -12,7 +12,7 @@ class ICommand(ABC):
 
 
 class IBundleCommand(ABC):
-    """Extended interface for the bundle creation."""
+    """Extended interface for the bundle formation."""
 
     @abstractmethod
     def build_kernel(self, rom_name: str, clean_only: bool) -> None:

@@ -10,7 +10,7 @@ from builder.configs import DirectoryConfig as dcfg
 
 
 class GithubApiClient(BaseModel):
-    """Limited interaction with GitHub API.
+    """Client for limited interaction with GitHub API.
 
     :param str project: GitHub project name (owner/repo).
     :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.

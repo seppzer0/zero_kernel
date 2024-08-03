@@ -22,9 +22,9 @@ class RomApiClient(BaseModel, IRomApiClient):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.endpoint = self.endpoint.format(self.codename_mapper())
+        self.endpoint = self.endpoint.format(self.map_codename())
 
-    def codename_mapper(self) -> str:
+    def map_codename(self) -> str:
         # by default, codename is devicename
         return self.codename
 

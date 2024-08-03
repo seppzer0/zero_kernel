@@ -10,7 +10,7 @@ from builder.configs import DirectoryConfig as dcfg
 
 
 def remove(elements: str | Path | list[Path | str]) -> None:
-    """Ultimate Pythonic alternative to 'rm -rf'.
+    """Remove files and directories as a Pythonic alternative to 'rm -rf'.
 
     Here, all Path() objects will have to be converted into str.
     Because of such specific as directories starting with a "." (e.g., .github).
