@@ -1,26 +1,32 @@
-[tool.poetry]
+[project]
 name = "zero-kernel"
-version = "0.4.4"
-description = "An advanced Android kernel builder with Kali NetHunter support."
-authors = ["seppzer0"]
+version = "0.5.0"
+description = "Advanced Android kernel builder with Kali NetHunter support."
+authors = [{name = "seppzer0"}]
 readme = "README.md"
-packages = [{include = "builder"}]
+requires-python = ">=3.12"
+dependencies = [
+    "argparse",
+    "conan ~=1.6",
+    "requests ~=2.31",
+    "pathlib ~=1.0",
+    "typing ~=3.7",
+    "pydantic ~=2.6"
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-conan = "~1"
-argparse = "*"
-requests = "^2.31"
-pathlib = "^1.0"
-typing = "^3.7"
-pydantic = "^2.6"
+[project.urls]
+Repository = "https://github.com/astral-sh/uv"
+Documentation = "https://github.com/astral-sh/uv"
 
-[tool.poetry.dev-dependencies]
-bandit = "^1.7"
-pytest = "^8.0"
-pytest-cov = "^4.1"
-pyright = "^1.1"
-pylint = "^3.1"
+[tool.uv]
+dev-dependencies = [
+    "bandit ~=1.7",
+    "pytest ~=8.0",
+    "pytest-cov ~=4.1",
+    "pyright ~=1.1",
+    "pylint ~=3.1"
+]
+
 
 [tool.coverage.run]
 source = [
@@ -38,6 +44,3 @@ show_missing = true
 include=["builder"]
 pythonVersion = "3.12"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

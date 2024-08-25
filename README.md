@@ -120,12 +120,12 @@ To run this tool in a `local` environment, you will need:
 - a Debian-based Linux distribution (other types of distros are untested);
 - a few [packages](Dockerfile#L15) installed in your system.
 
-You will also need to configure your Python installation, including some of the packages installation:
+You will also need to configure your Python installation. The project is now managed with [uv](https://github.com/astral-sh/uv), so you will need to install it and get project dependencies.
 
 ```sh
 export PYTHONPATH=$(pwd)
-python3 -m pip install poetry
-python3 -m poetry install --no-root
+python3 -m pip install uv
+python3 -m uv sync --frozen --no-install-project
 ```
 
 ### Kernel
