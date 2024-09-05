@@ -33,7 +33,7 @@ jobs:
           python-version: "3.12"
       - name: Build and assemble
         run: |
-          python3 -m pip install uv
+          python3 -m pip install uv==0.4.5
           python3 -m uv sync --frozen --no-install-project
           export PYTHONPATH=$(pwd)
           python3 scripts/run_tests.py

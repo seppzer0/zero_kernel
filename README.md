@@ -124,7 +124,7 @@ You will also need to configure your Python installation. The project is now man
 
 ```sh
 export PYTHONPATH=$(pwd)
-python3 -m pip install uv
+python3 -m pip install uv==0.4.5
 python3 -m uv sync --frozen --no-install-project
 ```
 
