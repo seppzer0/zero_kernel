@@ -11,7 +11,7 @@ job-build:
     - docker:dind
   script:
     - apk update && apk add python3 py3-pip
-    - python3 -m pip install uv==0.4.5 --break-system-packages
+    - python3 -m pip install -r uv-version.txt --break-system-packages
     - python3 -m uv sync --frozen --no-install-project
     - export PYTHONPATH=$(pwd)
     - python3 scripts/run_tests.py
