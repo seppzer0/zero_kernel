@@ -100,7 +100,7 @@ def main(args: argparse.Namespace) -> None:
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
         # form and launch the command
-        cmd = f"python3 builder {argset['command']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
+        cmd = f"uv run builder {argset['command']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
         # copy artifacts into the shared directory
