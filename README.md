@@ -92,7 +92,7 @@ Commands:
 - `bundle`.
 
 ```help
-$ python3 builder --help
+$ uv run builder --help
 usage: builder [-h] [--clean] {kernel,assets,bundle} ...
 
 A custom builder for the zero_kernel.
@@ -120,12 +120,15 @@ To run this tool in a `local` environment, you will need:
 - a Debian-based Linux distribution (other types of distros are untested);
 - a few [packages](Dockerfile#L15) installed in your system.
 
-You will also need to configure your Python installation. The project is now managed with [uv](https://github.com/astral-sh/uv), so you will need to install it and get project dependencies.
+You will also need to install [uv](https://github.com/astral-sh/uv). Please refer to [installation guide](https://docs.astral.sh/uv/getting-started/installation/) to choose an option fit for you. It is recommended to use `pip` to install the version tracked and confirmed to be working in the project.
 
 ```sh
+# making "builder" executable from source
 export PYTHONPATH=$(pwd)
+# installing uv via pip
 python3 -m pip install -r uv-version.txt
-python3 -m uv sync --frozen --no-install-project
+# collecting project dependencies into a local .venv
+uv sync --frozen --no-install-project
 ```
 
 ### Kernel
@@ -133,7 +136,7 @@ python3 -m uv sync --frozen --no-install-project
 Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
-$ python3 builder kernel --help
+$ uv run builder kernel --help
 usage: builder kernel [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --lkv LKV [-c] [--clean-image] [--ksu]
 
@@ -156,7 +159,7 @@ options:
 As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
-$ python3 builder assets --help
+$ uv run builder assets --help
 usage: builder assets [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --chroot {full,minimal} [--rom-only]
                       [--clean-image] [--clean] [--ksu]
@@ -196,7 +199,7 @@ Options `full` and `conan` collect all of the assets required to successfuly fla
 Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
-$ python3 builder bundle --help
+$ uv run builder bundle --help
 usage: builder bundle [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --lkv LKV --package-type
                       {conan,slim,full} [--conan-upload] [--clean-image] [--ksu]
@@ -224,19 +227,19 @@ Here are some examples of commands:
 **(Recommended)** Build kernel and collect ROM via Docker:
 
 ```sh
-python3 builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+uv run builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
 ```
 
 Build kernel locally:
 
 ```sh
-python3 builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+uv run builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
 ```
 
 Collect all of the assets locally:
 
 ```sh
-python3 builder assets --build-env=local --base=los --codename=dumpling --package-type=full
+uv run builder assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
 ## See also
