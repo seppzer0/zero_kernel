@@ -216,7 +216,7 @@ def main(args: argparse.Namespace) -> None:
     with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
         os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
     # create a config for checking and storing arguments
-    if args.defconfig:
+    if args.command != "assets" and args.defconfig:
         args.defconfig = args.defconfig if args.defconfig.is_absolute() else Path.cwd() / args.defconfig
     arguments = vars(args)
     acfg = ArgumentConfig(**arguments)

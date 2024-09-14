@@ -48,8 +48,8 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             else:
                 # add DFD alongside the ROM
                 print("\n", end="")
-                msg.done("ROM-only asset collection complete!")
-                return [self.rom_collector_dto, dfd]
+                msg.done("ROM-only asset collection specified")
+                return [self.rom_collector_dto.run(), dfd]
         # process the full download
         else:
             assets = [
@@ -90,7 +90,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",
             ]
-            # finally, add ROM (if kernel base is not universal) and DFD into assets list
+            # add ROM if kernel base is not universal
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run()) # type: ignore
             return assets
@@ -126,7 +126,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         # NOTE: call "self.assets" only once!
         assets = self.assets
         if isinstance(assets, list) or isinstance(assets, tuple):
-            for e in self.assets:
+            for e in assets:
                 if isinstance(e, GithubApiClient):
                     e.run()
                 else:
