@@ -34,7 +34,7 @@ jobs:
       - name: Build And Assemble
         run: |
           python3 -m pip install -r uv-version.txt
-          python3 -m uv sync --frozen --no-install-project
+          uv sync --frozen --no-install-project
           export PYTHONPATH=$(pwd)
           python3 scripts/run_tests.py
           python3 scripts/multi_build.py

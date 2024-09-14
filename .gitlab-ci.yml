@@ -12,7 +12,7 @@ job-build:
   script:
     - apk update && apk add python3 py3-pip
     - python3 -m pip install -r uv-version.txt --break-system-packages
-    - python3 -m uv sync --frozen --no-install-project
+    - uv sync --frozen --no-install-project
     - export PYTHONPATH=$(pwd)
     - python3 scripts/run_tests.py
     - python3 scripts/multi_build.py

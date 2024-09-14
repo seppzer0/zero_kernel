@@ -32,7 +32,7 @@ RUN \
 # configure Python environment
 RUN python3 -m pip install pip --upgrade && \
     python3 -m pip install -r uv-version.txt && \
-    python3 -m uv sync --frozen --no-install-project
+    uv sync --frozen --no-install-project
 
 # install shared tools from tools.json;
 #
