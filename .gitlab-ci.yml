@@ -3,6 +3,7 @@ stages:
 
 variables:
   GIT_STRATEGY: "clone"
+  GIT_SUBMODULE_STRATEGY: recursive
 
 job-build:
   stage: build_and_tag
@@ -30,7 +31,7 @@ job-tag:
     - USERNAME="$CUSTOM_CI_USERNAME"
     - PASSWORD="$CUSTOM_CI_PASSWORD"
     - EMAIL="$CUSTOM_CI_EMAIL"
-    - TAGNAME="v$(sh scripts/get_version.sh)"
+    - TAGNAME="v$(sh scripts/common/py/get_version.sh)"
     - git config --global user.name "${USERNAME}"
     - git config --global user.email "${EMAIL}"
     - git remote remove origin
