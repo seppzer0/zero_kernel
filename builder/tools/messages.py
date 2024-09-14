@@ -48,7 +48,7 @@ def done(text: str) -> None:
 
     :param str text: Text to wrap.
     """
-    print(f"[ \u2713 ] {text}".encode("utf-8"))
+    print(f"[ \u2713 ] {text}")
 
 
 def debug(text: str) -> None:
