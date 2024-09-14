@@ -14,7 +14,7 @@ job-build:
     - python3 -m pip install -r requirement-uv.txt --break-system-packages
     - uv sync --frozen --no-install-project
     - export PYTHONPATH=$(pwd)
-    - uv run scripts/common/run_tests.py
+    - uv run scripts/common/py/run_tests.py
     - uv run scripts/multi_build.py
   artifacts:
     paths:

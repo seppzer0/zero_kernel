@@ -36,7 +36,7 @@ jobs:
           python3 -m pip install -r requirement-uv.txt
           uv sync --frozen --no-install-project
           export PYTHONPATH=$(pwd)
-          uv run scripts/common/run_tests.py
+          uv run scripts/common/py/run_tests.py
           uv run scripts/multi_build.py
       - name: Publish Artifacts
         uses: actions/upload-artifact@v3
