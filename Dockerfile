@@ -42,7 +42,7 @@ RUN python3 -m pip install pip --upgrade && \
 # This significantly reduces the total build time, as each time we make a build call for a device,
 # only device-specific kernel source is being downloaded into the container.
 #
-RUN python3 ${WDIR}/builder/utils/bridge.py --shared
+RUN uv run ${WDIR}/builder/utils/bridge.py --shared
 
 # launch app
 CMD [ "/bin/bash" ]

@@ -14,8 +14,8 @@ job-build:
     - python3 -m pip install -r uv-version.txt --break-system-packages
     - uv sync --frozen --no-install-project
     - export PYTHONPATH=$(pwd)
-    - python3 scripts/run_tests.py
-    - python3 scripts/multi_build.py
+    - uv run scripts/run_tests.py
+    - uv run scripts/multi_build.py
   artifacts:
     paths:
       - "multi-build/zero-*.zip"
