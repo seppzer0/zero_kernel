@@ -73,7 +73,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return True if self._name_image in img_cache else False
 
     @property
-    def get_builder_cmd(self) -> str:
+    def builder_cmd(self) -> str:
         # prepare launch command
         cmd = f"python3 {Path('builder', 'utils', 'bridge.py')}"
         arguments = {
@@ -106,7 +106,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return cmd
 
     @property
-    def get_container_options(self) -> list[str]:
+    def container_options(self) -> list[str]:
         # declare the base of options
         options = [
             "-i",
@@ -170,9 +170,9 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     def get_container_cmd(self) -> str:
         return '{} run {} {} /bin/bash -c "{}"'.format(
             self.benv,
-            " ".join(self.get_container_options),
+            " ".join(self.container_options),
             self._name_image,
-            self.get_builder_cmd
+            self.builder_cmd
         )
 
     def __enter__(self) -> str:

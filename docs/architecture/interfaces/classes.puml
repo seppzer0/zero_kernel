@@ -17,10 +17,10 @@ interface "ICommand" as interfaces.commands.ICommand {
   {abstract}execute() -> None
 }
 interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngine {
+  builder_cmd
+  container_options
   dir_bundle_conan
-  get_builder_cmd
   get_container_cmd
-  get_container_options
   {abstract}build_image() -> str | None | CompletedProcess
   {abstract}check_cache() -> bool
   {abstract}create_dirs() -> None

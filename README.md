@@ -178,6 +178,8 @@ options:
                         build
   --clean               autoclean 'assets' folder if it exists
   --ksu                 add KernelSU support
+  --defconfig DEFCONFIG
+                        specify path to custom defconfig
 ```
 
 ### Bundle

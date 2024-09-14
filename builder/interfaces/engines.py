@@ -18,13 +18,13 @@ class IGenericContainerEngine(ABC):
         raise NotImplementedError()
 
     @property
-    def get_builder_cmd(self) -> str:
+    def builder_cmd(self) -> str:
         """Form the launch command for the builder."""
         raise NotImplementedError()
 
     @property
     @abstractmethod
-    def get_container_options(self) -> list[str]:
+    def container_options(self) -> list[str]:
         """Form the options for container launch."""
         raise NotImplementedError()
 
