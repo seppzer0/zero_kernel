@@ -12,12 +12,13 @@ class "GenericContainerEngine" as engines.generic_container.GenericContainerEngi
   command : Literal['kernel', 'assets', 'bundle']
   conan_upload : Optional[bool]
   container_options
+  defconfig : Optional[Path]
   dir_bundle_conan
+  get_container_cmd
   ksu : Optional[bool]
   lkv : Optional[str]
   package_type : Optional[str]
   rom_only : Optional[bool]
-  run_cmd
   build_image() -> str | None | CompletedProcess
   check_cache() -> bool
   create_dirs() -> None

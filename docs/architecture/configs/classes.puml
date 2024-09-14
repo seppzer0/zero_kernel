@@ -2,7 +2,7 @@
 set namespaceSeparator none
 class "ArgumentConfig" as configs.argument.ArgumentConfig {
   base : str
-  benv : Literal['docker', 'podman']
+  benv : Literal['docker', 'podman', 'local']
   chroot : Optional[str]
   clean_assets : Optional[bool]
   clean_image : Optional[bool]
@@ -10,6 +10,7 @@ class "ArgumentConfig" as configs.argument.ArgumentConfig {
   codename : str
   command : Literal['kernel', 'assets', 'bundle']
   conan_upload : Optional[bool]
+  defconfig : Optional[Path]
   ksu : Optional[bool]
   lkv : Optional[str]
   package_type : Optional[str]

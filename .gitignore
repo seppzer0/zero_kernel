@@ -1,5 +1,6 @@
 # basic
 __pycache__
+.venv
 .vscode
 .coverage
 .pytest_cache

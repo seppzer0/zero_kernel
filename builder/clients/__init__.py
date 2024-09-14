@@ -1,3 +1,3 @@
-from .github import GitHubApi
-from .los import LineageOsApi
-from .pa import ParanoidAndroidApi
+from .github import GithubApiClient
+from .los import LineageOsApiClient
+from .pa import ParanoidAndroidApiClient

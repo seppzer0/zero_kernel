@@ -2,14 +2,14 @@ import requests
 from pydantic import BaseModel
 
 from builder.tools import messages as msg
-from builder.interfaces import IRomApi
+from builder.interfaces import IRomApiClient
 
 
-class RomApi(BaseModel, IRomApi):
+class RomApiClient(BaseModel, IRomApiClient):
     """Generic class for interacting with ROMs' APIs.
 
     :param str endpoint: API endpoint to interact with.
-    :param str json_key: A JSON key to look for in the response.
+    :param str json_key: A JSON key to look for in the response data.
     :param str rom_name: ROM project's name.
     :param bool rom_only: Flag indicating ROM-only asset collection.
     """
@@ -22,9 +22,9 @@ class RomApi(BaseModel, IRomApi):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.endpoint = self.endpoint.format(self.codename_mapper())
+        self.endpoint = self.endpoint.format(self.map_codename())
 
-    def codename_mapper(self) -> str:
+    def map_codename(self) -> str:
         # by default, codename is devicename
         return self.codename
 

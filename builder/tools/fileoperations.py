@@ -8,7 +8,7 @@ from builder.tools import commands as ccmd, messages as msg
 
 
 def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = ()) -> None:
-    """Universal method to copy files into desired destinations.
+    """Copy files and directories into desired destinations universally.
 
     :param Path src: Source path.
     :param Path dst: Destination path.
@@ -34,7 +34,7 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
 
 
 def download(url: str) -> None:
-    """Simple file downloader.
+    """Download file from URL.
 
     :param str url: URL to the file.
     """

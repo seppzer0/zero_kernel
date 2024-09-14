@@ -2,8 +2,9 @@ import os
 import json
 import shutil
 import itertools
-from typing import Literal
+from pathlib import Path
 from pydantic import BaseModel
+from typing import Literal, Optional
 
 from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
@@ -20,6 +21,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
     :param str lkv: Linux kernel version.
     :param str package_type: Package type.
     :param bool ksu: Flag indicating KernelSU support.
+    :param Optional[Path]=None defconfig: Path to custom defconfig.
     """
 
     codename: str
@@ -27,6 +29,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
     lkv: str
     package_type: str
     ksu: bool
+    defconfig: Optional[Path] = None
 
     def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         if not dcfg.kernel.is_dir() or clean_only is True:
@@ -36,7 +39,8 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 lkv = self.lkv,
                 clean_kernel = clean_only,
                 ksu = self.ksu,
-                rm=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
+                rmanager=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base),
+                defconfig = self.defconfig,
             )
             kb.run()
 

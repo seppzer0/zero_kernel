@@ -16,8 +16,8 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     Note that here paths from DirectoryConfig are not used
     directly. Because the build will run in a container,
     these paths will be redefined according to container's
-    directory structure. We only need to specify directory
-    names and not full paths.
+    directory structure. We don't need to pass full paths
+    relevant to local environment, only directories' names.
 
     :param Literal["docker","podman"] benv: Build environment.
     :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
@@ -32,6 +32,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
     :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
     :param Optional[bool]=False ksu: Flag to add KernelSU support into the kernel.
+    :param Optional[Path]=None defconfig: Path to custom defconfig.
     """
 
     _name_image: str = "zero-kernel-image"
@@ -52,6 +53,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     rom_only: Optional[bool] = False
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
+    defconfig: Optional[Path] = None
 
     @staticmethod
     def _force_buildkit() -> None:
@@ -85,6 +87,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
             "--ksu": self.ksu,
             "--clean-kernel": self.clean_kernel,
             "--clean-assets": self.clean_assets,
+            "--defconfig": self.defconfig,
         }
         # extend the command with given arguments
         for arg, value in arguments.items():
@@ -150,8 +153,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
 
     def build_image(self) -> str | None | CompletedProcess:
         print("\n")
-        alias = self.benv.capitalize()
-        msg.note(f"Building the {alias} image..")
+        msg.note(f"Building the {self.benv.capitalize()} image..")
         os.chdir(self._wdir_local)
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
         cmd = "{} build . -f {} -t {} --load".format(
@@ -165,7 +167,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         return res
 
     @property
-    def run_cmd(self) -> str:
+    def get_container_cmd(self) -> str:
         return '{} run {} {} /bin/bash -c "{}"'.format(
             self.benv,
             " ".join(self.container_options),
@@ -183,7 +185,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         else:
             msg.note(f"\n{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
         self.create_dirs()
-        return self.run_cmd
+        return self.get_container_cmd
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         # navigate to root directory and clean image from host machine

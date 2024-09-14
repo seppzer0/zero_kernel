@@ -16,20 +16,20 @@ class Tester:
         """Launch specified command."""
         return subprocess.run(cmd, shell=True, check=True)
 
-    def pyright_checks(self) -> None:
+    def pyright_check(self) -> None:
         """Run typing checks with Pyright."""
         print("\n=== Pyright checks: Start ===")
         self._launch_cmd(f"{INTEPRETER} -m pyright")
         print("=== Pyright checks: Finish ===")
 
-    def pytest_checks(self) -> None:
+    def pytest_check(self) -> None:
         """Run unit tests with Pytest and coverage checks."""
         os.environ["PYTHONPATH"] = str(ROOTPATH)
         print("\n=== Pytest checks: Start ===")
         self._launch_cmd(f"{INTEPRETER} -m pytest -vv tests/ --cov")
         print("=== Pytest checks: Finish ===")
 
-    def bandit_checks(self) -> None:
+    def bandit_check(self) -> None:
         """Run SAST with Bandit."""
         fmts = ("json", "html")
         for fmt in fmts:
@@ -39,9 +39,9 @@ class Tester:
 def main() -> None:
     os.chdir(ROOTPATH)
     t = Tester()
-    t.pyright_checks()
-    t.pytest_checks()
-    #t.bandit_checks()
+    t.pyright_check()
+    t.pytest_check()
+    #t.bandit_check()
 
 
 if __name__ == "__main__":

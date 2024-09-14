@@ -54,7 +54,7 @@ The kernel has the following features:
 - Kali NetHunter support;
 - RTL8812/21AU + RTL8814AU + RTL8187 Wi-Fi drivers;
 - packet injection support for internal Wi-Fi chipset;
-- optional KernelSU support.
+- optional KernelSU support (v0.9.5, max compatible version for non-GKI kernels).
 
 ## Supported Devices & ROMs
 
@@ -92,7 +92,7 @@ Commands:
 - `bundle`.
 
 ```help
-$ python3 builder --help
+$ uv run builder --help
 usage: builder [-h] [--clean] {kernel,assets,bundle} ...
 
 A custom builder for the zero_kernel.
@@ -120,12 +120,15 @@ To run this tool in a `local` environment, you will need:
 - a Debian-based Linux distribution (other types of distros are untested);
 - a few [packages](Dockerfile#L15) installed in your system.
 
-You will also need to configure your Python installation, including some of the packages installation:
+You will also need to install [uv](https://github.com/astral-sh/uv). Please refer to [installation guide](https://docs.astral.sh/uv/getting-started/installation/) to choose an option fit for you. It is recommended to use `pip` to install the version of uv used in the project.
 
 ```sh
+# making "builder" executable from source
 export PYTHONPATH=$(pwd)
-python3 -m pip install poetry
-python3 -m poetry install --no-root
+# installing uv via pip
+python3 -m pip install -r uv-version.txt
+# collecting project dependencies into a local .venv
+uv sync --frozen --no-install-project
 ```
 
 ### Kernel
@@ -133,11 +136,9 @@ python3 -m poetry install --no-root
 Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
-$ python3 builder kernel --help
-usage: builder kernel [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --lkv LKV [-c]
-                      [--clean-image] [--log-level {normal,verbose,quiet}]
-                      [-o OUTLOG] [--ksu]
+$ uv run builder kernel --help
+usage: builder kernel [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --lkv LKV [-c] [--clean-image] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -150,12 +151,7 @@ options:
   -c, --clean           don't build anything, only clean kernel directories
   --clean-image         remove Docker/Podman image from the host machine after
                         build
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
-
 ```
 
 ### Assets
@@ -163,11 +159,10 @@ options:
 As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
-$ python3 builder assets --help
-usage: builder assets [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --chroot
-                      {full,minimal} [--rom-only] [--clean-image] [--clean]
-                      [--log-level {normal,verbose,quiet}] [-o OUTLOG] [--ksu]
+$ uv run builder assets --help
+usage: builder assets [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --chroot {full,minimal} [--rom-only]
+                      [--clean-image] [--clean] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -182,11 +177,9 @@ options:
   --clean-image         remove Docker/Podman image from the host machine after
                         build
   --clean               autoclean 'assets' folder if it exists
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
+  --defconfig DEFCONFIG
+                        specify path to custom defconfig
 ```
 
 ### Bundle
@@ -208,12 +201,10 @@ Options `full` and `conan` collect all of the assets required to successfuly fla
 Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
-$ python3 builder bundle --help
-usage: builder bundle [-h] --build-env {local,docker,podman} --base
-                      {los,pa,x,aosp} --codename CODENAME --lkv LKV
-                      --package-type {conan,slim,full} [--conan-upload]
-                      [--clean-image] [--log-level {normal,verbose,quiet}]
-                      [-o OUTLOG] [--ksu]
+$ uv run builder bundle --help
+usage: builder bundle [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+                      --codename CODENAME --lkv LKV --package-type
+                      {conan,slim,full} [--conan-upload] [--clean-image] [--ksu]
 
 options:
   -h, --help            show this help message and exit
@@ -228,10 +219,6 @@ options:
   --conan-upload        upload Conan packages to remote
   --clean-image         remove Docker/Podman image from the host machine after
                         build
-  --log-level {normal,verbose,quiet}
-                        select log level
-  -o OUTLOG, --output OUTLOG
-                        save logs to a file
   --ksu                 add KernelSU support
 ```
 
@@ -242,19 +229,19 @@ Here are some examples of commands:
 **(Recommended)** Build kernel and collect ROM via Docker:
 
 ```sh
-python3 builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+uv run builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
 ```
 
 Build kernel locally:
 
 ```sh
-python3 builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+uv run builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
 ```
 
 Collect all of the assets locally:
 
 ```sh
-python3 builder assets --build-env=local --base=los --codename=dumpling --package-type=full
+uv run builder assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
 ## See also
@@ -266,6 +253,5 @@ python3 builder assets --build-env=local --base=los --codename=dumpling --packag
 ## Credits
 
 - [x_kernel_oneplus_msm8998](https://github.com/ederekun/x_kernel_oneplus_msm8998): OnePlus 5/T kernel with many optimizations and improvements;
-- [x-ft_kernel_oneplus_msm8998](https://github.com/ederekun/x-ft_kernel_oneplus_msm8998): 4.14-based variation of x_kernel;
 - [4.14-kernel-oneplus-msm8998](https://github.com/roberto-sartori-gl/4.14-kernel-oneplus-msm8998): a base of 4.14 kernels for OnePlus 5/T, with KernelSU patches;
 - [kali-nethunter-kernel](https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel): official kernel patches from Kali NetHunter project.

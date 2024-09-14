@@ -9,8 +9,8 @@ from builder.tools import cleaning as cm, commands as ccmd, messages as msg
 from builder.configs import DirectoryConfig as dcfg
 
 
-class GitHubApi(BaseModel):
-    """Limited interaction with GitHub API.
+class GithubApiClient(BaseModel):
+    """Client for limited interaction with GitHub API.
 
     :param str project: GitHub project name (owner/repo).
     :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.
@@ -51,7 +51,7 @@ class GitHubApi(BaseModel):
             # if there is more than one fitting response -- throw an error
             if len(browser_download_urls) > 1:
                 msg.error(
-                    "Found more than one suitable assets for the given paramenters.\n"\
+                    "Found more than one suitable assets for the given parameters.\n"\
                     "      Please adjust the file filter."
                 )
             else:

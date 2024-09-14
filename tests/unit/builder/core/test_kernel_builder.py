@@ -19,12 +19,16 @@ from builder.managers import ResourceManager
         (
             {"codename": "dumpling", "base": "x", "lkv": "4.4", "clean_kernel": True, "ksu": True},
             Path("oneplus5_defconfig")
-        )
+        ),
+        (
+            {"codename": "guacamoleb", "base": "los", "lkv": "4.14", "clean_kernel": True, "ksu": False},
+            Path("lineage_sm8150_defconfig")
+        ),
     )
 )
 def test__defconfig__check(config: dict[str, str], expected_defconfig: Path) -> None:
     """Test defconfig path definition."""
-    t = KernelBuilder(**config, rm=ResourceManager())
+    t = KernelBuilder(**config, rmanager=ResourceManager())
     res_actual = t._defconfig
     res_expected = expected_defconfig
     assert res_actual == res_expected

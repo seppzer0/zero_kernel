@@ -6,9 +6,8 @@ from typing import Optional, Literal
 
 from builder.tools import commands as ccmd, messages as msg
 
-
 class ArgumentConfig(BaseModel):
-    """Variable storage for use across the app.
+    """Variable storage for usage across the app.
 
     :param Literal["docker","podman","local"] benv: Build environment.
     :param Literal["kernel","assets","bundle"] command: Builder command to be launched.
@@ -23,6 +22,7 @@ class ArgumentConfig(BaseModel):
     :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
     :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
     :param Optional[bool]=False ksu: Flag indicating KernelSU support.
+    :param Optional[Path]=None defconfig: Path to custom defconfig.
     """
 
     benv: Literal["docker", "podman", "local"]
@@ -38,6 +38,7 @@ class ArgumentConfig(BaseModel):
     rom_only: Optional[bool] = False
     conan_upload: Optional[bool] = False
     ksu: Optional[bool] = False
+    defconfig: Optional[Path] = None
 
     def check_settings(self) -> None:
         """Run settings validations."""
@@ -60,3 +61,6 @@ class ArgumentConfig(BaseModel):
             # check Conan-related argument usage
             if self.package_type != "conan" and self.conan_upload:
                 msg.error("Cannot use Conan-related arguments with non-Conan packaging\n")
+        # check that the provided defconfig file is valid
+        if self.defconfig and not self.defconfig.is_file():
+            msg.error("Provided path to defconfig is invalid.")

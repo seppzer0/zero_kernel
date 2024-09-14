@@ -5,7 +5,8 @@
 - [x] add monitor mode support for internal Wi-Fi chipset (with Wi-Fi packet injection);
 - [ ] add DM-Verity and Force Encrypt disabler;
 - [x] add KernelSU support;
-- [ ] add DriveDroid(-like) support.
+- [ ] add DriveDroid(-like) support;
+- [ ] add RTL88X2BU driver support.
 
 ## Build process features
 
@@ -28,7 +29,7 @@
 - [x] add a single-point manifest with main info on the tool;
 - [x] improve documentation;
 - [x] apply OOP paradigm;
-- [x] switch to Poetry for dependency management;
+- [x] switch to uv for dependency management;
 - [ ] create a commit-based lockfile system for reproducible kernel builds;
 - [x] switch to `pathlib`;
 - [ ] switch to `raise` instead of `sys.exit`;

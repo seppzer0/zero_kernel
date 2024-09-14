@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from builder.tools import cleaning as cm, fileoperations as fo, messages as msg
-from builder.clients import GitHubApi, LineageOsApi, ParanoidAndroidApi
+from builder.clients import GithubApiClient, LineageOsApiClient, ParanoidAndroidApiClient
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
 
@@ -26,59 +26,60 @@ class AssetsCollector(BaseModel, IAssetsCollector):
     ksu: bool
 
     @property
-    def rom_collector_dto(self) -> LineageOsApi | ParanoidAndroidApi | None:
+    def rom_collector_dto(self) -> LineageOsApiClient | ParanoidAndroidApiClient | None:
         match self.base:
             case "los":
-                return LineageOsApi(codename=self.codename, rom_only=self.rom_only)
+                return LineageOsApiClient(codename=self.codename, rom_only=self.rom_only)
             case "pa":
-                return ParanoidAndroidApi(codename=self.codename, rom_only=self.rom_only)
+                return ParanoidAndroidApiClient(codename=self.codename, rom_only=self.rom_only)
             case "x" | "aosp":
-                msg.note("Selected kernel base is ROM-universal, no specific ROM image will be collected")
+                # selected kernel base is ROM-universal, no specific ROM image will be collected
+                return None
 
     @property
-    def assets(self) -> tuple[str, str | None] | list[str] | None:
-        # define dm-verity and forceencrypt disabler (DFD) and SU manager
-        dfd = GitHubApi(project="seppzer0/Disable_Dm-Verity_ForceEncrypt").run()
+    def assets(self) -> list:
+        # define Disable_Dm-Verity_ForceEncrypt and SU manager
+        dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
             if not self.rom_collector_dto:
-                msg.cancel("Cancelling ROM-only asset collection")
+                return [dfd,]
             else:
                 # add DFD alongside the ROM
                 print("\n", end="")
                 msg.done("ROM-only asset collection complete!")
-                return (self.rom_collector_dto.run(), dfd)
-        # process the non-"RON-only" download
+                return [self.rom_collector_dto, dfd]
+        # process the full download
         else:
             assets = [
-                # DFD
+                # Disable_Dm-Verity_ForceEncrypt
                 dfd,
                 # files from GitHub projects
-                GitHubApi(
+                GithubApiClient(
                     project=su_manager,
                     file_filter=".apk"
-                ).run(),
-                GitHubApi(
+                ),
+                GithubApiClient(
                     project="klausw/hackerskeyboard",
                     file_filter=".apk"
-                ).run(),
-                GitHubApi(
+                ),
+                GithubApiClient(
                     project="aleksey-saenko/TTLChanger",
                     file_filter=".apk"
-                ).run(),
-                GitHubApi(
+                ),
+                GithubApiClient(
                     project="ukanth/afwall",
                     file_filter=".apk"
-                ).run(),
-                GitHubApi(
+                ),
+                GithubApiClient(
                     project="emanuele-f/PCAPdroid",
                     file_filter=".apk"
-                ).run(),
-                GitHubApi(
+                ),
+                GithubApiClient(
                     project="nfcgate/nfcgate",
                     file_filter=".apk"
-                ).run(),
+                ),
                 # files from direct URLs
                 "https://store.nethunter.com/NetHunter.apk",
                 "https://store.nethunter.com/NetHunterKeX.apk",
@@ -91,7 +92,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             ]
             # finally, add ROM (if kernel base is not universal) and DFD into assets list
             if self.rom_collector_dto:
-                assets.append(self.rom_collector_dto.run())
+                assets.append(self.rom_collector_dto.run()) # type: ignore
             return assets
         return None
 
@@ -122,9 +123,13 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         msg.banner("zero asset collector")
         self._check()
         os.chdir(dcfg.assets)
-        if isinstance(self.assets, list):
+        # NOTE: call "self.assets" only once!
+        assets = self.assets
+        if isinstance(assets, list) or isinstance(assets, tuple):
             for e in self.assets:
-                if e is not None:
+                if isinstance(e, GithubApiClient):
+                    e.run()
+                else:
                     fo.download(e)
         print("\n", end="")
         msg.done("Assets collected!")

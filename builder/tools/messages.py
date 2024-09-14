@@ -2,7 +2,7 @@ import sys
 
 
 def banner(text: str) -> None:
-    """Custom simple banner.
+    """Print out banner.
 
     :param str text: Text to wrap.
     """
@@ -15,7 +15,7 @@ def banner(text: str) -> None:
 
 
 def note(text: str) -> None:
-    """A "note" text wrapper.
+    """Wrap a "note" message.
 
     :param str text: Text to wrap.
     """
@@ -23,7 +23,7 @@ def note(text: str) -> None:
 
 
 def error(text: str, dont_exit: bool = False) -> None:
-    """An "error" text wrapper.
+    """Wrap an "error" message.
 
     Includes system exit with an error code.
 
@@ -35,7 +35,7 @@ def error(text: str, dont_exit: bool = False) -> None:
 
 
 def cancel(text: str) -> None:
-    """A "cancel" text wrapper.
+    """Wrap a "cancel" message.
 
     :param str text: Text to wrap.
     """
@@ -44,7 +44,7 @@ def cancel(text: str) -> None:
 
 
 def done(text: str) -> None:
-    """A "done" text wrapper.
+    """Wrap a "done" message.
 
     :param str text: Text to wrap.
     """
@@ -52,7 +52,7 @@ def done(text: str) -> None:
 
 
 def debug(text: str) -> None:
-    """A "debug" text wrapper.
+    """Wrap a "debug" message.
 
     Intended for debugging sessions.
 

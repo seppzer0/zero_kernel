@@ -20,7 +20,7 @@ interface "IGenericContainerEngine" as interfaces.engines.IGenericContainerEngin
   builder_cmd
   container_options
   dir_bundle_conan
-  run_cmd
+  get_container_cmd
   {abstract}build_image() -> str | None | CompletedProcess
   {abstract}check_cache() -> bool
   {abstract}create_dirs() -> None
@@ -47,8 +47,8 @@ interface "IResourceManager" as interfaces.managers.IResourceManager {
   {abstract}generate_paths() -> None
   {abstract}read_data() -> None
 }
-interface "IRomApi" as interfaces.clients.IRomApi {
-  {abstract}codename_mapper() -> str
+interface "IRomApiClient" as interfaces.clients.IRomApiClient {
+  {abstract}map_codename() -> str
   {abstract}run() -> str
 }
 @enduml
