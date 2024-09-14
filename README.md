@@ -126,7 +126,7 @@ You will also need to install [uv](https://github.com/astral-sh/uv). Please refe
 # making "builder" executable from source
 export PYTHONPATH=$(pwd)
 # installing uv via pip
-python3 -m pip install -r uv-version.txt
+python3 -m pip install -r requirement-uv.txt
 # collecting project dependencies into a local .venv
 uv sync --frozen --no-install-project
 ```
