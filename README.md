@@ -6,7 +6,7 @@ An advanced Android kernel builder with assets collection and Kali NetHunter sup
 
 - [zero\_kernel](#zero_kernel)
   - [Contents](#contents)
-  - [**Important to Read**](#important-to-read)
+  - [**Important**](#important)
   - [Description](#description)
   - [Kernel Features](#kernel-features)
   - [Supported Devices \& ROMs](#supported-devices--roms)
@@ -19,7 +19,7 @@ An advanced Android kernel builder with assets collection and Kali NetHunter sup
   - [See also](#see-also)
   - [Credits](#credits)
 
-## **Important to Read**
+## **Important**
 
 > [!IMPORTANT]
 > **\- DISCLAIMER \-**
