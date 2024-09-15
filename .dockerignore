@@ -3,6 +3,7 @@ __pycache__
 .vscode
 .coverage
 .pytest_cache
+.venv
 
 # git subrepos
 # (uncomment below if you explicitely want Docker/Podman to not use locally downloaded dirs)
