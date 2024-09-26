@@ -25,16 +25,16 @@ wheels = [
 
 [[package]]
 name = "astroid"
-version = "3.3.3"
+version = "3.3.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fe/ba/1b405d964cb37060f331029fa6baedb4f39832c65e270aa435d9ea704c08/astroid-3.3.3.tar.gz", hash = "sha256:63f8c5370d9bad8294163c87b2d440a7fdf546be6c72bbeac0549c93244dbd72", size = 396377 }
+sdist = { url = "https://files.pythonhosted.org/packages/16/27/0dae53cc2c6b55ebdd6d23bae865b419f0f0f9592897b4e3a7069d0ddc3e/astroid-3.3.4.tar.gz", hash = "sha256:e73d0b62dd680a7c07cb2cd0ce3c22570b044dd01bd994bc3a2dd16c6cbba162", size = 397071 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f9/89/adc721e79479bf6d8171033bfa484d7f59da4e33ed4e85f74c421c138c7e/astroid-3.3.3-py3-none-any.whl", hash = "sha256:2d79acfd3c594b6a2d4141fea98a1d62ab4a52e54332b1f1ddcf07b652cc5c0f", size = 274374 },
+    { url = "https://files.pythonhosted.org/packages/68/5b/99cdc9445e0f08e5b26312f3ee35b5c073fd985b977f11fd5af81cd95313/astroid-3.3.4-py3-none-any.whl", hash = "sha256:5eba185467253501b62a9f113c263524b4f5d55e1b30456370eed4cdbd6438fd", size = 274395 },
 ]
 
 [[package]]
 name = "bandit"
-version = "1.7.9"
+version = "1.7.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "platform_system == 'Windows'" },
@@ -42,9 +42,9 @@ dependencies = [
     { name = "rich" },
     { name = "stevedore" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1c/a4/ee391b0f046a6d8919eef246aed7c39849e299cc2e50d918b54add397de6/bandit-1.7.9.tar.gz", hash = "sha256:7c395a436743018f7be0a4cbb0a4ea9b902b6d87264ddecf8cfdc73b4f78ff61", size = 4225771 }
+sdist = { url = "https://files.pythonhosted.org/packages/38/26/bdd962d6ee781f6229c3fb83483cf9e09d87959150a9000789806d750f3c/bandit-1.7.10.tar.gz", hash = "sha256:59ed5caf5d92b6ada4bf65bc6437feea4a9da1093384445fed4d472acc6cff7b", size = 4228540 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/a3/05820b7ce584a1fa01d887ec5e3274bee9f9e02a53aa63de3cb1a5ad7d24/bandit-1.7.9-py3-none-any.whl", hash = "sha256:52077cb339000f337fb25f7e045995c4ad01511e716e5daac37014b9752de8ec", size = 127957 },
+    { url = "https://files.pythonhosted.org/packages/9e/9c/491231d973d54f6465002812b4cadc663f208436407745be473254725f55/bandit-1.7.10-py3-none-any.whl", hash = "sha256:665721d7bebbb4485a339c55161ac0eedde27d51e638000d91c8c2d68343ad02", size = 130756 },
 ]
 
 [[package]]
@@ -418,7 +418,7 @@ wheels = [
 
 [[package]]
 name = "pylint"
-version = "3.3.0"
+version = "3.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astroid" },
@@ -429,21 +429,22 @@ dependencies = [
     { name = "platformdirs" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dc/38/bd0af116fb2153b3efac3ac0b82953d4ac690b020c28f32d5fa38b979ee1/pylint-3.3.0.tar.gz", hash = "sha256:c685fe3c061ee5fb0ce7c29436174ab84a2f525fce2a268b1986e921e083fe22", size = 1516717 }
+sdist = { url = "https://files.pythonhosted.org/packages/63/3a/13e90e29777e695d90f422cf4fadb81c999e4755a9089838561bd0590cac/pylint-3.3.1.tar.gz", hash = "sha256:9f3dcc87b1203e612b78d91a896407787e708b3f189b5fa0b307712d49ff0c6e", size = 1516703 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/38/7cf2a837c88d27e8471c3d749306ce5fa000ff2c9da7990881c4d70b5b3a/pylint-3.3.0-py3-none-any.whl", hash = "sha256:02dce1845f68974b9b03045894eb3bf05a8b3c7da9fd10af4de3c91e69eb92f1", size = 521768 },
+    { url = "https://files.pythonhosted.org/packages/4d/11/4a3f814eee14593f3cfcf7046bc765bf1646d5c88132c08c45310fc7d85f/pylint-3.3.1-py3-none-any.whl", hash = "sha256:2f846a466dd023513240bc140ad2dd73bfc080a5d85a710afdb728c420a5a2b9", size = 521768 },
 ]
 
 [[package]]
 name = "pyright"
-version = "1.1.381"
+version = "1.1.382.post0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/10/f4/8e2374423280cfb221a8eba3cb13d39276a05e592fea36bc06d5feb18c33/pyright-1.1.381.tar.gz", hash = "sha256:314cf0c1351c189524fb10c7ac20688ecd470e8cc505c394d642c9c80bf7c3a5", size = 17488 }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/7e/bc877dfbde1f486cc0da40c4ad3f609300d9364f83107587b99fb20e6b91/pyright-1.1.382.post0.tar.gz", hash = "sha256:4b84dd4439b0cbc662dff6aaf012cc0860f1c788932ac4c2a4b5d6c1280a5e20", size = 21514 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2f/c0/fec7607edc2459816c49815cd5dac67b28c702ed497102118cdc2757cc8d/pyright-1.1.381-py3-none-any.whl", hash = "sha256:5dc0aa80a265675d36abab59c674ae01dbe476714f91845b61b841d34aa99081", size = 18221 },
+    { url = "https://files.pythonhosted.org/packages/fd/20/7e6ef22601e97055902a8ce7b6310523524d77ad0a6d790bcd2e5ea4c1ca/pyright-1.1.382.post0-py3-none-any.whl", hash = "sha256:a82a20b6a6511d71c6c95de19c0f874f7e50a013f332e3799deaae66a4d237d1", size = 18652 },
 ]
 
 [[package]]
