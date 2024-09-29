@@ -37,8 +37,8 @@ PATCH_VBMETA_FLAG=auto;
 dump_boot; # use split_boot to skip ramdisk unpack, e.g. for devices with init_boot ramdisk
 
 # begin ramdisk changes
-backup_file init.rc;
-insert_line init.rc "init.nethunter.rc" after "import /init.usb.configfs.rc" "import /init.nethunter.rc";
+#backup_file init.rc;
+#insert_line init.rc "init.nethunter.rc" after "import /init.usb.configfs.rc" "import /init.nethunter.rc";
 
 #backup_file ueventd.rc;
 #insert_line ueventd.rc "/dev/hidg" after "/dev/pmsg0" "/dev/hidg*                0666   root       root";
