@@ -60,7 +60,7 @@ jobs:
           path: "multi-build"
       - name: Get current version
         id: version
-        run: echo "version=$(python3 scripts/get_version.py)" >> $GITHUB_OUTPUT
+        run: echo "version=$(python3 scripts/common/py/get_version.py)" >> $GITHUB_OUTPUT
       - name: Form a tag name
         id: tagname
         run: echo "tagname=v${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
