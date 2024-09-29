@@ -612,7 +612,7 @@ wheels = [
 
 [[package]]
 name = "zero-kernel"
-version = "0.5.0"
+version = "0.5.1"
 source = { virtual = "." }
 dependencies = [
     { name = "argparse" },
