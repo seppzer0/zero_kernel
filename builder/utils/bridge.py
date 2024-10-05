@@ -1,3 +1,10 @@
+"""
+Bridge-connector to launch shift the build process from host to Docker/Podman container.
+
+Essentially it re-launches the same builder, but the one that is a copy inside the container.
+Complete chain is: builder in host -> this bridge -> builder in container.
+"""
+
 import sys
 import argparse
 

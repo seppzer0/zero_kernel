@@ -1,3 +1,7 @@
+"""
+Wrapper-script to launch the builder for multiple setting combinations.
+"""
+
 import os
 import shutil
 import argparse
