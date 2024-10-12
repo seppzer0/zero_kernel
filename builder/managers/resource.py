@@ -32,14 +32,18 @@ class ResourceManager(BaseModel, IResourceManager):
 
     def read_data(self) -> None:
         os.chdir(dcfg.root)
+
         # define paths
         tools = ""
         device = ""
+
         # load JSON data
         with open(dcfg.root / "builder" / "manifests" / "tools.json", encoding="utf-8") as f:
             tools = json.load(f)
+
         # codename and ROM are undefined only when the Docker/Podman image is being prepared
         if self.codename and self.base:
+
             with open(dcfg.root / "builder" / "manifests" / "devices.json", encoding="utf-8") as f:
                 data = json.load(f)
                 # load data only for the required codename + linux kernel version combination
@@ -48,8 +52,10 @@ class ResourceManager(BaseModel, IResourceManager):
                 except Exception:
                     msg.error("Arguments were specified for an unsupported build, exiting..")
                 device = {self.codename: data[self.codename][self.lkv][self.base]}
+
             # join tools and devices manifests
             self._data = {**tools, **device}
+
         else:
             self._data = tools
             msg.note("Only shared tools are installed.")
@@ -64,6 +70,7 @@ class ResourceManager(BaseModel, IResourceManager):
             # break data into individual required vars
             path = Path(self._data[e]["path"])    # type: ignore
             url = self._data[e]["url"]            # type: ignore
+
             # break further processing into "generic" and "git" groups
             ftype = self._data[e]["type"]         # type: ignore
             match ftype:
@@ -73,20 +80,28 @@ class ResourceManager(BaseModel, IResourceManager):
                     if path.name not in os.listdir():
                         fn = url.split("/")[-1]
                         dn = fn.split(".")[0]
+
                         if fn not in os.listdir() and dn not in os.listdir():
                             fo.download(url)
+
                         msg.note(f"Unpacking {fn}..")
+
                         with tarfile.open(fn) as f:
                             f.extractall(path)
+
                         cm.remove(fn)
+
                         msg.done("Done!")
+
                     else:
                         msg.note(f"Found an existing path: {path}")
+
                 case "git":
                     # break data into individual vars
                     branch = self._data[e]["branch"] # type: ignore
                     commit = self._data[e]["commit"] # type: ignore
                     cmd = f"git clone -b {branch} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {url} {path}"
+
                     # full commit history is required in two instances:
                     # - for KernelSU -- to define it's version based on *full* commit history;
                     # - for commit checkout -- to checkout a specific commit in the history.
@@ -102,6 +117,7 @@ class ResourceManager(BaseModel, IResourceManager):
                             os.chdir(dcfg.root)
                     else:
                         msg.note(f"Found an existing path: {path}")
+
                 case _:
                     msg.error("Invalid resource type detected. Use only: generic, git.")
 
@@ -109,4 +125,5 @@ class ResourceManager(BaseModel, IResourceManager):
         for elem in self.paths:
             p = self.paths[elem]
             pathenv = str(f"{p}/bin/")
+
             os.environ["PATH"] = pathenv + os.pathsep + os.getenv("PATH") # type: ignore

@@ -30,6 +30,7 @@ class GithubApiClient(BaseModel):
     def run(self) -> str | None:
         """Get the latest version of an artifact from GitHub project."""
         response = requests.get(self.endpoint).json()
+
         # this will check whether the GitHub API usage is exceeded
         try:
             data = response["message"]
@@ -40,14 +41,17 @@ class GithubApiClient(BaseModel):
                 )
         except Exception:
             pass
+
         try:
             # get direct download URL and optionally filter it with the given parameter
             data = response["assets"]
             browser_download_urls = []
+
             for elem in data:
                 url_dto = elem["browser_download_url"]
                 if url_dto and self.file_filter in url_dto:
                     browser_download_urls.append(url_dto)
+
             # if there is more than one fitting response -- throw an error
             if len(browser_download_urls) > 1:
                 msg.error(
@@ -56,6 +60,7 @@ class GithubApiClient(BaseModel):
                 )
             else:
                 data = "".join(browser_download_urls)
+
         except Exception:
             # if not available via API -- use regular "git clone"
             rdir = Path(dcfg.assets, self.direct_url.rsplit("/", 1)[1])
@@ -68,4 +73,5 @@ class GithubApiClient(BaseModel):
             shutil.make_archive(str(rdir), "zip", rdir)
             cm.remove(rdir)
             return None
+
         return data

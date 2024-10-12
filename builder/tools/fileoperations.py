@@ -16,8 +16,10 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
     """
     # for a directory (it's contents)
     if src.is_dir():
+
         if not dst.is_dir():
             os.makedirs(dst)
+
         contents = os.listdir(src)
         for e in contents:
             # do not copy restricted files
@@ -28,6 +30,7 @@ def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = (
                     shutil.copytree(src_e, dst_e)
                 elif src_e.is_file():
                     shutil.copy(src_e, dst_e)
+
     # for a single file
     elif src.is_file():
         shutil.copy(src, dst)
@@ -38,22 +41,27 @@ def download(url: str) -> None:
 
     :param str url: URL to the file.
     """
-    fn = url.split("/")[-1]
-    msg.note(f"Downloading {fn} ..")
+    msg.note(f"Downloading {url.split("/")[-1]} ..")
     print(f"      URL: {url}")
+
     try:
         if "sourceforge" in url:
             msg.note("Sorceforge URL detected, using wget..")
+
             fn = url.split("/download")[0].split("/")[-1]
             ccmd.launch(f"wget -O {fn} {url}")
+
         else:
             with requests.get(url, stream=True, headers={"referer": url}) as r:
                 r.raise_for_status()
+
                 with open(fn, "wb") as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
+
     except Exception as e:
         msg.error(f"Download failed: {e}")
+
     msg.done("Done!")
 
 
@@ -65,6 +73,7 @@ def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str
     :param tuple[str,...] nw_lines: New lines in place of original lines.
     """
     filename_new = Path(str(filename) + "_new")
+
     with open(filename, encoding="utf-8") as data:
         with open(filename_new, "w", encoding="utf-8") as new_data:
             for line in data:
@@ -73,6 +82,7 @@ def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str
                         msg.note(f"Replacing {key} with {nw_lines[indx]}")
                         line = line.replace(key, nw_lines[indx])
                 new_data.write(line)
+
     os.replace(filename_new, filename)
 
 
@@ -85,6 +95,7 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
     :param int occurence: The index of occurence to replace.
     """
     filename_new = Path(str(filename) + "_new")
+
     with open(filename, encoding="utf-8") as data:
         with open(filename_new, "w", encoding="utf-8") as new_data:
             counter = 0
@@ -95,6 +106,7 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
                         msg.note(f"Replacing {og_string} with {nw_string}")
                         line = line.replace(og_string, nw_string)
                 new_data.write(line)
+
     os.replace(filename_new, filename)
 
 
@@ -108,13 +120,16 @@ def insert_before_line(filename: str | Path, pointer_line: str, new_line: str) -
     with open(filename, "r+", encoding="utf-8") as f:
         a = [x.rstrip() for x in f]
         index = 0
+
         for item in a:
             if item.startswith(pointer_line):
                 a.insert(index, new_line)
                 break
             index += 1
+
         f.seek(0)
         f.truncate()
+
         for line in a:
             f.write(line + "\n")
 
@@ -125,5 +140,6 @@ def apply_patch(filename: str | Path) -> None:
     :param str/Path filename: Name of the .patch file.
     """
     msg.note(f"Applying patch: {filename}")
+
     ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {filename}")
     os.remove(filename)

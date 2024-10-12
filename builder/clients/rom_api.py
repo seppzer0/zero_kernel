@@ -30,6 +30,7 @@ class RomApiClient(BaseModel, IRomApiClient):
 
     def run(self) -> str:
         data = requests.get(self.endpoint)
+
         try:
             data = data.json()[self.json_key][0]["url"]
         except Exception:
@@ -38,4 +39,5 @@ class RomApiClient(BaseModel, IRomApiClient):
                 f"Could not connect to {self.rom_name} API, HTTP status code: {data.status_code}",
                 dont_exit=exit_flag
             )
+
         return str(data)

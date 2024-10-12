@@ -44,6 +44,7 @@ class ArgumentConfig(BaseModel):
         """Run settings validations."""
         # allow only asset colletion on a non-Linux machine
         if self.benv == "local" and self.command in ("kernel", "bundle"):
+
             if not platform.system() == "Linux":
                 msg.error("Can't build kernel on a non-Linux machine.")
             else:
@@ -52,15 +53,18 @@ class ArgumentConfig(BaseModel):
                     ccmd.launch("apt --version", loglvl="quiet")
                 except Exception:
                     msg.error("Detected Linux distribution is not Debian-based.")
+
         # check if specified device is supported
         with open(Path(__file__).absolute().parents[2] / "builder" / "manifests" / "devices.json", encoding="utf-8") as f:
             devices = json.load(f)
+
         if self.codename not in devices.keys():
             msg.error("Unsupported device codename specified.")
         if self.command == "bundle":
             # check Conan-related argument usage
             if self.package_type != "conan" and self.conan_upload:
                 msg.error("Cannot use Conan-related arguments with non-Conan packaging\n")
+
         # check that the provided defconfig file is valid
         if self.defconfig and not self.defconfig.is_file():
             msg.error("Provided path to defconfig is invalid.")

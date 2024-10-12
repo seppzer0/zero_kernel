@@ -23,8 +23,9 @@ def parse_args() -> argparse.Namespace:
     Because of that, all of the arguments are technically optional.
     Making any of the arguments mandatory would not allow it to be dual-use.
     """
-    parser = argparse.ArgumentParser()
     args = None if sys.argv[1:] else ["-h"]
+
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         "--command",
         help="select builder command",
@@ -86,11 +87,13 @@ def parse_args() -> argparse.Namespace:
         help="only setup the shared tools in the environment",
         action="store_true"
     )
+
     return parser.parse_args(args)
 
 
 def main(args: argparse.Namespace) -> None:
     match args.command:
+
         case "kernel":
             kc = KernelCommand(
                 codename = args.codename,
@@ -101,6 +104,7 @@ def main(args: argparse.Namespace) -> None:
                 defconfig = args.defconfig,
             )
             kc.execute()
+
         case "assets":
             ac = AssetsCommand(
                 codename = args.codename,
@@ -111,6 +115,7 @@ def main(args: argparse.Namespace) -> None:
                 ksu = args.ksu,
             )
             ac.execute()
+
         case "bundle":
             bc = BundleCommand(
                 codename = args.codename,
@@ -121,6 +126,7 @@ def main(args: argparse.Namespace) -> None:
                 defconfig = args.defconfig,
             )
             bc.execute()
+
         case _:
             # if no command was selected, then shared tools are (supposed to be) installed
             if args.shared:
@@ -128,6 +134,7 @@ def main(args: argparse.Namespace) -> None:
                 rm.read_data()
                 rm.generate_paths()
                 rm.download()
+
             else:
                 # technically this part of code cannot be reached and is just an extra precaution
                 msg.error("Invalid argument set specified, please review")

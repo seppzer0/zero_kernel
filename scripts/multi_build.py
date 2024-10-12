@@ -17,6 +17,7 @@ def parse_args() -> argparse.Namespace:
         choices={"docker", "podman", "local"},
         default="docker"
     )
+
     return parser.parse_args()
 
 
@@ -26,10 +27,12 @@ def rmove(src: Path, dst: Path) -> None:
     :param Path src: Source path.
     :param Path dst: Destination path.
     """
-    # for a directory (it's contents)
+    # for a directory
     if src.is_dir():
+
         if not dst.is_dir():
             os.makedirs(dst)
+
         contents = os.listdir(src)
         for e in contents:
             # do not copy restricted files
@@ -37,6 +40,7 @@ def rmove(src: Path, dst: Path) -> None:
                 src_e = src / e
                 dst_e = dst / e
                 shutil.move(src_e, dst_e)
+
     # for a single file
     elif src.is_file():
         shutil.move(src, dst)
@@ -88,10 +92,12 @@ def main(args: argparse.Namespace) -> None:
             "ksu": True
         },
     )
+
     os.chdir(rootpath)
     dir_shared = rootpath / "multi-build"
     shutil.rmtree(dir_shared, ignore_errors=True)
     os.makedirs(dir_shared)
+
     for count, argset in enumerate(argsets, 1):
         # define some of the values individually
         benv = f"--build-env {args.env}"
@@ -101,13 +107,16 @@ def main(args: argparse.Namespace) -> None:
         ksu = "--ksu" if argset["ksu"] else ""
         size = "--package-type slim" if argset["command"] == "bundle" else ""
         extra = "--chroot minimal --rom-only --clean" if argset["command"] == "assets" else ""
+
         # if the build is last, make it automatically remove the Docker/Podman image from runner
         clean_image = "--clean-image" if count == len(argsets) and args.env in ("docker", "podman") else ""
+
         # form and launch the command
         cmd = f"uv run builder {argset['command']} {benv} {base} {codename} {lkv} {size} {ksu} {clean_image} {extra}"
         print(f"[CMD]: {cmd}")
         subprocess.run(cmd.strip(), shell=True, check=True)
-        # copy artifacts into the shared directory
+
+        # define directory to copy artifacts to
         out = ""
         match argset["command"]:
             case "bundle":

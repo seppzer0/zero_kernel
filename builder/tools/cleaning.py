@@ -20,16 +20,19 @@ def remove(elements: str | Path | list[Path | str]) -> None:
     # if a given argument is a string --> convert it into a one-element list
     if isinstance(elements, str) or isinstance(elements, Path):
         elements = [str(elements)]
+
     for e in elements:
         # force convert into str
         e = str(e)
-        # a simple list-through removal
+
+        # list-through removal
         if "*" not in e:
             if os.path.isdir(e):
                 shutil.rmtree(e, onerror=on_rm_error)
             elif os.path.isfile(e):
                 os.remove(e)
-        # a recursive "glob" removal
+
+        # recursive "glob" removal
         else:
             for fn in glob.glob(e):
                 remove(fn)
@@ -37,7 +40,7 @@ def remove(elements: str | Path | list[Path | str]) -> None:
 
 def on_rm_error(func, path: str, exc_info):
     """For Windows system to remove a .git folder.
-    
+
     :param func: Function to be used along with.
     :param Path path: Path that is being removed.
     :exc_info param: Misc info.
@@ -52,6 +55,7 @@ def git(directory: Path | str) -> None:
     :param Path/str directory: Path to the directory.
     """
     goback = Path.cwd()
+
     os.chdir(directory)
     ccmd.launch("git clean -fdx")
     ccmd.launch("git reset --hard HEAD")
@@ -80,10 +84,12 @@ def root(extra: Optional[list[str]] = []) -> None:
         ".vscode",
         ".pytest_cache"
     ]
+
     # add extra elements to clean up from root directory
     if extra:
         for e in extra:
             trsh.append(dcfg.root / e)
-    # clean
+
+    # clean, with __pycache__ always
     remove(trsh)
     [remove(p) for p in Path(".").rglob("__pycache__")]
