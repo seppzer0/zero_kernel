@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--command",
         help="select builder command",
-        choices=("kernel", "assets", "bundle")
+        choices={"kernel", "assets", "bundle"}
     )
     parser.add_argument(
         "--codename",
@@ -45,13 +45,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--chroot",
         help="select chroot type",
-        choices=("full", "minimal")
+        choices={"full", "minimal"}
     )
     parser.add_argument(
         "--package-type",
         dest="package_type",
         help="select bundle packaging type",
-        choices=("conan", "slim", "full")
+        choices={"conan", "slim", "full"}
     )
     parser.add_argument(
         "--clean-kernel",

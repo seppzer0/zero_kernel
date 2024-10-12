@@ -14,7 +14,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--env",
-        choices=("docker", "podman", "local"),
+        choices={"docker", "podman", "local"},
         default="docker"
     )
     return parser.parse_args()

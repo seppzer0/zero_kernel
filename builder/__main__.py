@@ -33,8 +33,8 @@ def parse_args() -> argparse.Namespace:
     help_codename = "select device codename"
     help_benv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
-    choices_benv = ("local", "docker", "podman")
-    choices_base = ("los", "pa", "x", "aosp")
+    choices_benv = {"local", "docker", "podman"}
+    choices_base = {"los", "pa", "x", "aosp"}
     help_defconfig = "specify path to custom defconfig"
     help_ksu = "add KernelSU support"
     help_lkv = "select Linux Kernel Version"
@@ -176,7 +176,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         required=True,
         dest="package_type",
-        choices=("conan", "slim", "full"),
+        choices={"conan", "slim", "full"},
         help="select package type of the bundle"
     )
     parser_bundle.add_argument(
