@@ -41,7 +41,9 @@ def download(url: str) -> None:
 
     :param str url: URL to the file.
     """
-    msg.note(f"Downloading {url.split("/")[-1]} ..")
+    fn = url.split("/")[-1]
+
+    msg.note(f"Downloading {fn} ..")
     print(f"      URL: {url}")
 
     try:
