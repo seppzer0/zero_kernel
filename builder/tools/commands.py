@@ -21,17 +21,21 @@ def launch(
     cstdout = subprocess.DEVNULL if loglvl == "quiet" else os.getenv("OSTREAM", None)
     if get_output is True:
         cstdout = subprocess.PIPE
+
     # if output stream is a file -- open it
     if isinstance(cstdout, str):
         cstdout = open(cstdout, "a")
     if loglvl == "quiet" and os.getenv("OSTREAM"):
         msg.error("Cannot run 'quiet' build with file logging")
+
     try:
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
+
         # return only output if required
         if get_output is True:
             return result.stdout.decode("utf-8").rstrip()
         else:
             return result
+
     except Exception as e:
         msg.error(f"Error executing command: {cmd} -> {e}")
