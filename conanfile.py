@@ -24,8 +24,8 @@ class ZeroKernelConan(ConanFile):
             self.options.codename,
             self.options.chroot
         )
-        cmd = "uv run builder kernel {0} &&"\
-              "uv run builder assets {0} --clean"\
+        cmd = "python3 builder kernel {0} &&"\
+              "python3 builder assets {0} --clean"\
               .format(shared_args)
         print(f"[cmd] {cmd}")
         self.run(cmd)

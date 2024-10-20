@@ -14,9 +14,11 @@ job-build:
     - apk update && apk add python3 py3-pip
     - python3 -m pip install -r requirement-uv.txt --break-system-packages
     - uv sync --frozen --no-install-project
+    - source .venv/Scripts/activate
     - export PYTHONPATH=$(pwd)
-    - uv run scripts/common/py/run_tests.py
-    - uv run scripts/multi_build.py
+    - python3 scripts/common/py/run_tests.py
+    - python3 scripts/multi_build.py
+    - deactivate
   artifacts:
     paths:
       - "multi-build/zero-*.zip"
@@ -36,6 +38,7 @@ job-tag:
     - git config --global user.email "${EMAIL}"
     - git remote remove origin
     - git remote add origin https://${USERNAME}:${PASSWORD}@gitlab.com/${CI_PROJECT_PATH}
+    - git fetch --force --tags
     - if [ $(git tag | grep "$TAGNAME") ]; then echo "[ * ] Tag already exists, skipping.."; else git tag $TAGNAME && git push origin $TAGNAME; fi
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
