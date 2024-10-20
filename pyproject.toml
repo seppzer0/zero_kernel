@@ -46,7 +46,7 @@ include = ["builder"]
 pythonVersion = "3.12"
 
 [tool.ruff]
-include = ["builder/*.py", "scripts/**/*.py"]
+include = ["builder/**/*.py", "scripts/**/*.py"]
 indent-width = 4
 line-length = 120
 exclude = [
