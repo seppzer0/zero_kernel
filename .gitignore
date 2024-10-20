@@ -4,6 +4,7 @@ __pycache__
 .vscode
 .coverage
 .pytest_cache
+.ruff_cache
 
 # git subrepos
 /android_*
