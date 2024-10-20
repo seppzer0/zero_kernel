@@ -67,12 +67,6 @@ task-tags = ["TODO", "NOTE"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "tab"
-line-ending = "lf"
-docstring-code-format = true
-
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 inline-quotes = "double"

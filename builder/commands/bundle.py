@@ -64,6 +64,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
 
         sourcedir = dcfg.root / "source"
         cm.remove(str(sourcedir))
+        # NOTE: .venv is intentionally kept here, for Python environment repoducibility
         fo.ucopy(
             dcfg.root,
             sourcedir,
@@ -72,9 +73,12 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 dcfg.assets,
                 "__pycache__",
                 ".vscode",
+                ".coverage",
+                ".pytest_cache",
+                ".ruff_cache",
                 "source",
                 "localversion",
-                "conanfile.py",
+                "conanfile.py"
             )
         )
 

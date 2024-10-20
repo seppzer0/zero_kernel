@@ -82,7 +82,8 @@ def root(extra: Optional[list[str]] = []) -> None:
         "multi-build",
         ".coverage",
         ".vscode",
-        ".pytest_cache"
+        ".pytest_cache",
+        ".ruff_cache"
     ]
 
     # add extra elements to clean up from root directory
