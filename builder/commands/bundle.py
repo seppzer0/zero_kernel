@@ -14,8 +14,7 @@ from builder.interfaces import ICommand, IBundleCommand
 
 
 class BundleCommand(BaseModel, ICommand, IBundleCommand):
-    """Command that packages the artifacts produced both
-    by 'kernel_builder' and 'assets_collector' core modules.
+    """Command that packages the artifacts produced both by 'kernel_builder' and 'assets_collector' core modules.
 
     :param str base: Kernel source base.
     :param str lkv: Linux kernel version.

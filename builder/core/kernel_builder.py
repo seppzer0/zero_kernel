@@ -203,7 +203,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         }
 
         # the following files are not present in 4.14
-        if self._linux_kernel_version != "4.14":
+        if self._lkv_src != "4.14":
             extra_non_414 = {
                 self.rmanager.paths[self.codename] /\
                 "drivers" /\
@@ -282,8 +282,8 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             ),
             (
                 "EXTRA_CFLAGS += -Wno-parentheses-equality",
-                "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack\nEXTRA_CFLAGS += -Wno-unused-variable",
-                '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules',
+                "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack\nEXTRA_CFLAGS += -Wno-unused-variable", # noqa: E501
+                '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules', # noqa: E501
                 "CONFIG_PLATFORM_I386_PC = n",
                 "CONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
             )
@@ -395,7 +395,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         fo.insert_before_line(
             kconfig,
             "endif",
-            "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\""
+            'source "drivers/net/wireless/realtek/rtl8812au/Kconfig"'
         )
 
     def patch_ksu(self) -> None:
@@ -429,16 +429,16 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         fo.insert_before_line(
             kconfig,
             "endmenu",
-            "source \"drivers/kernelsu/Kconfig\""
+            'source "drivers/kernelsu/Kconfig"'
         )
 
         # either patch kernel or KernelSU sources, depending on Linux kernel version
-        target_dir = dcfg.root / "KernelSU" if self._linux_kernel_version == "4.14" else self.rmanager.paths[self.codename]
+        target_d = dcfg.root / "KernelSU" if self._lkv_src == "4.14" else self.rmanager.paths[self.codename]
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
-            target_dir
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "kernelsu-compat.patch",
+            target_d
         )
-        os.chdir(target_dir)
+        os.chdir(target_d)
         fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
 
@@ -446,7 +446,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         goback = Path.cwd()
 
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version / "qcacld_pa.patch",
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "qcacld_pa.patch",
             self.rmanager.paths[self.codename]
         )
         os.chdir(self.rmanager.paths[self.codename])
@@ -479,7 +479,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         # apply .patch files
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version,
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
             self.rmanager.paths[self.codename],
             ("kernelsu-compat.patch", "qcacld_pa.patch")
         )
@@ -500,7 +500,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         # some patches only for ParanoidAndroid
         if self.base == "pa":
-            if self._linux_kernel_version == "4.4":
+            if self._lkv_src == "4.4":
                 self.patch_qcacld()
             self.patch_ioctl()
 
@@ -558,7 +558,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 .format(punits)
 
         # for PA's 4.14, extend the "make" command with additional variables
-        if (self.base, self._linux_kernel_version) == ("pa", "4.14"):
+        if (self.base, self._lkv_src) == ("pa", "4.14"):
             cmd2 = f"{cmd2} LEX=flex YACC=bison"
 
         # launch and time the build process
@@ -578,7 +578,8 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         msg.done("Done! Time spent for the build: %02d:%02d:%02d" % (hours, mins, secs))
 
     @property
-    def _linux_kernel_version(self) -> str:
+    def _lkv_src(self) -> str:
+        """Linux kernel version in kernel source."""
         data = ""
         version = []
 
@@ -613,7 +614,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         )
 
         # define kernel versions: Linux and internal
-        verbase = self._linux_kernel_version
+        verbase = self._lkv_src
         ver_int = os.getenv("KVERSION")
 
         # create the final ZIP file
@@ -650,7 +651,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         self.write_localversion()
         msg.done("Done! Tools are configured!")
 
-        if self.lkv != self._linux_kernel_version:
+        if self.lkv != self._lkv_src:
             msg.error("Linux kernel version in sources is different what was specified in arguments")
 
         self.patch_all()

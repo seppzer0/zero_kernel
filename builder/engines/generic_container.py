@@ -166,7 +166,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
         cmd = "{} build . -f {} -t {} --load".format(
             self.benv,
-            self._wdir_local / 'Dockerfile',
+            self._wdir_local / "Dockerfile",
             self._name_image
         )
 

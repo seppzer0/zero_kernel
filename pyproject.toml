@@ -25,7 +25,7 @@ dev-dependencies = [
     "pytest-cov ~=4.1",
     "pyright ~=1.1",
     "pylint ~=3.1",
-    "ruff ~= 0.7"
+    "ruff ~=0.7"
 ]
 
 
@@ -42,6 +42,37 @@ source = [
 show_missing = true
 
 [tool.pyright]
-include=["builder"]
+include = ["builder"]
 pythonVersion = "3.12"
 
+[tool.ruff]
+include = ["builder/*.py", "scripts/**/*.py"]
+indent-width = 4
+line-length = 120
+exclude = [
+    ".git",
+    ".pytest_cache",
+    ".venv"
+]
+output-format = "full"
+
+[tool.ruff.lint]
+select = ["E", "Q", "D", "E501"]
+ignore = ["D1", "D200", "D212"]
+task-tags = ["TODO", "NOTE"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+line-ending = "lf"
+docstring-code-format = true
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"

@@ -26,10 +26,6 @@ class ResourceManager(BaseModel, IResourceManager):
     lkv: Optional[str] = None
     base: Optional[str] = None
 
-    def __getitem__(self, arg: Path) -> slice:
-        """Custom getitem implementation for accessing data via Path-type indexes."""
-        return slice(*[{True: lambda n: None, False: int}[x == ""](x) for x in (str(arg).split(":") + ["", "", ""])[:3]])
-
     def read_data(self) -> None:
         os.chdir(dcfg.root)
 
@@ -100,7 +96,9 @@ class ResourceManager(BaseModel, IResourceManager):
                     # break data into individual vars
                     branch = self._data[e]["branch"] # type: ignore
                     commit = self._data[e]["commit"] # type: ignore
-                    cmd = f"git clone -b {branch} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {url} {path}"
+                    cmd = \
+                        "git clone -b {} --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {} {}"\
+                        .format(branch, url, path)
 
                     # full commit history is required in two instances:
                     # - for KernelSU -- to define it's version based on *full* commit history;

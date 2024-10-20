@@ -63,15 +63,21 @@ class GithubApiClient(BaseModel):
 
         except Exception:
             # if not available via API -- use regular "git clone"
-            rdir = Path(dcfg.assets, self.direct_url.rsplit("/", 1)[1])
             msg.note(f"Non-API GitHub resolution for {self.project}")
+
+            rdir = Path(dcfg.assets, self.direct_url.rsplit("/", 1)[1])
+
             cm.remove(rdir)
-            ccmd.launch(f"git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {self.direct_url} {rdir}")
+            ccmd.launch(
+                "git clone --depth 1 --remote-submodules --recurse-submodules --shallow-submodules {} {}"
+                .format(self.direct_url, rdir)
+            )
             os.chdir(rdir)
             cm.remove(".git*")
             os.chdir(dcfg.assets)
             shutil.make_archive(str(rdir), "zip", rdir)
             cm.remove(rdir)
+
             return None
 
         return data
