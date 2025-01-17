@@ -39,7 +39,7 @@ jobs:
         run: |
           python3 -m pip install -r requirement-uv.txt
           uv sync --frozen --no-install-project
-          source .venv/Scripts/activate
+          source .venv/bin/activate
 
       - name: Build And Assemble
         run: |

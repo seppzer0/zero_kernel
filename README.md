@@ -128,7 +128,7 @@ python3 -m pip install -r requirement-uv.txt
 export PYTHONPATH=$(pwd)
 # prepare and activate dev environment
 uv sync --frozen --no-install-project
-source .venv/Scripts/activate
+source .venv/bin/activate
 ```
 
 Once you are finished working with the project, don't forget to disable the virtual environment (venv) via simple `deactivate`.
