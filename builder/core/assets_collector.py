@@ -41,6 +41,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         # define Disable_Dm-Verity_ForceEncrypt and SU manager
         dfd = GithubApiClient(project="seppzer0/Disable_Dm-Verity_ForceEncrypt")
         su_manager = "tiann/KernelSU" if self.ksu else "topjohnwu/Magisk"
+
         # process the "ROM-only" download for non-universal kernel bases
         if self.rom_only:
             if not self.rom_collector_dto:
@@ -50,6 +51,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 print("\n", end="")
                 msg.done("ROM-only asset collection specified")
                 return [self.rom_collector_dto.run(), dfd]
+
         # process the full download
         else:
             assets = [
@@ -90,14 +92,18 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                 "https://github.com/mozilla-mobile/firefox-android/releases/download/fenix-v117.1.0/fenix-117.1.0-arm64-v8a.apk",
                 "https://f-droid.org/F-Droid.apk",
             ]
+
             # add ROM if kernel base is not universal
             if self.rom_collector_dto:
                 assets.append(self.rom_collector_dto.run()) # type: ignore
+
             return assets
+
         return None
 
     def _check(self) -> None:
         os.chdir(dcfg.root)
+
         # directory check
         if not dcfg.assets.is_dir():
             os.makedirs(dcfg.assets)
@@ -105,6 +111,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             if len(os.listdir(dcfg.assets)) != 0:
                 cmsg = f'[ ? ] Found an existing "{dcfg.assets.name}" folder, clean it? [Y/n]: '
                 ans = input(cmsg).lower() if not self.clean_assets else "y"
+
                 match ans:
                     case "y":
                         msg.note("Cleaning 'assets' directory..")
@@ -116,21 +123,25 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                         msg.cancel("Cancelling asset download.")
                     case _:
                         msg.error("Invalid option selected.")
+
         print("\n", end="")
 
     def run(self) -> None:
-        os.chdir(dcfg.root)
         msg.banner("zero asset collector")
+
+        os.chdir(dcfg.root)
         self._check()
         os.chdir(dcfg.assets)
         # NOTE: call "self.assets" only once!
         assets = self.assets
+
         if isinstance(assets, list) or isinstance(assets, tuple):
             for e in assets:
                 if isinstance(e, GithubApiClient):
                     e.run()
                 else:
                     fo.download(e)
+
         print("\n", end="")
         msg.done("Assets collected!")
         os.chdir(dcfg.root)

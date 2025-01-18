@@ -4,6 +4,7 @@ import sys
 import json
 import argparse
 from pathlib import Path
+from importlib.metadata import version
 
 from builder.tools import cleaning as cm, commands as ccmd
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
@@ -15,29 +16,34 @@ def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
     # show the 'help' message if no arguments supplied
     args = None if sys.argv[1:] else ["-h"]
+
     # parser and subparsers
-    parser_parent = argparse.ArgumentParser(description="A custom builder for the zero kernel.")
+    parser_parent = argparse.ArgumentParser(description="Advanced Android kernel builder with Kali NetHunter support.")
     subparsers = parser_parent.add_subparsers(dest="command")
     parser_kernel = subparsers.add_parser("kernel", help="build the kernel")
     parser_assets = subparsers.add_parser("assets", help="collect assets")
     parser_bundle = subparsers.add_parser("bundle", help="build the kernel + collect assets")
-    # add a single argument for the main parser
+
+    # main parser arguments
     parser_parent.add_argument(
         "--clean",
         dest="clean_root",
         action="store_true",
         help="clean the root directory"
     )
+    parser_parent.add_argument("-v", "--version", action="version", version=version("zero-kernel"))
+
     # common argument attributes for subparsers
     help_base = "select a kernel base for the build"
     help_codename = "select device codename"
     help_benv = "select build environment"
     help_clean = "remove Docker/Podman image from the host machine after build"
-    choices_benv = ("local", "docker", "podman")
-    choices_base = ("los", "pa", "x", "aosp")
+    choices_benv = {"local", "docker", "podman"}
+    choices_base = {"los", "pa", "x", "aosp"}
     help_defconfig = "specify path to custom defconfig"
     help_ksu = "add KernelSU support"
     help_lkv = "select Linux Kernel Version"
+
     # kernel
     parser_kernel.add_argument(
         "--build-env",
@@ -90,6 +96,7 @@ def parse_args() -> argparse.Namespace:
         dest="defconfig",
         help=help_defconfig
     )
+
     # assets
     parser_assets.add_argument(
         "--build-env",
@@ -143,6 +150,7 @@ def parse_args() -> argparse.Namespace:
         dest="ksu",
         help=help_ksu
     )
+
     # bundle
     parser_bundle.add_argument(
         "--build-env",
@@ -176,7 +184,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         required=True,
         dest="package_type",
-        choices=("conan", "slim", "full"),
+        choices={"conan", "slim", "full"},
         help="select package type of the bundle"
     )
     parser_bundle.add_argument(
@@ -212,20 +220,24 @@ def main(args: argparse.Namespace) -> None:
     if args.clean_root:
         cm.root()
         sys.exit(0)
+
     # define env variable with kernel version
     with open(dcfg.root / "pyproject.toml", encoding="utf-8") as f:
-        os.environ["KVERSION"] = f.read().split("version = \"")[1].split("\"")[0]
+        os.environ["KVERSION"] = f.read().split('version = "')[1].split('"')[0]
+
     # create a config for checking and storing arguments
     if args.command != "assets" and args.defconfig:
         args.defconfig = args.defconfig if args.defconfig.is_absolute() else Path.cwd() / args.defconfig
     arguments = vars(args)
     acfg = ArgumentConfig(**arguments)
     acfg.check_settings()
-    # determine the build
+
+    # determine the build variation
     match args.benv:
         case "docker" | "podman":
             with GenericContainerEngine(**json.loads(acfg.model_dump_json())) as engined_cmd:
                 ccmd.launch(engined_cmd)
+
         case "local":
             match args.command:
                 case "kernel":

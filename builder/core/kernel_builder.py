@@ -51,6 +51,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # return custom defconfig if it is specified
         if self.defconfig:
             return Path(self.defconfig.name)
+
         # list of the available defconfigs
         op7_defconfigs = {
             "los": "lineage_sm8150_defconfig",
@@ -60,6 +61,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "pa": "vendor/paranoid_defconfig" if self.lkv == "4.14" else "paranoid_defconfig",
             "x": "msm8998_oneplus_android_defconfig" if self.lkv == "4.14" else "oneplus5_defconfig"
         }
+
         # convert output to path object
         if "guacamole" in self.codename:
             return Path(op7_defconfigs[self.base])
@@ -71,16 +73,20 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     def clean_build(self) -> None:
         print("\n", end="")
         msg.note("Cleaning the build environment..")
+
         cm.git(self.rmanager.paths[self.codename])
         cm.git(self.rmanager.paths["AnyKernel3"])
         cm.git(self.rmanager.paths["KernelSU"])
+
         for fn in os.listdir():
             if fn == "localversion" or fn.endswith(".zip"):
                 cm.remove(fn)
+
         msg.done("Done!")
 
     def patch_strict_prototypes(self) -> None:
         msg.note("Patching sources for Clang 15+ compatibility..")
+
         data = {
             self.rmanager.paths[self.codename] /\
             "drivers" /\
@@ -195,8 +201,9 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "mdss_util.c":
             ("struct mdss_util_intf *mdss_get_util_intf()",)
         }
+
         # the following files are not present in 4.14
-        if self._linux_kernel_version != "4.14":
+        if self._lkv_src != "4.14":
             extra_non_414 = {
                 self.rmanager.paths[self.codename] /\
                 "drivers" /\
@@ -213,6 +220,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 ("int msm_thermal_ioctl_init()", "void msm_thermal_ioctl_cleanup()",),
             }
             data.update(extra_non_414)
+
         # PA needs this, LineageOS does not
         if self.base == "pa":
             extra_pa = {
@@ -235,21 +243,23 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 ("struct wlan_cfg_dp_soc_ctxt *wlan_cfg_soc_attach()",),
             }
             data.update(extra_pa)
+
         # start the patching process
         contents = ""
         for fname, funcnames in data.items():
             with open(fname, "r", encoding="utf-8") as f:
                 contents = f.read()
-            # replace: "()" -> "(void)"
             for func in funcnames:
                 contents = contents.replace(func, func.replace("()", "(void)"))
             with open(fname, "w") as f:
                 f.write(contents)
+
         msg.done("Done!")
 
     def patch_anykernel3(self) -> None:
         cm.remove(self.rmanager.paths["AnyKernel3"] / "ramdisk")
         cm.remove(self.rmanager.paths["AnyKernel3"] / "models")
+
         fo.ucopy(
             dcfg.root / "builder" / "modifications" / self._ucodename / "anykernel3" / "ramdisk",
             self.rmanager.paths["AnyKernel3"] / "ramdisk"
@@ -272,18 +282,20 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             ),
             (
                 "EXTRA_CFLAGS += -Wno-parentheses-equality",
-                "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack\nEXTRA_CFLAGS += -Wno-unused-variable",
-                '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules',
+                "EXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pointer-bool-conversion\nEXTRA_CFLAGS += -Wno-pragma-pack\nEXTRA_CFLAGS += -Wno-unused-variable", # noqa: E501
+                '$(MAKE) ARCH=$(ARCH) SUBARCH=$(ARCH) REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) O="$(KBUILD_OUTPUT)" modules', # noqa: E501
                 "CONFIG_PLATFORM_I386_PC = n",
                 "CONFIG_PLATFORM_ANDROID_ARM64 = y\nCONFIG_CONCURRENT_MODE = n",
             )
         )
+
         # ioctl_cfg80211.h
         fo.replace_lines(
             Path("os_dep", "linux", "ioctl_cfg80211.h").absolute(),
             ("#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))",),
             ("#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0))",)
         )
+
         # ioctl_cfg80211.c
         fo.replace_lines(
             Path("os_dep", "linux", "ioctl_cfg80211.c").absolute(),
@@ -308,6 +320,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                     "arm64" /\
                     "configs" /\
                     self._defconfig
+
         # base changes (Wi-Fi + RTL8812AU)
         extra_configs = [
                 "CONFIG_88XXAU=y",
@@ -320,6 +333,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 "CONFIG_RTL8187=y",
                 "CONFIG_RTLWIFI=y",
             ]
+
         # KernelSU changes
         if self.ksu:
             extra_configs.extend([
@@ -332,6 +346,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 "CONFIG_HAVE_KPROBES=y",
                 "CONFIG_KPROBE_EVENTS=y",
             ])
+
         # apply changes
         with open(defconfig, "a", encoding="utf-8") as f:
             f.write("\n".join(extra_configs))
@@ -349,6 +364,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "realtek" /\
             "rtl8812au"
         )
+
         # modify sources depending on driver version
         os.chdir(
             self.rmanager.paths[self.codename] /\
@@ -361,6 +377,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         self.patch_rtl8812au_source_mod_v5642()
         cm.remove(".git*")
         os.chdir(dcfg.root)
+
         # include the driver into build process
         makefile = self.rmanager.paths[self.codename] /\
                    "drivers" /\
@@ -378,12 +395,13 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         fo.insert_before_line(
             kconfig,
             "endif",
-            "source \"drivers/net/wireless/realtek/rtl8812au/Kconfig\""
+            'source "drivers/net/wireless/realtek/rtl8812au/Kconfig"'
         )
 
     def patch_ksu(self) -> None:
         msg.note("Adding KernelSU into the kernel..")
-        # extract KSU_GIT_VERSION environment variable manually
+
+        # extract KSU version manually and include it via symlink
         goback = Path.cwd()
         os.chdir(self.rmanager.paths["KernelSU"])
         os.environ["KSU_GIT_VERSION"] = str(
@@ -391,43 +409,48 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             10000 + int(ccmd.launch("git rev-list --count HEAD", get_output=True)) + 200 # type: ignore
         )
         os.chdir(goback)
+
         makefile = self.rmanager.paths[self.codename] /\
                    "drivers" /\
                    "Makefile"
         kconfig = self.rmanager.paths[self.codename] /\
                   "drivers" /\
                   "Kconfig"
-        # include into the build process via symlink
+
         os.symlink(
             self.rmanager.paths["KernelSU"] / "kernel",
             self.rmanager.paths[self.codename] /\
             "drivers" /\
             "kernelsu"
         )
+
         with open(makefile, "a", encoding="utf-8") as f:
             f.write("obj-$(CONFIG_KSU)		+= kernelsu/\n")
         fo.insert_before_line(
             kconfig,
             "endmenu",
-            "source \"drivers/kernelsu/Kconfig\""
+            'source "drivers/kernelsu/Kconfig"'
         )
+
         # either patch kernel or KernelSU sources, depending on Linux kernel version
-        target_dir = dcfg.root / "KernelSU" if self._linux_kernel_version == "4.14" else self.rmanager.paths[self.codename]
+        target_d = dcfg.root / "KernelSU" if self._lkv_src == "4.14" else self.rmanager.paths[self.codename]
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version / "kernelsu-compat.patch",
-            target_dir
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "kernelsu-compat.patch",
+            target_d
         )
-        os.chdir(target_dir)
+        os.chdir(target_d)
         fo.apply_patch("kernelsu-compat.patch")
         os.chdir(goback)
 
     def patch_qcacld(self) -> None:
         goback = Path.cwd()
+
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version / "qcacld_pa.patch",
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "qcacld_pa.patch",
             self.rmanager.paths[self.codename]
         )
         os.chdir(self.rmanager.paths[self.codename])
+
         fo.apply_patch("qcacld_pa.patch")
         os.chdir(goback)
 
@@ -439,6 +462,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                 "ipa" /\
                 "ipa_v3" /\
                 "ipa.c"
+
         fo.replace_lines(
             ioctl.absolute(),
             ("	u8 header[128] = { 0 };",),
@@ -449,43 +473,53 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # -Wstrict-prototypes patch to build with Clang 15+
         clang_cmd = f'{self.rmanager.paths["clang"] / "bin" / "clang"} --version'
         clang_ver = str(ccmd.launch(clang_cmd, get_output=True)).split("clang version ")[1].split(".")[0]
+
         if int(clang_ver) >= 15:
             self.patch_strict_prototypes()
+
         # apply .patch files
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._linux_kernel_version,
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
             self.rmanager.paths[self.codename],
             ("kernelsu-compat.patch", "qcacld_pa.patch")
         )
         os.chdir(self.rmanager.paths[self.codename])
+
         for pf in Path.cwd().glob("*.patch"):
             fo.apply_patch(pf)
+
         # add support for CONFIG_MAC80211 kernel option
         data = ""
         files = ("tx.c", "mlme.c")
+
         for fn in files:
             with open(Path("net", "mac80211", fn), "r", encoding="utf-8") as f:
                 data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
             with open(Path("net", "mac80211", fn), "w", encoding="utf-8") as f:
                 f.write(data)
+
         # some patches only for ParanoidAndroid
         if self.base == "pa":
-            if self._linux_kernel_version == "4.4":
+            if self._lkv_src == "4.4":
                 self.patch_qcacld()
             self.patch_ioctl()
+
         os.chdir(dcfg.root)
 
     def patch_all(self) -> None:
         self.patch_anykernel3()
         self.patch_kernel()
+
         # optionally include KernelSU support
         if self.ksu:
             self.patch_ksu()
+
         self.patch_rtl8812au()
+
         if self.defconfig:
             msg.note("Custom defconfig provided, copying..")
             fo.ucopy(
-                self.defconfig, 
+                self.defconfig,
                 self.rmanager.paths[self.codename] /\
                 "arch" /\
                 "arm64" /\
@@ -494,12 +528,15 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             )
         else:
             self.update_defconfig()
+
         msg.done("Patches added!")
 
     def build(self) -> None:
         print("\n", end="")
         msg.note("Launching the build..")
+
         os.chdir(self.rmanager.paths[self.codename])
+
         # launch "make"
         punits = ccmd.launch("nproc --all", get_output=True)
         cmd1 = "make -j{} O=out {} "\
@@ -519,30 +556,38 @@ class KernelBuilder(BaseModel, IKernelBuilder):
                "CXX=clang++ "\
                "AS=llvm-as"\
                 .format(punits)
+
         # for PA's 4.14, extend the "make" command with additional variables
-        if (self.base, self._linux_kernel_version) == ("pa", "4.14"):
+        if (self.base, self._lkv_src) == ("pa", "4.14"):
             cmd2 = f"{cmd2} LEX=flex YACC=bison"
+
         # launch and time the build process
         time_start = time.time()
         ccmd.launch(cmd1)
         ccmd.launch(cmd2)
         time_stop = time.time()
         time_elapsed = time_stop - time_start
+
         # convert elapsed time into human readable format
         secs = time_elapsed % (24 * 3600)
         hours = secs // 3600
         secs %= 3600
         mins = secs // 60
         secs %= 60
+
         msg.done("Done! Time spent for the build: %02d:%02d:%02d" % (hours, mins, secs))
 
     @property
-    def _linux_kernel_version(self) -> str:
+    def _lkv_src(self) -> str:
+        """Linux kernel version in kernel source."""
         data = ""
         version = []
+
         with open(self.rmanager.paths[self.codename] / "Makefile", encoding="utf-8") as f:
             data = f.read()
+
         params = ("VERSION", "PATCHLEVEL")
+
         # find the required lines in a single data run-through
         for line in data.splitlines():
             for p in params:
@@ -551,11 +596,13 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             # stop the loop when all values are found
             if len(version) == len(params):
                 break
+
         return ".".join(version)
 
     def create_zip(self) -> None:
         print("\n", end="")
         msg.note("Forming final ZIP file..")
+
         fo.ucopy(
             self.rmanager.paths[self.codename] /\
             "out" /\
@@ -565,37 +612,48 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             "Image.gz-dtb",
             self.rmanager.paths["AnyKernel3"] / "Image.gz-dtb"
         )
+
         # define kernel versions: Linux and internal
-        verbase = self._linux_kernel_version
+        verbase = self._lkv_src
         ver_int = os.getenv("KVERSION")
+
         # create the final ZIP file
         name_suffix = "-ksu" if self.ksu else ""
         name_full = f'{os.getenv("KNAME", "zero")}-{ver_int}-{self._ucodename}-{self.base}-{verbase}{name_suffix}'
         kdir = dcfg.root / dcfg.kernel
+
         if not kdir.is_dir():
             os.makedirs(kdir)
+
         os.chdir(self.rmanager.paths["AnyKernel3"])
+
         # this is not the best solution, but is the easiest
         cmd = f"zip -r9 {kdir / name_full}.zip . -x *.git* *README* *LICENSE* *placeholder"
         ccmd.launch(cmd)
         os.chdir(dcfg.root)
+
         msg.done("Done!")
 
     def run(self) -> None:
         os.chdir(dcfg.root)
         msg.banner("zero kernel builder")
         msg.note("Setting up tools and links..")
+
         self.rmanager.read_data()
         self.rmanager.generate_paths()
         self.rmanager.download()
         self.rmanager.export_path()
         self.clean_build()
+
         if self.clean_kernel:
             sys.exit(0)
+
         self.write_localversion()
         msg.done("Done! Tools are configured!")
-        if self.lkv != self._linux_kernel_version:
+
+        if self.lkv != self._lkv_src:
             msg.error("Linux kernel version in sources is different what was specified in arguments")
+
         self.patch_all()
         self.build()
         self.create_zip()

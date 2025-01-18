@@ -30,6 +30,7 @@ def error(text: str, dont_exit: bool = False) -> None:
     :param str text: Text to wrap.
     """
     print(f"[ ! ] {text}", file=sys.stderr)
+
     if not dont_exit:
         sys.exit(1)
 
