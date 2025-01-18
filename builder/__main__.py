@@ -12,6 +12,18 @@ from builder.engines import GenericContainerEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
+def __get_version() -> str:
+    """Get app version."""
+    msg = "zero_kernel {}"
+
+    try:
+        return msg.format(version("zero-kernel"))
+    except Exception:
+        with open(Path(__file__).absolute().parents[1] / "pyproject.toml", "r") as f:
+            v = f.read().split('version = "')[1].split('"')[0]
+        return msg.format(v)
+
+
 def parse_args() -> argparse.Namespace:
     """Parse the script arguments."""
     # show the 'help' message if no arguments supplied
@@ -31,7 +43,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="clean the root directory"
     )
-    parser_parent.add_argument("-v", "--version", action="version", version=version("zero-kernel"))
+    parser_parent.add_argument("-v", "--version", action="version", version=__get_version())
 
     # common argument attributes for subparsers
     help_base = "select a kernel base for the build"
