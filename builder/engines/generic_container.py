@@ -178,7 +178,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
 
     @property
     def get_container_cmd(self) -> str:
-        return '{} run {} {} /bin/bash -c "{}"'.format(
+        return '{} run {} {} /bin/bash -c "source .venv/bin/activate && {}"'.format(
             self.benv,
             " ".join(self.container_options),
             self._name_image,
