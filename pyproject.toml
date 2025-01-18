@@ -11,7 +11,8 @@ dependencies = [
     "requests ~=2.31",
     "pathlib ~=1.0",
     "typing ~=3.7",
-    "pydantic ~=2.6"
+    "pydantic ~=2.6",
+    "pip"
 ]
 
 [project.urls]

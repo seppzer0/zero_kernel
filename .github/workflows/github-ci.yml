@@ -30,16 +30,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
+      - name: Install uv
+        run: |
+          uv_version=$(cat ./requirement-uv.txt | awk -F'==' '{print $2}' | tr -d ' \n')
+          curl -LsSf https://astral.sh/uv/${uv_version}/install.sh | sh
+
+      - name: Record original PATH
+        id: record_original_path
+        run: echo "PATH_ORIGINAL=$PATH" >> $GITHUB_OUTPUT
 
       - name: Activate .venv
         run: |
-          python3 -m pip install -r requirement-uv.txt
           uv sync --frozen --no-install-project
-          source .venv/bin/activate
+          . .venv/bin/activate
+          echo PATH=${GITHUB_WORKSPACE}/.venv/bin:$PATH >> $GITHUB_ENV
 
       - name: Build And Assemble
         run: |
@@ -56,7 +60,7 @@ jobs:
           if-no-files-found: "error"
 
       - name: Deactivate .venv
-        run: deactivate
+        run: echo PATH=${{ steps.record_original_path.outputs.PATH_ORIGINAL }}
 
   release:
     runs-on: ubuntu-latest
