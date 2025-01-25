@@ -22,6 +22,9 @@ def parse_args() -> argparse.Namespace:
 
     Because of that, all of the arguments are technically optional.
     Making any of the arguments mandatory would not allow it to be dual-use.
+
+    :return: Namespace of arguments.
+    :rtype: argparse.Namespace
     """
     args = None if sys.argv[1:] else ["-h"]
 

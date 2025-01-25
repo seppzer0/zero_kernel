@@ -13,7 +13,14 @@ from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
 def __get_version() -> str:
-    """Get app version."""
+    """Get app version.
+
+    Version is retrieved depending on the way the app
+    is launched (as PIP package or from source).
+
+    :return: App version.
+    :rtype: str
+    """
     msg = "zero_kernel {}"
 
     try:
@@ -25,7 +32,11 @@ def __get_version() -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse the script arguments."""
+    """Parse the script arguments.
+
+    :return: Namespace of arguments.
+    :rtype: argparse.Namespace
+    """
     # show the 'help' message if no arguments supplied
     args = None if sys.argv[1:] else ["-h"]
 

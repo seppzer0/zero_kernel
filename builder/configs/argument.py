@@ -41,7 +41,10 @@ class ArgumentConfig(BaseModel):
     defconfig: Optional[Path] = None
 
     def check_settings(self) -> None:
-        """Run settings validations."""
+        """Run settings validations.
+
+        :return: None
+        """
         # allow only asset colletion on a non-Linux machine
         if self.benv == "local" and self.command in {"kernel", "bundle"}:
             if not platform.system() == "Linux":

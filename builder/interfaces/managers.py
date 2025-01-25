@@ -6,20 +6,32 @@ class IResourceManager(ABC):
 
     @abstractmethod
     def read_data(self) -> None:
-        """Read data from all of the JSON files."""
+        """Read data from all of the JSON files.
+
+        :return: None
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def generate_paths(self) -> None:
-        """Generate paths with Path objects."""
+        """Generate paths with Path objects.
+
+        :return: None
+        """
         raise NotImplementedError()
-    
+
     @abstractmethod
     def download(self) -> None:
-        """Download files from URLs."""
+        """Download files from URLs.
+
+        :return: None
+        """
         raise NotImplementedError()
-    
+
     @abstractmethod
     def export_path(self) -> None:
-        """Export path to PATH."""
+        """Export path to PATH.
+
+        :return: None
+        """
         raise NotImplementedError()

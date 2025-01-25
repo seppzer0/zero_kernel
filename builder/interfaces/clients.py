@@ -6,10 +6,18 @@ class IRomApiClient(ABC):
 
     @abstractmethod
     def map_codename(self) -> str:
-        """Map the device's codename to it's devicename."""
+        """Map the device's codename to it's devicename.
+
+        :return: Mapped device codename for the ROM.
+        :rtype: str
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def run(self) -> str:
-        """Execute the API interaction logic."""
+        """Execute the API interaction logic.
+
+        :return: API response content.
+        :rtype: str
+        """
         raise NotImplementedError()

@@ -21,17 +21,31 @@ class GithubApiClient(BaseModel):
 
     @property
     def endpoint(self) -> str:
+        """Formatted endpoint.
+
+        :return: GitHub API endpoint for specified project's latest release.
+        :rtype: str
+        """
         return f"https://api.github.com/repos/{self.project}/releases/latest"
 
     @property
     def direct_url(self) -> str:
+        """Direct URL to GitHub project.
+
+        :return: URL to GitHub project.
+        :rtype: str
+        """
         return f"https://github.com/{self.project}"
 
     def run(self) -> str | None:
-        """Get the latest version of an artifact from GitHub project."""
+        """Get the latest version of an artifact from GitHub project.
+
+        :return: URL to download release artifact from if applicable.
+        :rtype: str | None
+        """
         response = requests.get(self.endpoint).json()
 
-        # this will check whether the GitHub API usage is exceeded
+        # check whether the GitHub API usage is exceeded
         try:
             data = response["message"]
             if "API rate limit" in data:

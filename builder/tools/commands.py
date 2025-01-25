@@ -16,6 +16,8 @@ def launch(
     :param str cmd: Command to launch.
     :param Optional[bool]=False get_output: Switch to get the piped output of the command.
     :param str loglvl: Log level.
+    :return: Result of command launch.
+    :rtype: str | CompletedProcess | None
     """
     # determine stdout and check some of the cases
     cstdout = subprocess.DEVNULL if loglvl == "quiet" else os.getenv("OSTREAM", None)

@@ -18,6 +18,7 @@ def note(text: str) -> None:
     """Wrap a "note" message.
 
     :param str text: Text to wrap.
+    :return: None
     """
     print(f"[ * ] {text}")
 
@@ -28,6 +29,7 @@ def error(text: str, dont_exit: bool = False) -> None:
     Includes system exit with an error code.
 
     :param str text: Text to wrap.
+    :return: None
     """
     print(f"[ ! ] {text}", file=sys.stderr)
 
@@ -39,6 +41,7 @@ def cancel(text: str) -> None:
     """Wrap a "cancel" message.
 
     :param str text: Text to wrap.
+    :return: None
     """
     print(f"[ ~ ] {text}")
     sys.exit(0)
@@ -48,6 +51,7 @@ def done(text: str) -> None:
     """Wrap a "done" message.
 
     :param str text: Text to wrap.
+    :return: None
     """
     print(f"[ \u2713 ] {text}")
 

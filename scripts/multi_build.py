@@ -10,7 +10,11 @@ from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse arguments."""
+    """Parse arguments.
+
+    :return: Namespace of arguments.
+    :rtype: argparse.Namespace
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--env",
@@ -26,6 +30,7 @@ def rmove(src: Path, dst: Path) -> None:
 
     :param Path src: Source path.
     :param Path dst: Destination path.
+    :return: None
     """
     # for a directory
     if src.is_dir():
@@ -47,7 +52,6 @@ def rmove(src: Path, dst: Path) -> None:
 
 
 def main(args: argparse.Namespace) -> None:
-    """Run multi build."""
     rootpath = Path(__file__).absolute().parents[1]
     argsets = (
         {

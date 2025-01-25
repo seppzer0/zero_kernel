@@ -7,7 +7,10 @@ class ICommand(ABC):
 
     @abstractmethod
     def execute(self) -> None:
-        """Execute command's logic."""
+        """Execute command's logic.
+
+        :return: None
+        """
         raise NotImplementedError()
 
 
@@ -20,6 +23,7 @@ class IBundleCommand(ABC):
 
         :param str rom_name: Name of the ROM.
         :param bool clean_only: Append an argument to just clean the kernel directory.
+        :return: None
         """
         raise NotImplementedError()
 
@@ -29,12 +33,16 @@ class IBundleCommand(ABC):
 
         :param str rom_name: Name of the ROM.
         :param Literal["full","minimal"] chroot: Type of chroot.
+        :return: None
         """
         raise NotImplementedError()
 
     @abstractmethod
     def conan_sources(self) -> None:
-        """Prepare sources for rebuildable Conan packages."""
+        """Prepare sources for rebuildable Conan packages.
+
+        :return: None
+        """
         raise NotImplementedError()
 
     @staticmethod
@@ -43,6 +51,8 @@ class IBundleCommand(ABC):
         """Read Conan options from a JSON file.
 
         :param str json_file: Name of the JSON file to read data from.
+        :return: Parsed Conan options.
+        :rtype: dict
         """
         raise NotImplementedError()
 
@@ -52,6 +62,7 @@ class IBundleCommand(ABC):
 
         :param tuple[str,...] options: Conan options.
         :param str reference: Conan reference.
+        :return: None
         """
         raise NotImplementedError()
 
@@ -61,5 +72,6 @@ class IBundleCommand(ABC):
         """Upload Conan component to the remote.
 
         :param str reference: Conan reference.
+        :return: None
         """
         raise NotImplementedError()

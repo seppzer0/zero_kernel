@@ -16,6 +16,7 @@ def remove(elements: str | Path | list[Path | str]) -> None:
     Because of such specific as directories starting with a "." (e.g., .github).
 
     :param str/Path/list[Path] elements: Files and/or directories to remove.
+    :return: None
     """
     # if a given argument is a string --> convert it into a one-element list
     if isinstance(elements, str) or isinstance(elements, Path):

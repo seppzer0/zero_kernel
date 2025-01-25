@@ -37,7 +37,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @property
     def _ucodename(self) -> str:
-        """Define unified codename for devices series with same kernels."""
+        """Define unified codename for devices series with same kernels.
+
+        :return: Unified codename.
+        :rtype: str
+        """
         if self.codename in ("dumpling", "cheeseburger"):
             return "dumplinger"
         elif "guacamole" in self.codename:
@@ -47,7 +51,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @property
     def _defconfig(self) -> Path:
-        """Define defconfig."""
+        """Define defconfig.
+
+        :return: Path to defconfig.
+        :rtype: Path
+        """
         # return custom defconfig if it is specified
         if self.defconfig:
             return Path(self.defconfig.name)
@@ -314,7 +322,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         )
 
     def update_defconfig(self) -> None:
-        """Update defconfig file."""
         defconfig = self.rmanager.paths[self.codename] /\
                     "arch" /\
                     "arm64" /\
@@ -579,7 +586,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     @property
     def _lkv_src(self) -> str:
-        """Linux kernel version in kernel source."""
+        """Linux kernel version in kernel source.
+
+        :return: Linux kernel version found in sources.
+        :rtype: str
+        """
         data = ""
         version = []
 
