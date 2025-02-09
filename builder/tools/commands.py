@@ -1,9 +1,12 @@
 import os
+import sys
 import subprocess
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
-from builder.tools import messages as msg
+from builder.tools import Logger
+
+log = Logger().get_logger()
 
 
 def launch(
@@ -28,7 +31,8 @@ def launch(
     if isinstance(cstdout, str):
         cstdout = open(cstdout, "a")
     if loglvl == "quiet" and os.getenv("OSTREAM"):
-        msg.error("Cannot run 'quiet' build with file logging")
+        log.error("Cannot run 'quiet' build with file logging")
+        sys.exit(1)
 
     try:
         result = subprocess.run(cmd, shell=True, check=True, stdout=cstdout, stderr=subprocess.STDOUT)
@@ -40,4 +44,5 @@ def launch(
             return result
 
     except Exception as e:
-        msg.error(f"Error executing command: {cmd} -> {e}")
+        log.error(f"Error executing command: {cmd} -> {e}")
+        sys.exit(1)

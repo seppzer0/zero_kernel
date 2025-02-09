@@ -1,11 +1,15 @@
 import os
+import sys
 from typing import Literal
 from pydantic import BaseModel
 
-from builder.tools import cleaning as cm, fileoperations as fo, messages as msg
+from builder.tools import Logger, cleaning as cm, fileoperations as fo
 from builder.clients import GithubApiClient, LineageOsApiClient, ParanoidAndroidApiClient
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
+
+
+log = Logger().get_logger()
 
 
 class AssetsCollector(BaseModel, IAssetsCollector):
@@ -49,7 +53,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
             else:
                 # add DFD alongside the ROM
                 print("\n", end="")
-                msg.done("ROM-only asset collection specified")
+                log.info("ROM-only asset collection specified")
                 return [self.rom_collector_dto.run(), dfd]
 
         # process the full download
@@ -114,20 +118,21 @@ class AssetsCollector(BaseModel, IAssetsCollector):
 
                 match ans:
                     case "y":
-                        msg.note("Cleaning 'assets' directory..")
+                        log.warning("Cleaning 'assets' directory..")
                         os.chdir(dcfg.assets)
                         cm.remove("./*")
                         os.chdir(dcfg.root)
-                        msg.done("Done!")
+                        log.info("Done!")
                     case "n":
-                        msg.cancel("Cancelling asset download.")
+                        log.cancel("Cancelling asset download.")
                     case _:
-                        msg.error("Invalid option selected.")
+                        log.error("Invalid option selected.")
+                        sys.exit(1)
 
         print("\n", end="")
 
     def run(self) -> None:
-        msg.banner("zero asset collector")
+        log.banner("zero asset collector")
 
         os.chdir(dcfg.root)
         self._check()
@@ -143,5 +148,5 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                     fo.download(e)
 
         print("\n", end="")
-        msg.done("Assets collected!")
+        log.info("Assets collected!")
         os.chdir(dcfg.root)

@@ -5,10 +5,13 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
+from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
 from builder.configs import DirectoryConfig as dcfg
 from builder.managers import ResourceManager
 from builder.interfaces import IKernelBuilder
+
+
+log = Logger().get_logger()
 
 
 class KernelBuilder(BaseModel, IKernelBuilder):
@@ -80,7 +83,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     def clean_build(self) -> None:
         print("\n", end="")
-        msg.note("Cleaning the build environment..")
+        log.warning("Cleaning the build environment..")
 
         cm.git(self.rmanager.paths[self.codename])
         cm.git(self.rmanager.paths["AnyKernel3"])
@@ -90,10 +93,10 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             if fn == "localversion" or fn.endswith(".zip"):
                 cm.remove(fn)
 
-        msg.done("Done!")
+        log.info("Done!")
 
     def patch_strict_prototypes(self) -> None:
-        msg.note("Patching sources for Clang 15+ compatibility..")
+        log.warning("Patching sources for Clang 15+ compatibility..")
 
         data = {
             self.rmanager.paths[self.codename] /\
@@ -262,7 +265,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             with open(fname, "w") as f:
                 f.write(contents)
 
-        msg.done("Done!")
+        log.info("Done!")
 
     def patch_anykernel3(self) -> None:
         cm.remove(self.rmanager.paths["AnyKernel3"] / "ramdisk")
@@ -361,7 +364,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     def patch_rtl8812au(self) -> None:
         # copy RTL8812AU sources into kernel sources
-        msg.note("Adding RTL8812AU drivers into the kernel..")
+        log.warning("Adding RTL8812AU drivers into the kernel..")
         fo.ucopy(
             self.rmanager.paths["rtl8812au"],
             self.rmanager.paths[self.codename] /\
@@ -406,7 +409,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         )
 
     def patch_ksu(self) -> None:
-        msg.note("Adding KernelSU into the kernel..")
+        log.warning("Adding KernelSU into the kernel..")
 
         # extract KSU version manually and include it via symlink
         goback = Path.cwd()
@@ -524,7 +527,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         self.patch_rtl8812au()
 
         if self.defconfig:
-            msg.note("Custom defconfig provided, copying..")
+            log.warning("Custom defconfig provided, copying..")
             fo.ucopy(
                 self.defconfig,
                 self.rmanager.paths[self.codename] /\
@@ -536,11 +539,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         else:
             self.update_defconfig()
 
-        msg.done("Patches added!")
+        log.info("Patches added!")
 
     def build(self) -> None:
         print("\n", end="")
-        msg.note("Launching the build..")
+        log.warning("Launching the build..")
 
         os.chdir(self.rmanager.paths[self.codename])
 
@@ -582,7 +585,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         mins = secs // 60
         secs %= 60
 
-        msg.done("Done! Time spent for the build: %02d:%02d:%02d" % (hours, mins, secs))
+        log.info("Done! Time spent for the build: %02d:%02d:%02d" % (hours, mins, secs))
 
     @property
     def _lkv_src(self) -> str:
@@ -612,7 +615,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     def create_zip(self) -> None:
         print("\n", end="")
-        msg.note("Forming final ZIP file..")
+        log.warning("Forming final ZIP file..")
 
         fo.ucopy(
             self.rmanager.paths[self.codename] /\
@@ -643,12 +646,12 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         ccmd.launch(cmd)
         os.chdir(dcfg.root)
 
-        msg.done("Done!")
+        log.info("Done!")
 
     def run(self) -> None:
         os.chdir(dcfg.root)
-        msg.banner("zero kernel builder")
-        msg.note("Setting up tools and links..")
+        log.banner("zero kernel builder")
+        log.warning("Setting up tools and links..")
 
         self.rmanager.read_data()
         self.rmanager.generate_paths()
@@ -660,10 +663,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
             sys.exit(0)
 
         self.write_localversion()
-        msg.done("Done! Tools are configured!")
+        log.info("Done! Tools are configured!")
 
         if self.lkv != self._lkv_src:
-            msg.error("Linux kernel version in sources is different what was specified in arguments")
+            log.error("Linux kernel version in sources is different what was specified in arguments")
+            sys.exit(1)
 
         self.patch_all()
         self.build()

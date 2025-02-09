@@ -7,10 +7,13 @@ from pydantic import BaseModel
 from typing import Literal, Optional
 
 from builder.core import KernelBuilder, AssetsCollector
-from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
+from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
 from builder.configs import DirectoryConfig as dcfg
 from builder.managers import ResourceManager
 from builder.interfaces import ICommand, IBundleCommand
+
+
+log = Logger().get_logger()
 
 
 class BundleCommand(BaseModel, ICommand, IBundleCommand):
@@ -60,7 +63,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
 
     def conan_sources(self) -> None:
         print("\n", end="")
-        msg.note("Copying sources for Conan packaging..")
+        log.warning("Copying sources for Conan packaging..")
 
         sourcedir = dcfg.root / "source"
         cm.remove(str(sourcedir))
@@ -82,7 +85,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
             )
         )
 
-        msg.done("Done!")
+        log.info("Done!")
 
     @staticmethod
     def conan_options(json_file: str) -> dict:

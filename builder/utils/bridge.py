@@ -8,9 +8,12 @@ Complete chain is: builder in host -> this bridge -> builder in container.
 import sys
 import argparse
 
-from builder.tools import messages as msg
+from builder.tools import Logger
 from builder.managers import ResourceManager
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
+
+
+log = Logger().get_logger()
 
 
 def parse_args() -> argparse.Namespace:
@@ -140,7 +143,8 @@ def main(args: argparse.Namespace) -> None:
 
             else:
                 # technically this part of code cannot be reached and is just an extra precaution
-                msg.error("Invalid argument set specified, please review")
+                log.error("Invalid argument set specified, please review")
+                sys.exit(1)
 
 
 if __name__ == "__main__":

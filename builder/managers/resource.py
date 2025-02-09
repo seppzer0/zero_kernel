@@ -1,13 +1,17 @@
 import os
+import sys
 import json
 import tarfile
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from builder.tools import cleaning as cm, commands as ccmd, fileoperations as fo, messages as msg
+from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IResourceManager
+
+
+log = Logger().get_logger()
 
 
 class ResourceManager(BaseModel, IResourceManager):
@@ -46,7 +50,8 @@ class ResourceManager(BaseModel, IResourceManager):
                 try:
                     data[self.codename][self.lkv][self.base]
                 except Exception:
-                    msg.error("Arguments were specified for an unsupported build, exiting..")
+                    log.error("Arguments were specified for an unsupported build, exiting..")
+                    sys.exit(1)
                 device = {self.codename: data[self.codename][self.lkv][self.base]}
 
             # join tools and devices manifests
@@ -54,7 +59,7 @@ class ResourceManager(BaseModel, IResourceManager):
 
         else:
             self._data = tools
-            msg.note("Only shared tools are installed.")
+            log.warning("Only shared tools are installed.")
 
     def generate_paths(self) -> None:
         for e in self._data:
@@ -80,17 +85,17 @@ class ResourceManager(BaseModel, IResourceManager):
                         if fn not in os.listdir() and dn not in os.listdir():
                             fo.download(url)
 
-                        msg.note(f"Unpacking {fn}..")
+                        log.warning(f"Unpacking {fn}..")
 
                         with tarfile.open(fn) as f:
                             f.extractall(path)
 
                         cm.remove(fn)
 
-                        msg.done("Done!")
+                        log.info("Done!")
 
                     else:
-                        msg.note(f"Found an existing path: {path}")
+                        log.warning(f"Found an existing path: {path}")
 
                 case "git":
                     # break data into individual vars
@@ -114,10 +119,11 @@ class ResourceManager(BaseModel, IResourceManager):
                             ccmd.launch(cmd)
                             os.chdir(dcfg.root)
                     else:
-                        msg.note(f"Found an existing path: {path}")
+                        log.warning(f"Found an existing path: {path}")
 
                 case _:
-                    msg.error("Invalid resource type detected. Use only: generic, git.")
+                    log.error("Invalid resource type detected. Use only: generic, git.")
+                    sys.exit(1)
 
     def export_path(self) -> None:
         for elem in self.paths:

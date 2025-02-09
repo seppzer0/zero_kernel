@@ -1,13 +1,17 @@
 import os
+import sys
 import shutil
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
-from builder.tools import commands as ccmd, messages as msg
+from builder.tools import Logger, commands as ccmd
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IGenericContainerEngine
+
+
+log = Logger().get_logger()
 
 
 class GenericContainerEngine(BaseModel, IGenericContainerEngine):
@@ -140,7 +144,8 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
                         if self.dir_bundle_conan.is_dir():
                             options.append(f'-v {self.dir_bundle_conan}:/"/root/.conan"')
                         else:
-                            msg.error("Could not find Conan local cache on the host machine.")
+                            log.error("Could not find Conan local cache on the host machine.")
+                            sys.exit(1)
 
         return options
 
@@ -160,7 +165,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
 
     def build_image(self) -> str | None | CompletedProcess:
         print("\n")
-        msg.note(f"Building the {self.benv.capitalize()} image..")
+        log.warning(f"Building the {self.benv.capitalize()} image..")
 
         os.chdir(self._wdir_local)
         # NOTE: this will crash in GitLab CI/CD (Docker-in-Docker), requires a workaround
@@ -171,7 +176,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         )
 
         res = ccmd.launch(cmd)
-        msg.done("Done!")
+        log.info("Done!")
         print("\n")
 
         return res
@@ -194,7 +199,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
         if not self.check_cache():
             self.build_image()
         else:
-            msg.note(f"\n{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
+            log.warning(f"{self.benv.capitalize()} image already in local cache, skipping it's build..\n")
 
         self.create_dirs()
         return self.get_container_cmd

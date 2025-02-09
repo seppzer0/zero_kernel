@@ -1,12 +1,16 @@
 import os
+import sys
 import shutil
 import requests
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from builder.tools import cleaning as cm, commands as ccmd, messages as msg
+from builder.tools import Logger, cleaning as cm, commands as ccmd
 from builder.configs import DirectoryConfig as dcfg
+
+
+log = Logger().get_logger()
 
 
 class GithubApiClient(BaseModel):
@@ -49,10 +53,7 @@ class GithubApiClient(BaseModel):
         try:
             data = response["message"]
             if "API rate limit" in data:
-                msg.error(
-                    "GitHub API call rate was exceeded, try a bit later.",
-                    dont_exit=True
-                )
+                log.error("GitHub API call rate was exceeded, try a bit later.")
         except Exception:
             pass
 
@@ -68,16 +69,17 @@ class GithubApiClient(BaseModel):
 
             # if there is more than one fitting response -- throw an error
             if len(browser_download_urls) > 1:
-                msg.error(
+                log.error(
                     "Found more than one suitable assets for the given parameters.\n"\
                     "      Please adjust the file filter."
                 )
+                sys.exit(1)
             else:
                 data = "".join(browser_download_urls)
 
         except Exception:
             # if not available via API -- use regular "git clone"
-            msg.note(f"Non-API GitHub resolution for {self.project}")
+            log.warning(f"Non-API GitHub resolution for {self.project}")
 
             rdir = Path(dcfg.assets, self.direct_url.rsplit("/", 1)[1])
 

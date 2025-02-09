@@ -1,10 +1,14 @@
 import os
+import sys
 import shutil
 import requests
 from pathlib import Path
 from typing import Optional
 
-from builder.tools import commands as ccmd, messages as msg
+from builder.tools import Logger, commands as ccmd
+
+
+log = Logger().get_logger()
 
 
 def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = ()) -> None:
@@ -45,12 +49,11 @@ def download(url: str) -> None:
     """
     fn = url.split("/")[-1]
 
-    msg.note(f"Downloading {fn} ..")
-    print(f"      URL: {url}")
+    log.info(f"Downloading {fn} ..\n      URL: {url}")
 
     try:
         if "sourceforge" in url:
-            msg.note("Sorceforge URL detected, using wget..")
+            log.warning("Sorceforge URL detected, using wget..")
 
             fn = url.split("/download")[0].split("/")[-1]
             ccmd.launch(f"wget -O {fn} {url}")
@@ -64,9 +67,10 @@ def download(url: str) -> None:
                         f.write(chunk)
 
     except Exception as e:
-        msg.error(f"Download failed: {e}")
+        log.error(f"Download failed: {e}")
+        sys.exit(1)
 
-    msg.done("Done!")
+    log.info("Done!")
 
 
 def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str, ...]) -> None:
@@ -84,7 +88,7 @@ def replace_lines(filename: Path, og_lines: tuple[str, ...], nw_lines: tuple[str
             for line in data:
                 for indx, key in enumerate(og_lines):
                     if key in line:
-                        msg.note(f"Replacing {key} with {nw_lines[indx]}")
+                        log.warning(f"Replacing {key} with {nw_lines[indx]}")
                         line = line.replace(key, nw_lines[indx])
                 new_data.write(line)
 
@@ -109,7 +113,7 @@ def replace_nth(filename: Path, og_string: str, nw_string: str, occurence: int) 
                 if og_string in line:
                     counter += 1
                     if counter == occurence:
-                        msg.note(f"Replacing {og_string} with {nw_string}")
+                        log.warning(f"Replacing {og_string} with {nw_string}")
                         line = line.replace(og_string, nw_string)
                 new_data.write(line)
 
@@ -147,7 +151,7 @@ def apply_patch(filename: str | Path) -> None:
     :param str/Path filename: Name of the .patch file.
     :return: None
     """
-    msg.note(f"Applying patch: {filename}")
+    log.warning(f"Applying patch: {filename}")
 
     ccmd.launch(f"patch -p1 -s --no-backup-if-mismatch -i {filename}")
     os.remove(filename)

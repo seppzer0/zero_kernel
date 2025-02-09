@@ -1,8 +1,11 @@
 import requests
 from pydantic import BaseModel
 
-from builder.tools import messages as msg
+from builder.tools import Logger
 from builder.interfaces import IRomApiClient
+
+
+log = Logger().get_logger()
 
 
 class RomApiClient(BaseModel, IRomApiClient):
@@ -35,9 +38,6 @@ class RomApiClient(BaseModel, IRomApiClient):
             data = data.json()[self.json_key][0]["url"]
         except Exception:
             exit_flag = False if self.rom_only else True
-            msg.error(
-                f"Could not connect to {self.rom_name} API, HTTP status code: {data.status_code}",
-                dont_exit=exit_flag
-            )
+            log.error(f"Could not connect to {self.rom_name} API, HTTP status code: {data.status_code}")
 
         return str(data)
