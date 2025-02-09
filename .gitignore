@@ -5,6 +5,7 @@ __pycache__
 .coverage
 .pytest_cache
 .ruff_cache
+.ropeproject
 
 # git subrepos
 /android_*

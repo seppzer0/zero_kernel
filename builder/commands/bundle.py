@@ -79,6 +79,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 ".coverage",
                 ".pytest_cache",
                 ".ruff_cache",
+                ".ropeproject",
                 "source",
                 "localversion",
                 "conanfile.py"
