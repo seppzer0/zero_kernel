@@ -1,5 +1,6 @@
 # basic
 __pycache__
+/dist
 .venv
 .vscode
 .coverage
