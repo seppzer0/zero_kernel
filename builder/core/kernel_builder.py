@@ -411,15 +411,16 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     def patch_ksu(self) -> None:
         log.warning("Adding KernelSU into the kernel..")
 
+        patch_name = "kernelsu-compat.patch"
+
         fo.ucopy(
             dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
             self.rmanager.paths[self.codename],
-            ("kernelsu-compat.patch",)
+            (patch_name,)
         )
-        os.chdir(self.rmanager.paths[self.codename])
+        fo.apply_patch(self.rmanager.paths[self.codename] / patch_name)
 
-        for pf in Path.cwd().glob("*.patch"):
-            fo.apply_patch(pf)
+        os.chdir(self.rmanager.paths[self.codename])
 
         # extract KSU version manually and include it via symlink
         goback = Path.cwd()
@@ -463,16 +464,16 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         os.chdir(goback)
 
     def patch_qcacld(self) -> None:
-        # apply .patch files
+        patch_name = "qcacld_pa.patch"
+
         fo.ucopy(
             dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
             self.rmanager.paths[self.codename],
             ("qcacld_pa.patch",)
         )
-        os.chdir(self.rmanager.paths[self.codename])
+        fo.apply_patch(self.rmanager.paths[self.codename] / patch_name)
 
-        for pf in Path.cwd().glob("*.patch"):
-            fo.apply_patch(pf)
+        os.chdir(self.rmanager.paths[self.codename])
 
         goback = Path.cwd()
 
