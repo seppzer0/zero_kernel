@@ -31,5 +31,12 @@
         "url": "https://github.com/tiann/KernelSU",
         "branch": "v0.9.5",
         "commit": ""
+    },
+    "rtw88": {
+        "type": "git",
+        "path": "rtw88",
+        "url": "https://github.com/lwfinger/rtw88",
+        "branch": "master",
+        "commit": "9fee632"
     }
 }

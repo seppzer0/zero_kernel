@@ -333,7 +333,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         # base changes (Wi-Fi + RTL8812AU)
         extra_configs = [
-                "CONFIG_88XXAU=y",
+                #"CONFIG_88XXAU=y",
                 "CONFIG_MODULE_FORCE_LOAD=y",
                 "CONFIG_MODULE_FORCE_UNLOAD=y",
                 "CONFIG_CFG80211_WEXT=y",
@@ -411,6 +411,16 @@ class KernelBuilder(BaseModel, IKernelBuilder):
     def patch_ksu(self) -> None:
         log.warning("Adding KernelSU into the kernel..")
 
+        fo.ucopy(
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
+            self.rmanager.paths[self.codename],
+            ("kernelsu-compat.patch",)
+        )
+        os.chdir(self.rmanager.paths[self.codename])
+
+        for pf in Path.cwd().glob("*.patch"):
+            fo.apply_patch(pf)
+
         # extract KSU version manually and include it via symlink
         goback = Path.cwd()
         os.chdir(self.rmanager.paths["KernelSU"])
@@ -453,6 +463,17 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         os.chdir(goback)
 
     def patch_qcacld(self) -> None:
+        # apply .patch files
+        fo.ucopy(
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
+            self.rmanager.paths[self.codename],
+            ("qcacld_pa.patch",)
+        )
+        os.chdir(self.rmanager.paths[self.codename])
+
+        for pf in Path.cwd().glob("*.patch"):
+            fo.apply_patch(pf)
+
         goback = Path.cwd()
 
         fo.ucopy(
@@ -487,17 +508,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         if int(clang_ver) >= 15:
             self.patch_strict_prototypes()
 
-        # apply .patch files
-        fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
-            self.rmanager.paths[self.codename],
-            ("kernelsu-compat.patch", "qcacld_pa.patch")
-        )
-        os.chdir(self.rmanager.paths[self.codename])
-
-        for pf in Path.cwd().glob("*.patch"):
-            fo.apply_patch(pf)
-
         # add support for CONFIG_MAC80211 kernel option
         data = ""
         files = ("tx.c", "mlme.c")
@@ -524,7 +534,8 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         if self.ksu:
             self.patch_ksu()
 
-        self.patch_rtl8812au()
+        # NOTE: Disabled in favour of new drivers from rtw88
+        #self.patch_rtl8812au()
 
         if self.defconfig:
             log.warning("Custom defconfig provided, copying..")
