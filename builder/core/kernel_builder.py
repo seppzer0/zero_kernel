@@ -413,15 +413,6 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         patch_name = "kernelsu-compat.patch"
 
-        fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
-            self.rmanager.paths[self.codename],
-            (patch_name,)
-        )
-        fo.apply_patch(self.rmanager.paths[self.codename] / patch_name)
-
-        os.chdir(self.rmanager.paths[self.codename])
-
         # extract KSU version manually and include it via symlink
         goback = Path.cwd()
         os.chdir(self.rmanager.paths["KernelSU"])
@@ -456,34 +447,25 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # either patch kernel or KernelSU sources, depending on Linux kernel version
         target_d = dcfg.root / "KernelSU" if self._lkv_src == "4.14" else self.rmanager.paths[self.codename]
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "kernelsu-compat.patch",
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / patch_name,
             target_d
         )
         os.chdir(target_d)
-        fo.apply_patch("kernelsu-compat.patch")
+        fo.apply_patch(patch_name)
         os.chdir(goback)
 
     def patch_qcacld(self) -> None:
         patch_name = "qcacld_pa.patch"
 
-        fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
-            self.rmanager.paths[self.codename],
-            ("qcacld_pa.patch",)
-        )
-        fo.apply_patch(self.rmanager.paths[self.codename] / patch_name)
-
-        os.chdir(self.rmanager.paths[self.codename])
-
         goback = Path.cwd()
 
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / "qcacld_pa.patch",
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src / patch_name,
             self.rmanager.paths[self.codename]
         )
         os.chdir(self.rmanager.paths[self.codename])
 
-        fo.apply_patch("qcacld_pa.patch")
+        fo.apply_patch(patch_name)
         os.chdir(goback)
 
     def patch_ioctl(self) -> None:
@@ -508,6 +490,17 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         if int(clang_ver) >= 15:
             self.patch_strict_prototypes()
+
+        # apply .patch files
+        fo.ucopy(
+            dcfg.root / "builder" / "modifications" / self._ucodename / self._lkv_src,
+            self.rmanager.paths[self.codename],
+            ("kernelsu-compat.patch", "qcacld_pa.patch")
+        )
+        os.chdir(self.rmanager.paths[self.codename])
+
+        for pf in Path.cwd().glob("*.patch"):
+            fo.apply_patch(pf)
 
         # add support for CONFIG_MAC80211 kernel option
         data = ""
