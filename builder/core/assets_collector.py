@@ -3,7 +3,7 @@ import sys
 from typing import Literal
 from pydantic import BaseModel
 
-from builder.tools import Logger, cleaning as cm, fileoperations as fo
+from builder.tools import Logger, cleaning as cm, fileoperations as fo, banner
 from builder.clients import GithubApiClient, LineageOsApiClient, ParanoidAndroidApiClient
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
@@ -132,7 +132,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         print("\n", end="")
 
     def run(self) -> None:
-        log.banner("zero asset collector")
+        banner.print_banner("zero asset collector")
 
         os.chdir(dcfg.root)
         self._check()

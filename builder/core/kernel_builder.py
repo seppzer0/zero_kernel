@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
+from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo, banner
 from builder.configs import DirectoryConfig as dcfg
 from builder.managers import ResourceManager
 from builder.interfaces import IKernelBuilder
@@ -512,11 +512,17 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         data = ""
         files = ("tx.c", "mlme.c")
 
+        os.chdir(self.rmanager.paths[self.codename])
+
         for fn in files:
-            with open(Path("net", "mac80211", fn), "r", encoding="utf-8") as f:
-                data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
-            with open(Path("net", "mac80211", fn), "w", encoding="utf-8") as f:
-                f.write(data)
+            f_path = self.rmanager.paths[self.codename] / "net" / "mac80211" / fn
+            if f_path.is_file():
+                with open(f_path, "r", encoding="utf-8") as f:
+                    data = f.read().replace("case IEEE80211_BAND_60GHZ:", "case NL80211_BAND_60GHZ:")
+                with open(f_path, "w", encoding="utf-8") as f:
+                    f.write(data)
+            else:
+                log.warning(f"Modification of {str(f_path)} is skipped")
 
         # some patches only for ParanoidAndroid
         if self.base == "pa":
@@ -661,7 +667,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
     def run(self) -> None:
         os.chdir(dcfg.root)
-        log.banner("zero kernel builder")
+        banner.print_banner("zero kernel builder")
         log.warning("Setting up tools and links..")
 
         self.rmanager.read_data()
