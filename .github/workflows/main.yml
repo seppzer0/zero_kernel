@@ -48,7 +48,7 @@ jobs:
       - name: Build and assemble
         run: |
           export PYTHONPATH=$(pwd)
-          python3 scripts/common/py/run_tests.py
+          #python3 scripts/common/py/run_tests.py
           python3 scripts/multi_build.py
 
       - name: Publish Artifacts

@@ -16,6 +16,7 @@ class Colours:
 
 
 class Logger:
+    """Singleton logger."""
     _instance = None
     _lock = threading.Lock()
 
