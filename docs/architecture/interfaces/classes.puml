@@ -39,6 +39,7 @@ interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
   {abstract}patch_rtl8812au_source_mod_v5642() -> None
   {abstract}patch_strict_prototypes() -> None
   {abstract}run() -> None
+  {abstract}update_defconfig() -> None
   {abstract}write_localversion() -> None
 }
 interface "IResourceManager" as interfaces.managers.IResourceManager {

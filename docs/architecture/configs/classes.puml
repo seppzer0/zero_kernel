@@ -4,17 +4,17 @@ class "ArgumentConfig" as configs.argument.ArgumentConfig {
   base : str
   benv : Literal['docker', 'podman', 'local']
   chroot : Optional[str]
-  clean_assets : Optional[bool]
-  clean_image : Optional[bool]
-  clean_kernel : Optional[bool]
+  clean_assets : bool
+  clean_image : bool
+  clean_kernel : bool
   codename : str
   command : Literal['kernel', 'assets', 'bundle']
-  conan_upload : Optional[bool]
+  conan_upload : bool
   defconfig : Optional[Path]
-  ksu : Optional[bool]
+  ksu : bool
   lkv : Optional[str]
   package_type : Optional[str]
-  rom_only : Optional[bool]
+  rom_only : bool
   check_settings() -> None
 }
 class "DirectoryConfig" as configs.directory.DirectoryConfig {
