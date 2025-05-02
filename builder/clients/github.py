@@ -17,11 +17,11 @@ class GithubApiClient(BaseModel):
     """Client for limited interaction with GitHub API.
 
     :param str project: GitHub project name (owner/repo).
-    :param Optional[str]=None file_filter: A filter to select specific files from project's artifacts.
+    :param Optional[str] file_filter: A filter to select specific files from project's artifacts.
     """
 
     project: str
-    file_filter: Optional[str] = None
+    file_filter: Optional[str]
 
     @property
     def endpoint(self) -> str:

@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-from typing import Optional, Literal
+from typing import Literal
 from subprocess import CompletedProcess
 
 from builder.tools import Logger
@@ -11,13 +11,13 @@ log = Logger().get_logger()
 
 def launch(
         cmd: str,
-        get_output: Optional[bool] = False,
-        loglvl: Optional[Literal["normal", "quiet"]] = "normal"
+        get_output: bool = False,
+        loglvl: Literal["normal", "quiet"] = "normal"
     ) -> str | CompletedProcess | None:
     """Custom subprocess wrapper to launch commands.
 
     :param str cmd: Command to launch.
-    :param Optional[bool]=False get_output: Switch to get the piped output of the command.
+    :param bool=False get_output: Switch to get the piped output of the command.
     :param str loglvl: Log level.
     :return: Result of command launch.
     :rtype: str | CompletedProcess | None

@@ -17,18 +17,18 @@ log = Logger().get_logger()
 class ResourceManager(BaseModel, IResourceManager):
     """Build resource manager.
 
-    :param Optional[str]=None codename: Device codename.
-    :param Optional[str]=None base: Kernel source base.
-    :param Optional[str]=None lkv: Linux kernel version.
+    :param Optional[str] codename: Device codename.
+    :param Optional[str] base: Kernel source base.
+    :param Optional[str] lkv: Linux kernel version.
     """
 
     _data: dict[str, dict[str, str]] = {}
 
     paths: dict[str, Path] = {}
 
-    codename: Optional[str] = None
-    lkv: Optional[str] = None
-    base: Optional[str] = None
+    codename: Optional[str]
+    lkv: Optional[str]
+    base: Optional[str]
 
     def read_data(self) -> None:
         os.chdir(dcfg.root)

@@ -28,15 +28,15 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     :param str codename: Device codename.
     :param str base: Kernel source base.
     :param str lkv: Linux kernel version.
-    :param Optional[Literal["full","minimal"]]=None chroot: Chroot type.
-    :param Optional[bool]=False package_type: Package type.
-    :param Optional[bool]=False clean_kernel: Flag to clean folder for kernel storage.
-    :param Optional[bool]=False clean_assets: Flag to clean folder for assets storage.
-    :param Optional[bool]=False clean_image: Flag to clean a Docker/Podman image from local cache.
-    :param Optional[bool]=False rom_only: Flag indicating ROM-only asset collection.
-    :param Optional[bool]=False conan_upload: Flag to enable Conan upload.
-    :param Optional[bool]=False ksu: Flag to add KernelSU support into the kernel.
-    :param Optional[Path]=None defconfig: Path to custom defconfig.
+    :param Optional[Literal["full","minimal"]] chroot: Chroot type.
+    :param bool=False package_type: Package type.
+    :param bool=False clean_kernel: Flag to clean folder for kernel storage.
+    :param bool=False clean_assets: Flag to clean folder for assets storage.
+    :param bool=False clean_image: Flag to clean a Docker/Podman image from local cache.
+    :param bool=False rom_only: Flag indicating ROM-only asset collection.
+    :param bool=False conan_upload: Flag to enable Conan upload.
+    :param bool=False ksu: Flag to add KernelSU support into the kernel.
+    :param Optional[Path] defconfig: Path to custom defconfig.
     """
 
     _name_image: str = "zero-kernel-image"
@@ -48,16 +48,16 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     command: Literal["kernel", "assets", "bundle"]
     codename: str
     base: str
-    lkv: Optional[str] = None
-    chroot: Optional[Literal["full", "minimal"]] = None
-    package_type: Optional[str] = None
-    clean_kernel: Optional[bool] = False
-    clean_assets: Optional[bool] = False
-    clean_image: Optional[bool] = False
-    rom_only: Optional[bool] = False
-    conan_upload: Optional[bool] = False
-    ksu: Optional[bool] = False
-    defconfig: Optional[Path] = None
+    lkv: Optional[str]
+    chroot: Optional[Literal["full", "minimal"]]
+    package_type: Optional[str]
+    clean_kernel: bool = False
+    clean_assets: bool = False
+    clean_image: bool = False
+    rom_only: bool = False
+    conan_upload: bool = False
+    ksu: bool = False
+    defconfig: Optional[Path]
 
     @staticmethod
     def _force_buildkit() -> None:
