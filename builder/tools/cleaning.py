@@ -63,10 +63,10 @@ def git(directory: Path | str) -> None:
     os.chdir(goback)
 
 
-def root(extra: Optional[list[str]] = []) -> None:
+def root(extra: Optional[list[str]]) -> None:
     """Fully clean the root directory.
 
-    :param Optional[list[str]]=[] extra: Extra elements to be removed.
+    :param Optional[list[str]] extra: Extra elements to be removed.
     """
     trsh = [
         dcfg.kernel,
@@ -95,4 +95,5 @@ def root(extra: Optional[list[str]] = []) -> None:
 
     # clean, with __pycache__ always
     remove(trsh)
-    [remove(p) for p in Path(".").rglob("__pycache__")]
+    for p in Path(".").rglob("__pycache__"):
+        remove(p)

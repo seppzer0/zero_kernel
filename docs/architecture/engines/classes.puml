@@ -5,20 +5,20 @@ class "GenericContainerEngine" as engines.generic_container.GenericContainerEngi
   benv : Literal['docker', 'podman']
   builder_cmd
   chroot : Optional[Literal['full', 'minimal']]
-  clean_assets : Optional[bool]
-  clean_image : Optional[bool]
-  clean_kernel : Optional[bool]
+  clean_assets : bool
+  clean_image : bool
+  clean_kernel : bool
   codename : str
   command : Literal['kernel', 'assets', 'bundle']
-  conan_upload : Optional[bool]
+  conan_upload : bool
   container_options
   defconfig : Optional[Path]
   dir_bundle_conan
   get_container_cmd
-  ksu : Optional[bool]
+  ksu : bool
   lkv : Optional[str]
   package_type : Optional[str]
-  rom_only : Optional[bool]
+  rom_only : bool
   build_image() -> str | None | CompletedProcess
   check_cache() -> bool
   create_dirs() -> None

@@ -23,7 +23,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
     :param str lkv: Linux kernel version.
     :param str package_type: Package type.
     :param bool ksu: Flag indicating KernelSU support.
-    :param Optional[Path]=None defconfig: Path to custom defconfig.
+    :param Optional[Path] defconfig: Path to custom defconfig.
     """
 
     codename: str
@@ -31,7 +31,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
     lkv: str
     package_type: str
     ksu: bool
-    defconfig: Optional[Path] = None
+    defconfig: Optional[Path]
 
     def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
         if not dcfg.kernel.is_dir() or clean_only is True:

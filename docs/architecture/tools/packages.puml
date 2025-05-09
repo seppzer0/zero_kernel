@@ -2,12 +2,15 @@
 set namespaceSeparator none
 package "tools" as tools {
 }
+package "tools.banner" as tools.banner {
+}
 package "tools.cleaning" as tools.cleaning {
 }
 package "tools.commands" as tools.commands {
 }
 package "tools.fileoperations" as tools.fileoperations {
 }
-package "tools.messages" as tools.messages {
+package "tools.logger" as tools.logger {
 }
+tools --> tools.logger
 @enduml

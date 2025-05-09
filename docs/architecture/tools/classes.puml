@@ -1,3 +1,21 @@
 @startuml classes
 set namespaceSeparator none
+class "ColouredFormatter" as tools.logger.Logger._get_coloured_formatter.ColouredFormatter {
+  format(record)
+}
+class "Colours" as tools.logger.Colours {
+  BLUE : str
+  CYAN : str
+  GREEN : str
+  PURPLE : str
+  RED : str
+  RESET : str
+  WHITE : str
+  YELLOW : str
+}
+class "Logger" as tools.logger.Logger {
+  logger : NoneType, RootLogger
+  get_logger() -> logging.Logger
+  set_level(level) -> None
+}
 @enduml

@@ -15,7 +15,7 @@ class KernelCommand(BaseModel, ICommand):
     :param str lkv: Linux kernel version.
     :param bool clean_kernel: Flag to clean folder with kernel sources.
     :param bool ksu: Flag indicating KernelSU support.
-    :param Optional[Path]=None defconfig: Path to custom defconfig.
+    :param Optional[Path] defconfig: Path to custom defconfig.
     """
 
     codename: str
@@ -23,7 +23,7 @@ class KernelCommand(BaseModel, ICommand):
     lkv: str
     clean_kernel: bool
     ksu: bool
-    defconfig: Optional[Path] = None
+    defconfig: Optional[Path]
 
     def execute(self) -> None:
         # create resource manager and pass it to the builder
