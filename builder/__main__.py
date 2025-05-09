@@ -16,7 +16,7 @@ def __get_version() -> str:
     """Get app version.
 
     Version is retrieved depending on the way the app
-    is launched (as PIP package or from source).
+    is launched (as a package or from source).
 
     :return: App version.
     :rtype: str
