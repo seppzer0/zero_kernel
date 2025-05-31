@@ -17,7 +17,7 @@ class HookInstaller:
     """Manager of git hooks for the repository."""
 
     def __init__(self) -> None:
-        self.__hook_path = Path(__file__).absolute().parents[1] / ".git" / "hooks" / "pre-commit"
+        self.__path = Path(__file__).absolute().parents[1] / ".git" / "hooks" / "pre-commit"
 
     @property
     def hook(self) -> str:
@@ -45,9 +45,9 @@ class HookInstaller:
 
         :return: None
         """
-        with open(self.__hook_path, "w") as f:
+        with open(self.__path, "w") as f:
             f.write(self.hook)
-        os.chmod(self.__hook_path, 0o755)
+        os.chmod(self.__path, 0o755)
 
 
 def main() -> None:
