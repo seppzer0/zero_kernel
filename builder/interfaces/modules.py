@@ -6,10 +6,6 @@ from builder.clients import LineageOsApiClient, ParanoidAndroidApiClient
 class IKernelBuilder(ABC):
     """Interface for the kernel builder."""
 
-    @abstractmethod
-    def __init__(self, **kwargs) -> None:
-        raise NotImplementedError()
-
     @staticmethod
     @abstractmethod
     def write_localversion() -> None:

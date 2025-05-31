@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import logging
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
@@ -11,7 +12,7 @@ from builder.managers import ResourceManager
 from builder.interfaces import IKernelBuilder
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class KernelBuilder(BaseModel, IKernelBuilder):

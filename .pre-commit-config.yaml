@@ -1,0 +1,36 @@
+default_stages: [pre-commit]
+
+repos:
+-   repo: local
+    hooks:
+    -   id: ruff
+        name: Ruff
+        description: "Static analysts (SAST) via Ruff."
+        entry: ruff check
+        language: python
+        types_or: [python]
+        args: []
+        require_serial: true
+        additional_dependencies: []
+        minimum_pre_commit_version: "2.9.2"
+
+    -   id: pyright
+        name: Pyright
+        description: "Static typing check via Pyright."
+        entry: pyright
+        language: python
+        types_or: [python]
+        require_serial: true
+        additional_dependencies: []
+        minimum_pre_commit_version: "2.9.2"
+
+    -   id: pytest
+        name: Pytest
+        pass_filenames: false
+        description: "Unit testing via Pytest."
+        entry: pytest
+        language: python
+        types_or: [python]
+        require_serial: true
+        additional_dependencies: []
+        minimum_pre_commit_version: "2.9.2"

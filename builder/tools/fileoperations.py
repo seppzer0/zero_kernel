@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import logging
 import requests
 from pathlib import Path
 from typing import Optional
@@ -8,7 +9,7 @@ from typing import Optional
 from builder.tools import Logger, commands as ccmd
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 def ucopy(src: Path, dst: Path, exceptions: Optional[tuple[str | Path, ...]] = ()) -> None:

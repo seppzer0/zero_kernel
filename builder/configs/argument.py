@@ -1,5 +1,6 @@
 import sys
 import json
+import logging
 import platform
 from pathlib import Path
 from pydantic import BaseModel
@@ -8,7 +9,7 @@ from typing import Optional, Literal
 from builder.tools import Logger, commands as ccmd
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class ArgumentConfig(BaseModel):

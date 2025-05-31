@@ -1,11 +1,12 @@
 import requests
+import logging
 from pydantic import BaseModel
 
 from builder.tools import Logger
 from builder.interfaces import IRomApiClient
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class RomApiClient(BaseModel, IRomApiClient):

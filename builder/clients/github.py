@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import logging
 import requests
 from pathlib import Path
 from typing import Optional
@@ -10,7 +11,7 @@ from builder.tools import Logger, cleaning as cm, commands as ccmd
 from builder.configs import DirectoryConfig as dcfg
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class GithubApiClient(BaseModel):

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import tarfile
+import logging
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
@@ -11,7 +12,7 @@ from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IResourceManager
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class ResourceManager(BaseModel, IResourceManager):
