@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import logging
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, Literal
@@ -11,7 +12,7 @@ from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IGenericContainerEngine
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class GenericContainerEngine(BaseModel, IGenericContainerEngine):

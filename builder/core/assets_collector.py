@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 from typing import Literal
 from pydantic import BaseModel
 
@@ -9,7 +10,7 @@ from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class AssetsCollector(BaseModel, IAssetsCollector):
@@ -124,7 +125,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
                         os.chdir(dcfg.root)
                         log.info("Done!")
                     case "n":
-                        log.cancel("Cancelling asset download.")
+                        log.warning("Cancelling asset download.")
                     case _:
                         log.error("Invalid option selected.")
                         sys.exit(1)

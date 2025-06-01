@@ -1,6 +1,6 @@
 [project]
 name = "zero-kernel"
-version = "0.6.0"
+version = "0.6.1"
 description = "Advanced Android kernel builder with Kali NetHunter support."
 authors = [{name = "seppzer0"}]
 readme = "README.md"
@@ -45,6 +45,11 @@ dev-dependencies = [
     "pip",
 ]
 
+[[tool.uv.index]]
+name = "pypi"
+default = true
+url = "https://pypi.org/simple"
+
 [tool.coverage.run]
 source = [
     "builder/clients",
@@ -60,11 +65,13 @@ show_missing = true
 [tool.pyright]
 include = ["builder"]
 pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
 
 [tool.ruff]
-include = ["builder/**/*.py", "scripts/**/*.py"]
+include = ["builder/**/*.py"]
 indent-width = 4
-line-length = 120
+line-length = 125
 exclude = [
     ".git",
     ".pytest_cache",
@@ -86,3 +93,7 @@ convention = "google"
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 inline-quotes = "double"
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib -vv"
+testpaths = ["tests"]

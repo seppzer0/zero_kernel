@@ -20,6 +20,9 @@ class Logger:
     _instance = None
     _lock = threading.Lock()
 
+    def __init__(self):
+        raise RuntimeError("Call get_logger() instead.")
+
     def __new__(cls, *args, **kwargs) -> object:
         if not cls._instance:
             with cls._lock:

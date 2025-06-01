@@ -6,6 +6,7 @@ Complete chain is: builder in host -> this bridge -> builder in container.
 """
 
 import sys
+import logging
 import argparse
 
 from builder.tools import Logger
@@ -13,7 +14,7 @@ from builder.managers import ResourceManager
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 def parse_args() -> argparse.Namespace:

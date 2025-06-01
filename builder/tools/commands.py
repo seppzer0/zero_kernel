@@ -1,12 +1,13 @@
 import os
 import sys
+import logging
 import subprocess
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
 from builder.tools import Logger
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 def launch(

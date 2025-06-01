@@ -1,6 +1,7 @@
 import os
 import json
 import shutil
+import logging
 import itertools
 from pathlib import Path
 from pydantic import BaseModel
@@ -13,7 +14,7 @@ from builder.managers import ResourceManager
 from builder.interfaces import ICommand, IBundleCommand
 
 
-log = Logger().get_logger()
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class BundleCommand(BaseModel, ICommand, IBundleCommand):
