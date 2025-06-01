@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 from importlib.metadata import version
 
-from builder.tools import cleaning as cm, commands as ccmd
+from builder.tools import cleaning as cm, commands as ccmd, Logger as logger
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
 from builder.engines import GenericContainerEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
@@ -238,6 +238,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def main(args: argparse.Namespace) -> None:
+    # initialize the logger in memory
+    _ = logger().get_logger()  # type: ignore
     # start preparing the environment
     os.chdir(dcfg.root)
     if args.clean_root:
