@@ -4,7 +4,7 @@ import logging
 from typing import Literal
 from pydantic import BaseModel
 
-from builder.tools import Logger, cleaning as cm, fileoperations as fo, banner
+from builder.tools import banner, fileoperations as fo, cleaning as cm
 from builder.clients import GithubApiClient, LineageOsApiClient, ParanoidAndroidApiClient
 from builder.configs import DirectoryConfig as dcfg
 from builder.interfaces import IAssetsCollector
@@ -106,7 +106,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
 
         return None
 
-    def _check(self) -> None:
+    def check(self) -> None:
         os.chdir(dcfg.root)
 
         # directory check
@@ -136,7 +136,7 @@ class AssetsCollector(BaseModel, IAssetsCollector):
         banner.print_banner("zero asset collector")
 
         os.chdir(dcfg.root)
-        self._check()
+        self.check()
         os.chdir(dcfg.assets)
         # NOTE: call "self.assets" only once!
         assets = self.assets

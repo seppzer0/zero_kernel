@@ -10,57 +10,41 @@ from typing import Literal, Optional
 from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
 from builder.configs import DirectoryConfig as dcfg
-from builder.managers import ResourceManager
-from builder.interfaces import ICommand, IBundleCommand
+from builder.interfaces import ICommand
 
 
 log = logging.getLogger("ZeroKernelLogger")
 
 
-class BundleCommand(BaseModel, ICommand, IBundleCommand):
+class BundleCommand(BaseModel, ICommand):
     """Command that packages the artifacts produced both by 'kernel_builder' and 'assets_collector' core modules.
 
-    :param str base: Kernel source base.
-    :param str lkv: Linux kernel version.
+    :param builder.core.KernelBuilder kernel_builder: Kernel builder object.
+    :param builder.core.AssetsCollector assets_collector: Assets collector object.
     :param str package_type: Package type.
-    :param bool ksu: Flag indicating KernelSU support.
-    :param Optional[Path]=None defconfig: Path to custom defconfig.
+    :param str base: ROM base for the kernel.
     """
 
-    codename: str
-    base: str
-    lkv: str
+    kernel_builder: KernelBuilder
+    assets_collector: AssetsCollector
     package_type: str
-    ksu: bool
-    defconfig: Optional[Path] = None
+    base: str
 
-    def build_kernel(self, rom_name: str, clean_only: bool = False) -> None:
+    def build_kernel(self, rom_name: str, clean_only: Optional[bool] = False) -> None:
         if not dcfg.kernel.is_dir() or clean_only is True:
-            kb = KernelBuilder(
-                codename = self.codename,
-                base = rom_name,
-                lkv = self.lkv,
-                clean_kernel = clean_only,
-                ksu = self.ksu,
-                rmanager=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base),
-                defconfig = self.defconfig,
-            )
-            kb.run()
+            self.kernel_builder.clean_kernel = clean_only  # type: ignore
+
+            self.kernel_builder.run()
 
     @property
     def _rom_only_flag(self) -> bool:
         return True if "full" not in self.package_type else False
 
     def collect_assets(self, rom_name: str, chroot: Literal["full", "minimal"]) -> None:
-        ac = AssetsCollector(
-            codename = self.codename,
-            base = rom_name,
-            chroot = chroot,
-            clean_assets = True,
-            rom_only = self._rom_only_flag,
-            ksu = self.ksu,
-        )
-        ac.run()
+        self.assets_collector.clean_assets = True
+        self.assets_collector.rom_only = self._rom_only_flag
+
+        self.assets_collector.run()
 
     def conan_sources(self) -> None:
         print("\n", end="")
@@ -105,7 +89,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
             cmd += f" -o {option_name}={option_value}"
 
         # add codename as an option separately
-        cmd += f" -o codename={self.codename}"
+        cmd += f" -o codename={self.kernel_builder.codename}"
         ccmd.launch(cmd)
 
     @staticmethod
@@ -151,7 +135,7 @@ class BundleCommand(BaseModel, ICommand, IBundleCommand):
                 # form Conan reference
                 name = "zero_kernel"
                 version = os.getenv("KVERSION")
-                user = self.codename
+                user = self.kernel_builder.codename
                 channel = ""
 
                 if ccmd.launch("git branch --show-current", get_output=True) == "main":

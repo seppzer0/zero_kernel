@@ -6,10 +6,12 @@ import argparse
 from pathlib import Path
 from importlib.metadata import version
 
+from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import cleaning as cm, commands as ccmd, Logger as logger
 from builder.configs import ArgumentConfig, DirectoryConfig as dcfg
 from builder.engines import GenericContainerEngine
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
+from builder.managers import ResourceManager
 
 
 def __get_version() -> str:
@@ -264,35 +266,43 @@ def main(args: argparse.Namespace) -> None:
                 ccmd.launch(engined_cmd)
 
         case "local":
+            kernel_builder = KernelBuilder(
+                codename = args.codename,
+                base = args.base,
+                lkv = args.lkv,
+                clean_kernel = args.clean_kernel,
+                ksu = args.ksu,
+                defconfig = args.defconfig,
+                rmanager = ResourceManager(
+                    codename = args.codename,
+                    lkv = args.lkv,
+                    base = args.base
+                )
+            )
+            assets_collector = AssetsCollector(
+                codename = args.codename,
+                base = args.base,
+                chroot = args.chroot,
+                clean_assets = args.clean_assets,
+                rom_only = args.rom_only,
+                ksu = args.ksu,
+            )
+
             match args.command:
                 case "kernel":
-                    kc = KernelCommand(
-                        codename = args.codename,
-                        base = args.base,
-                        lkv = args.lkv,
-                        clean_kernel = args.clean_kernel,
-                        ksu = args.ksu,
-                        defconfig = args.defconfig,
-                    )
+                    kc = KernelCommand(kernel_builder=kernel_builder)
                     kc.execute()
+
                 case "assets":
-                    ac = AssetsCommand(
-                        codename = args.codename,
-                        base = args.base,
-                        chroot = args.chroot,
-                        clean_assets = args.clean_assets,
-                        rom_only = args.rom_only,
-                        ksu = args.ksu,
-                    )
+                    ac = AssetsCommand(assets_collector=assets_collector)
                     ac.execute()
-                case "bundle":
+
+                case "bundle":  
                     bc = BundleCommand(
-                        codename = args.codename,
-                        base = args.base,
-                        lkv = args.lkv,
+                        kernel_builder = kernel_builder,
+                        assets_collector = assets_collector,
                         package_type = args.package_type,
-                        ksu = args.ksu,
-                        defconfig = args.defconfig,
+                        base = args.base
                     )
                     bc.execute()
 

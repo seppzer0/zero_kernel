@@ -1,22 +1,14 @@
 @startuml classes
 set namespaceSeparator none
 class "AssetsCommand" as commands.assets.AssetsCommand {
-  base : str
-  chroot : Literal['full', 'minimal']
-  clean_assets : bool
-  codename : str
-  ksu : bool
-  rom_only : bool
+  assets_collector : AssetsCollector
   execute() -> None
 }
 class "BundleCommand" as commands.bundle.BundleCommand {
-  base : str
-  codename : str
-  defconfig : Optional[Path]
-  ksu : bool
-  lkv : str
+  assets_collector : AssetsCollector
+  kernel_builder : KernelBuilder
   package_type : str
-  build_kernel(rom_name: str, clean_only: bool) -> None
+  build_kernel(rom_name: str, clean_only: Optional[bool]) -> None
   collect_assets(rom_name: str, chroot: Literal['full', 'minimal']) -> None
   conan_options(json_file: str) -> dict
   conan_package(options: tuple[str, ...], reference: str) -> None
@@ -25,12 +17,7 @@ class "BundleCommand" as commands.bundle.BundleCommand {
   execute() -> None
 }
 class "KernelCommand" as commands.kernel.KernelCommand {
-  base : str
-  clean_kernel : bool
-  codename : str
-  defconfig : Optional[Path]
-  ksu : bool
-  lkv : str
+  kernel_builder : KernelBuilder
   execute() -> None
 }
 @enduml

@@ -5,14 +5,6 @@ interface "IAssetsCollector" as interfaces.modules.IAssetsCollector {
   rom_collector_dto
   {abstract}run() -> None
 }
-interface "IBundleCommand" as interfaces.commands.IBundleCommand {
-  {abstract}build_kernel(rom_name: str, clean_only: bool) -> None
-  {abstract}collect_assets(rom_name: str, chroot: Literal['full', 'minimal']) -> None
-  {abstract}conan_options(json_file: str) -> dict
-  {abstract}conan_package(options: tuple[str, ...], reference: str) -> None
-  {abstract}conan_sources() -> None
-  {abstract}conan_upload(reference: str) -> None
-}
 interface "ICommand" as interfaces.commands.ICommand {
   {abstract}execute() -> None
 }
@@ -39,6 +31,7 @@ interface "IKernelBuilder" as interfaces.modules.IKernelBuilder {
   {abstract}patch_rtl8812au_source_mod_v5642() -> None
   {abstract}patch_strict_prototypes() -> None
   {abstract}run() -> None
+  {abstract}update_defconfig() -> None
   {abstract}write_localversion() -> None
 }
 interface "IResourceManager" as interfaces.managers.IResourceManager {
