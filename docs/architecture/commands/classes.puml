@@ -6,6 +6,7 @@ class "AssetsCommand" as commands.assets.AssetsCommand {
 }
 class "BundleCommand" as commands.bundle.BundleCommand {
   assets_collector : AssetsCollector
+  base : str
   kernel_builder : KernelBuilder
   package_type : str
   build_kernel(rom_name: str, clean_only: Optional[bool]) -> None

@@ -10,6 +10,7 @@ class "AssetsCollector" as core.assets_collector.AssetsCollector {
   rom_collector_dto
   rom_only : bool
   check() -> None
+  run() -> None
 }
 class "KernelBuilder" as core.kernel_builder.KernelBuilder {
   base : str
@@ -32,6 +33,7 @@ class "KernelBuilder" as core.kernel_builder.KernelBuilder {
   patch_rtl8812au() -> None
   patch_rtl8812au_source_mod_v5642() -> None
   patch_strict_prototypes() -> None
+  run() -> None
   update_defconfig() -> None
   write_localversion() -> None
 }
