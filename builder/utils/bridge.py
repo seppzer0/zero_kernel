@@ -9,6 +9,7 @@ import sys
 import logging
 import argparse
 
+from builder.core import KernelBuilder, AssetsCollector
 from builder.tools import Logger
 from builder.managers import ResourceManager
 from builder.commands import KernelCommand, AssetsCommand, BundleCommand
@@ -99,21 +100,28 @@ def parse_args() -> argparse.Namespace:
 
 
 def main(args: argparse.Namespace) -> None:
+
     match args.command:
 
         case "kernel":
-            kc = KernelCommand(
+            kernel_builder = KernelBuilder(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
                 clean_kernel = args.clean_kernel,
                 ksu = args.ksu,
                 defconfig = args.defconfig,
+                rmanager = ResourceManager(
+                    codename = args.codename,
+                    lkv = args.lkv,
+                    base = args.base
+                )
             )
+            kc = KernelCommand(kernel_builder=kernel_builder)
             kc.execute()
 
         case "assets":
-            ac = AssetsCommand(
+            assets_collector = AssetsCollector(
                 codename = args.codename,
                 base = args.base,
                 chroot = args.chroot,
@@ -121,16 +129,36 @@ def main(args: argparse.Namespace) -> None:
                 rom_only = args.rom_only,
                 ksu = args.ksu,
             )
+            ac = AssetsCommand(assets_collector=assets_collector)
             ac.execute()
 
         case "bundle":
-            bc = BundleCommand(
+            kernel_builder = KernelBuilder(
                 codename = args.codename,
                 base = args.base,
                 lkv = args.lkv,
-                package_type = args.package_type,
+                clean_kernel = args.clean_kernel,
                 ksu = args.ksu,
                 defconfig = args.defconfig,
+                rmanager = ResourceManager(
+                    codename = args.codename,
+                    lkv = args.lkv,
+                    base = args.base
+                )
+            )
+            assets_collector = AssetsCollector(
+                codename = args.codename,
+                base = args.base,
+                chroot = args.chroot,
+                clean_assets = args.clean_assets,
+                rom_only = args.rom_only,
+                ksu = args.ksu,
+            )
+            bc = BundleCommand(
+                kernel_builder = kernel_builder,
+                assets_collector = assets_collector,
+                package_type = args.package_type,
+                base = args.base
             )
             bc.execute()
 

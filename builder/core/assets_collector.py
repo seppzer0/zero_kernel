@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel
 
 from builder.tools import banner, fileoperations as fo, cleaning as cm
@@ -18,14 +18,14 @@ class AssetsCollector(BaseModel, IAssetsCollector):
 
     :param str codename: Device codename.
     :param str base: Kernel source base.
-    :param Literal["full","minimal"] chroot: Chroot type.
+    :param Optional[Literal["full","minimal"]]=None chroot: Chroot type.
     :param bool rom_only: Flag indicating ROM-only asset collection.
     :param bool ksu: Flag indicating KernelSU support.
     """
 
     codename: str
     base: str
-    chroot: Literal["full", "minimal"]
+    chroot: Optional[Literal["full", "minimal"]] = None
     clean_assets: bool
     rom_only: bool
     ksu: bool
