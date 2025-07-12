@@ -1,34 +1,21 @@
-from pathlib import Path
-from typing import Optional
+import logging
 from pydantic import BaseModel
 
 from builder.core import KernelBuilder
-from builder.managers import ResourceManager
+from builder.tools import banner, fileoperations as fo
 from builder.interfaces import ICommand
+
+
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class KernelCommand(BaseModel, ICommand):
     """Command responsible for launching the 'kernel_builder' core module directly.
 
-    :param str codename: Device codename.
-    :param str base: Kernel source base.
-    :param str lkv: Linux kernel version.
-    :param bool clean_kernel: Flag to clean folder with kernel sources.
-    :param bool ksu: Flag indicating KernelSU support.
-    :param Optional[Path]=None defconfig: Path to custom defconfig.
+    :param builder.core.KernelBuilder kernel_builder: Kernel builder object.
     """
 
-    codename: str
-    base: str
-    lkv: str
-    clean_kernel: bool
-    ksu: bool
-    defconfig: Optional[Path] = None
+    kernel_builder: KernelBuilder
 
     def execute(self) -> None:
-        # create resource manager and pass it to the builder
-        kb = KernelBuilder(
-            **self.__dict__,
-            rmanager=ResourceManager(codename=self.codename, lkv=self.lkv, base=self.base)
-        )
-        kb.run()
+        self.kernel_builder.run()

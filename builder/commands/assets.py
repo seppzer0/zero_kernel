@@ -1,27 +1,22 @@
+import logging
 from typing import Literal
 from pydantic import BaseModel
 
 from builder.core import AssetsCollector
+from builder.tools import banner, fileoperations as fo
 from builder.interfaces import ICommand
+
+
+log = logging.getLogger("ZeroKernelLogger")
 
 
 class AssetsCommand(BaseModel, ICommand):
     """Command responsible for launching the 'assets_collector' core module directly.
 
-    :param str codename: Device codename.
-    :param str base: Kernel source base.
-    :param Literal["full","minimal"] chroot: Chroot type.
-    :param bool rom_only: Flag indicating ROM-only asset collection.
-    :param bool ksu: Flag indicating KernelSU support.
+    :param builder.core.AssetsCollector assets_collector: Assets collector object.
     """
 
-    codename: str
-    base: str
-    chroot: Literal["full", "minimal"]
-    clean_assets: bool
-    rom_only: bool
-    ksu: bool
+    assets_collector: AssetsCollector
 
     def execute(self) -> None:
-        ac = AssetsCollector(**self.__dict__)
-        ac.run()
+        self.assets_collector.run()

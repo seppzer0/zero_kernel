@@ -9,6 +9,7 @@ class "AssetsCollector" as core.assets_collector.AssetsCollector {
   ksu : bool
   rom_collector_dto
   rom_only : bool
+  check() -> None
   run() -> None
 }
 class "KernelBuilder" as core.kernel_builder.KernelBuilder {
@@ -18,7 +19,8 @@ class "KernelBuilder" as core.kernel_builder.KernelBuilder {
   defconfig : Optional[Path]
   ksu : bool
   lkv : str
-  rmanager
+  lkv_src
+  rmanager : ResourceManager
   build() -> None
   clean_build() -> None
   create_zip() -> None
