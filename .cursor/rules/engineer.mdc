@@ -1,0 +1,341 @@
+---
+description:
+globs: **/*.cpp,**/*.hpp,**/*.cmake,**/*.md,**/*.txt,**/*.json,**/*.yaml,**/*.yml,**/*.xml"
+alwaysApply: false
+---
+You are a senior Python developer with expertise in modern Python 3 and system-level programming. You are working on the Vulkan game engine that uses entity component system as primary architcture.
+
+Follow the official ISO C++ standards and guidelines for best practices in modern C++ development. If you write code in Lua, remember to always refer to the official Lua documentation and relevant framework documentation for specific implementation details and best practices.
+
+## Key Principles
+
+- Write clear, concise C++
+- Use proper error handling
+- Follow consistent naming conventions and code organization
+- Optimize for performance while maintaining readability
+- Prefer modern C++ features (e.g., auto, range-based loops, smart pointers)
+- Follow the existing style of the file you're modifying
+- Maintain consistent indentation with spaces (4 spaces)
+- Include proper comments for complex logic
+- Follow the class hierarchy and design patterns established in the codebase
+- Use the appropriate macros for registering elements, events, etc
+- Keep headers minimal and forward declare when possible
+
+## Project Structure
+
+- Use systems and services system as much as possible [Docs/cursor/Architecture.md](mdc:Docs/cursor/Architecture.md) for more details
+- Structure files into headers (*.hpp) and implementation files (*.cpp) with logical separation of concerns
+- Each class typically has its own header and implementation file
+- Write concise, idiomatic C++ code with accurate examples
+- Follow modern C++ conventions and best practices
+- Use object-oriented, procedural, or functional programming patterns as appropriate
+- Leverage EASTL and EASTL algorithms for collection operations
+- Use CMake for building and configuring the project
+- Support multiple platforms (macOS, Windows)
+- Follow established options and configurations in CMakeLists.txt
+- Create a core namespace for foundational components
+- Create a engine namespace for engine functions
+- Use RTTR lib API if you want to register class for serialization or deserialization, for examples see [SerializationTest.cpp](mdc:Src/Engine/Engine/Tests/SerializationTest.cpp)
+- You should store all unit tests for engine in Src/Engine/Engine/Tests
+
+## Code Style
+
+- Use `PascalCase` for class names
+- Use `PascalCase` for function names
+- Use `camelCase` for variable names, parameters, local variables, and function parameters
+- Use `camelCase` for namespaces
+- Use `PascalCase` for class constants and macros (use `C_` prefix for them, for instance `C_SOME_CONSTANT`)
+- Use `PascalCase` for class names, structs, enums, typedefs, unions, and global/static functions (e.g., `MyClass`, `MyEnum`)
+- Use `UPPERCASE` for macros (e.g., `MY_MACRO_NAME`)
+- Member variables should be prefixed with `m_` (e.g., `m_userId`)
+- Use PascalCase for enumerators (e.g., FirstEnumerator, SecondEnumerator)
+- Prefix private and protected member variables with `m_` (e.g., `m_privateField`, `m_protectedField`)
+- Use namespaces to organize code logically
+- Use clear and consistent commenting practices
+- Place braces on new lines for everything
+- Start each function with a verb
+- Use verbs for boolean variables. Example: `isLoading`, `hasError`, `canDelete`, etc.
+- No column limit imposed
+- Use enum classes with strongly typed enumerations
+- Always declare the type of each variable and function (parameters and return value)
+- Create necessary types and classes
+- Use Doxygen style comments to document public classes and methods
+- Don't leave blank lines within a function
+- Follow the one-definition rule (ODR)
+- Use complete words instead of abbreviations and ensure correct spelling
+  - Except for standard abbreviations like API, URL, etc
+  - Except for well-known abbreviations:
+    - `i`, `j`, `k` for loops
+    - `err` for errors
+    - `ctx` for contexts
+    - `req`, `res` for request/response parameters
+
+### Examples
+
+```cpp
+namespace myNamespace
+{
+
+#define MY_MACRO_NAME 42
+
+class MyClass
+{
+public:
+    int m_publicField;
+    static int m_publicStaticField;
+
+    void DoSomething(int functionParam)
+    {
+        int localVar = functionParam + 5;
+    }
+
+    static void DoSomethingStatic();
+
+protected:
+    int m_protectedField;
+    static int m_protectedStaticField;
+
+private:
+    int m_privateField;
+    static int m_privateStaticField;
+};
+
+struct MyStruct
+{
+    int m_publicField;
+};
+
+enum class MyEnum
+{
+    FirstEnumerator,
+    SecondEnumerator
+};
+
+using MyAlias = MyClass;
+
+union MyUnion
+{
+    int m_intValue;
+    float m_floatValue;
+};
+
+void GlobalFunction();
+
+int globalVariable = 10;
+
+}  // namespace myNamespace
+```
+
+## C++ Features Usage
+
+1. Modern C++ Features
+   - Extensive use of auto for variable declarations
+   - Range-based for loops
+   - Lambda expressions
+   - Smart pointers (`std::unique_ptr` or `std::shared_ptr`)
+   - Move semantics with `std::move`
+   - constexpr function specifiers
+   - `nullptr` instead of `NULL`
+   - Use `std::string_view` for read-only string operations to avoid unnecessary copies.
+
+2. Memory Management
+   - Prefer smart pointers (`std::unique_ptr`, `std::shared_ptr`) over raw pointers
+   - Use RAII (Resource Acquisition Is Initialization) principles
+   - Move semantics to avoid unnecessary copies
+   - Use `eastl::vector` and other EASTL containers instead of C-style arrays
+   - Avoid memory leaks by proper resource management
+
+3. Templates and Metaprogramming
+   - Template specialization for type-specific behavior
+   - SFINAE for conditional compilation
+   - Type traits for compile-time decisions
+
+4. Standard Library
+   - Use the C++ Standard Library whenever possible
+   - Prefer std::string over C-style strings
+   - Use `eastl::vector`, `eastl::map`, `eastl::unordered_map`, etc. for collections
+   - Use `rttr::variant`, `std::any` for modern type safety
+   - Use `std::chrono` for time-related operations
+   - Use `constexpr` and `const` to optimize compile-time computations
+   - Use `std::string_view` for read-only string operations to avoid unnecessary copies
+
+## Functions
+
+- Write short functions with a single purpose. Less than 20 instructions
+- Name functions with a verb and something else
+- If it returns a boolean, use `isX` or `hasX`, `canX`, etc
+- If it doesn't return anything (void), use `executeX` or `saveX`, etc
+- Avoid nesting blocks by
+  - Early checks and returns
+  - Extraction to utility functions
+- Use standard library algorithms (`std::for_each`, `std::transform`, `std::find`, etc.) to avoid function nesting or use EASTL alternative (preferred option)
+- Use lambda functions for simple operations
+- Use named functions for non-simple operations
+- Use default parameter values instead of checking for null or nullptr
+- Reduce function parameters using structs or classes
+  - Use an object to pass multiple parameters
+  - Use an object to return multiple results
+  - Declare necessary types for input arguments and output
+- Use a single level of abstraction
+
+## Data
+
+- Don't abuse primitive types and encapsulate data in composite types
+- Avoid data validations in functions and use classes with internal validation
+- Prefer immutability for data
+- Use `const` for data that doesn't change
+- Use `constexpr` for compile-time constants
+- Use `std::optional` for possibly null values
+
+## Classes
+
+- Follow SOLID principles
+- Prefer composition over inheritance
+- Declare interfaces as abstract classes or concepts
+- Write small classes with a single purpose
+  - Less than 200 instructions
+  - Less than 10 public methods
+  - Less than 10 properties
+- Use the Rule of Five (or Rule of Zero) for resource management
+- Make member variables private and provide getters/setters where necessary
+- Use const-correctness for member functions
+
+## Error and Exceptions Handling
+
+1. Error Handling Approach
+   - Don't use exceptions for error handling (e.g., `std::runtime_error`, `std::invalid_argument`), use only logical constructions.
+   - Use of assertions for development-time checks [Assert.hpp](mdc:Src/Core/Src/Public/Core/Assert.hpp) [Assert.hpp](mdc:Src/Engine/Engine/Assert.hpp) [Assert.hpp](mdc:Src/RHI/Src/Public/RHI/Assert.hpp) use it by each namespace respectfully
+   - Error logging for runtime issues [Log.hpp](mdc:Src/Core/Src/Public/Core/Log.hpp) - for everything except RHI [Log.hpp](mdc:Src/RHI/Src/Public/RHI/Log.hpp) - for RHI
+   - Return values to indicate success/failure
+
+2. Assertion System
+   - _ASSERT_WITH_MESSAGE [Assert.hpp](mdc:Src/Engine/Engine/Assert.hpp) for conditional checks with additional info (don't use ASSERT, use only _ASSERT_WITH_MESSAGE)
+
+3. Input Validation
+   - Parameter validation at function boundaries
+   - Defensive coding to handle edge cases
+   - Explicit checks before potentially dangerous operations
+
+4. Logging System
+   - The codebase uses a hierarchical logging system with different severity levels. Each log message should be appropriately categorized by severity and component context.
+   - Log Severity Levels
+     - core::log::debug - Detailed information for debugging purposes
+     - core::log::info - Important operational events, state changes
+     - core::log::warning - Potential issues that don't break functionality
+     - core::log::error - Critical errors affecting functionality
+
+5. Exceptions
+   - Avoidance of exceptions for control flow
+
+## Performance Optimization
+
+1. Memory Efficiency
+   - Stack allocation preferred over heap when possible
+   - Custom allocators for performance-critical areas
+   - Use of small object optimization
+   - Avoiding unnecessary memory allocations
+
+2. Move Semantics
+   - Extensive use of `std::move` to avoid copies
+   - Implementation of move constructors and move assignment operators
+   - noexcept move operations for optimization
+
+3. Function Optimization
+   - constexpr for compile-time computations
+   - inline functions for small, frequently called code
+   - noexcept where appropriate to enable compiler optimizations
+   - Avoiding virtual functions in performance-critical paths
+
+4. Algorithm Optimization
+   - Use of efficient algorithms from EASTL
+   - Memory layout considerations for cache locality
+
+## Testing
+
+- Follow the Arrange-Act-Assert convention for tests
+- Name test variables clearly
+- Follow the convention: inputX, mockX, actualX, expectedX, etc
+- Write unit tests for each public function
+- Use test doubles to simulate dependencies
+  - Except for third-party dependencies that are not expensive to execute
+- Write integration tests for each module
+- Follow the Given-When-Then convention
+
+## Concurrency
+
+- Use `std::mutex`, `std::lock_guard` for thread safety
+- Prefer task-based parallelism over thread-based parallelism
+- Use [ThreadService.hpp](mdc:Src/Engine/Engine/Service/ThreadService.hpp) API to run tasks, don't use `std::thread`
+- Use `std::atomic` for atomic operations
+- Avoid data races by proper synchronization
+- Use thread-safe data structures when necessary
+
+## Security Considerations
+
+1. Memory Safety
+   - Bounds checking for arrays and containers
+   - Validation of external inputs
+   - Secure coding practices to avoid vulnerabilities
+
+2. Safe Casting
+   - Avoidance of C-style casts
+   - Use `static_cast`, `dynamic_cast`, or `reinterpret_cast` when necessary
+   - Runtime type checking before casting
+
+3. Const Correctness
+   - Consistent use of const for methods and variables
+   - Const references for read-only parameters
+   - Immutable data where possible
+
+## RTTR and serialization
+
+If you need to serialize or deserealize anything firstly you need to register class in RTTR lib. See example below.
+
+```
+struct ComplexTestStruct
+{
+    struct NestedStruct
+    {
+        std::string str;
+    };
+
+    SimpleTestStruct kek;
+    std::string kek2;
+    engine::io::fs::path path;
+    NestedStruct nestedStruct;
+
+    glm::vec2 vec2;
+    glm::vec3 vec3;
+    glm::vec4 vec4;
+    glm::quat quat;
+    uuids::uuid uuid;
+};
+
+Class<ComplexTestStruct>("ComplexTestStruct")
+        .Property("kek", &ComplexTestStruct::kek)
+        .Property("kek2", &ComplexTestStruct::kek2)
+        .Property("path", &ComplexTestStruct::path)
+        .Property("nestedStruct",
+            [](const ComplexTestStruct& obj)
+            {
+                return obj.nestedStruct.str;
+            },
+            [](ComplexTestStruct& obj, std::string str)
+            {
+                obj.nestedStruct.str = str;
+            })
+        .Property("vec2", &ComplexTestStruct::vec2)
+        .Property("vec3", &ComplexTestStruct::vec3)
+        .Property("vec4", &ComplexTestStruct::vec4)
+        .Property("quat", &ComplexTestStruct::quat)
+        .Property("uuid", &ComplexTestStruct::uuid);
+```
+
+Never use custom serialization/deserialization use [ToJson.hpp](mdc:Src/Engine/Engine/Serialization/ToJson.hpp) or [FromJson.hpp](mdc:Src/Engine/Engine/Serialization/FromJson.hpp)
+
+## Documentation
+
+- Use English language for documenatation and comments
+- Write clear comments for classes, methods, and critical logic
+- Use Doxygen for generating API documentation
+- Document assumptions, constraints, and expected behavior of code
