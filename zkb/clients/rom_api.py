@@ -2,8 +2,8 @@ import requests
 import logging
 from pydantic import BaseModel
 
-from builder.tools import Logger
-from builder.interfaces import IRomApiClient
+from zkb.tools import Logger
+from zkb.interfaces import IRomApiClient
 
 
 log = logging.getLogger("ZeroKernelLogger")

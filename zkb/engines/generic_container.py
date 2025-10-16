@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
-from builder.tools import Logger, commands as ccmd
-from builder.configs import DirectoryConfig as dcfg
-from builder.interfaces import IGenericContainerEngine
+from zkb.tools import Logger, commands as ccmd
+from zkb.configs import DirectoryConfig as dcfg
+from zkb.interfaces import IGenericContainerEngine
 
 
 log = logging.getLogger("ZeroKernelLogger")

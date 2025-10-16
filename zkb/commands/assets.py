@@ -2,9 +2,9 @@ import logging
 from typing import Literal
 from pydantic import BaseModel
 
-from builder.core import AssetsCollector
-from builder.tools import banner, fileoperations as fo
-from builder.interfaces import ICommand
+from zkb.core import AssetsCollector
+from zkb.tools import banner, fileoperations as fo
+from zkb.interfaces import ICommand
 
 
 log = logging.getLogger("ZeroKernelLogger")

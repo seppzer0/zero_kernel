@@ -1,4 +1,4 @@
-from builder.clients.rom_api import RomApiClient
+from zkb.clients.rom_api import RomApiClient
 
 
 class LineageOsApiClient(RomApiClient):

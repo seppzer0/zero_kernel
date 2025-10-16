@@ -1,8 +1,8 @@
 import pytest
 from pathlib import Path
 
-from builder.core import KernelBuilder
-from builder.managers import ResourceManager
+from zkb.core import KernelBuilder
+from zkb.managers import ResourceManager
 
 
 @pytest.mark.parametrize(

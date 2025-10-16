@@ -6,7 +6,7 @@ import requests
 from pathlib import Path
 from typing import Optional
 
-from builder.tools import Logger, commands as ccmd
+from zkb.tools import Logger, commands as ccmd
 
 
 log = logging.getLogger("ZeroKernelLogger")

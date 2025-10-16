@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from builder.clients import LineageOsApiClient, ParanoidAndroidApiClient
+from zkb.clients import LineageOsApiClient, ParanoidAndroidApiClient
 
 
 class IKernelBuilder(ABC):

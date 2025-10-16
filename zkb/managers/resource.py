@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from builder.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
-from builder.configs import DirectoryConfig as dcfg
-from builder.interfaces import IResourceManager
+from zkb.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
+from zkb.configs import DirectoryConfig as dcfg
+from zkb.interfaces import IResourceManager
 
 
 log = logging.getLogger("ZeroKernelLogger")

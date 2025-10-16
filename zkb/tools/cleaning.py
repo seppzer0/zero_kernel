@@ -5,8 +5,8 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-from builder.tools import commands as ccmd
-from builder.configs import DirectoryConfig as dcfg
+from zkb.tools import commands as ccmd
+from zkb.configs import DirectoryConfig as dcfg
 
 
 def remove(elements: str | Path | list[Path | str]) -> None:

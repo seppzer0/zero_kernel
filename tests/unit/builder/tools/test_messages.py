@@ -1,7 +1,7 @@
 import pytest
 import logging
 
-from builder.tools import Logger
+from zkb.tools import Logger
 
 
 log = logging.getLogger("ZeroKernelLogger")

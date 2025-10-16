@@ -1,9 +1,9 @@
 import logging
 from pydantic import BaseModel
 
-from builder.core import KernelBuilder
-from builder.tools import banner, fileoperations as fo
-from builder.interfaces import ICommand
+from zkb.core import KernelBuilder
+from zkb.tools import banner, fileoperations as fo
+from zkb.interfaces import ICommand
 
 
 log = logging.getLogger("ZeroKernelLogger")

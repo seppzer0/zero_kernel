@@ -1,6 +1,6 @@
 from typing import override
 
-from builder.clients.rom_api import RomApiClient
+from zkb.clients.rom_api import RomApiClient
 
 
 class ParanoidAndroidApiClient(RomApiClient):
