@@ -2,7 +2,6 @@ import requests
 import logging
 from pydantic import BaseModel
 
-from zkb.tools import Logger
 from zkb.interfaces import IRomApiClient
 
 

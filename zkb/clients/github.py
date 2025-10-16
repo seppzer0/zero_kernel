@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 
-from zkb.tools import Logger, cleaning as cm, commands as ccmd
+from zkb.tools import cleaning as cm, commands as ccmd
 from zkb.configs import DirectoryConfig as dcfg
 
 

@@ -6,7 +6,7 @@ from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, Literal
 
-from zkb.tools import Logger, commands as ccmd
+from zkb.tools import commands as ccmd
 
 
 log = logging.getLogger("ZeroKernelLogger")

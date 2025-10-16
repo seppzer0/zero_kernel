@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
-from zkb.tools import Logger, commands as ccmd
+from zkb.tools import commands as ccmd
 from zkb.configs import DirectoryConfig as dcfg
 from zkb.interfaces import IGenericContainerEngine
 

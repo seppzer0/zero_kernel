@@ -10,7 +10,6 @@ import logging
 import argparse
 
 from zkb.core import KernelBuilder, AssetsCollector
-from zkb.tools import Logger
 from zkb.managers import ResourceManager
 from zkb.commands import KernelCommand, AssetsCommand, BundleCommand
 

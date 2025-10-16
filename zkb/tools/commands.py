@@ -5,7 +5,6 @@ import subprocess
 from typing import Optional, Literal
 from subprocess import CompletedProcess
 
-from zkb.tools import Logger
 
 log = logging.getLogger("ZeroKernelLogger")
 

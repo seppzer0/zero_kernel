@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import Literal, Optional
 
 from zkb.core import KernelBuilder, AssetsCollector
-from zkb.tools import Logger, cleaning as cm, commands as ccmd, fileoperations as fo
+from zkb.tools import cleaning as cm, commands as ccmd, fileoperations as fo
 from zkb.configs import DirectoryConfig as dcfg
 from zkb.interfaces import ICommand
 
