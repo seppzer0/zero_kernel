@@ -1,6 +1,6 @@
 [project]
-name = "zero-kernel"
-version = "0.6.2"
+name = "zero-kernel-builder"
+version = "0.6.3"
 description = "Advanced Android kernel builder with Kali NetHunter support."
 authors = [{name = "seppzer0"}]
 readme = "README.md"
@@ -19,22 +19,17 @@ Repository = "https://github.com/seppzer0/zero_kernel"
 Documentation = "https://github.com/seppzer0/zero_kernel/blob/main/README.md"
 
 [project.scripts]
-buildz = "zero_builder:main"
+zkb = "zkb.__main__:main"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["builder"]
-
-[tool.uv]
-environments = [
-    "sys_platform == 'darwin'",
-    "sys_platform == 'linux'",
-    #"implementation_name == 'cpython'",
+[dependency-groups]
+main = [
+    "conan ~=1.6",
+    "requests ~=2.31",
+    "pathlib ~=1.0",
+    "pydantic ~=2.6",
 ]
-dev-dependencies = [
+dev = [
+    {include-group = "main"},
     "bandit ~=1.7",
     "pytest ~=8.0",
     "pytest-cov ~=4.1",
@@ -45,6 +40,21 @@ dev-dependencies = [
     "pip",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["zkb"]
+
+[tool.uv]
+default-groups = ["dev"]
+environments = [
+    "sys_platform == 'darwin'",
+    "sys_platform == 'linux'",
+    #"implementation_name == 'cpython'",
+]
+
 [[tool.uv.index]]
 name = "pypi"
 default = true
@@ -52,24 +62,24 @@ url = "https://pypi.org/simple"
 
 [tool.coverage.run]
 source = [
-    "builder/clients",
-    "builder/commands",
-    "builder/configs",
-    "builder/engines",
-    "builder/managers"
+    "zkb/clients",
+    "zkb/commands",
+    "zkb/configs",
+    "zkb/engines",
+    "zkb/managers"
 ]
 
 [tool.coverage.report]
 show_missing = true
 
 [tool.pyright]
-include = ["builder"]
+include = ["zkb"]
 pythonVersion = "3.12"
 venvPath = "."
 venv = ".venv"
 
 [tool.ruff]
-include = ["builder/**/*.py"]
+include = ["zkb/**/*.py"]
 indent-width = 4
 line-length = 125
 exclude = [
