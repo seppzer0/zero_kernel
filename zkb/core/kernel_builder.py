@@ -273,11 +273,11 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         cm.remove(self.rmanager.paths["AnyKernel3"] / "models")
 
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / "anykernel3" / "ramdisk",
+            dcfg.root / "zkb" / "modifications" / self._ucodename / "anykernel3" / "ramdisk",
             self.rmanager.paths["AnyKernel3"] / "ramdisk"
         )
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / "anykernel3" / "anykernel.sh",
+            dcfg.root / "zkb" / "modifications" / self._ucodename / "anykernel3" / "anykernel.sh",
             self.rmanager.paths["AnyKernel3"] / "anykernel.sh"
         )
 
@@ -448,7 +448,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         # either patch kernel or KernelSU sources, depending on Linux kernel version
         target_d = dcfg.root / "KernelSU" if self.lkv_src == "4.14" else self.rmanager.paths[self.codename]
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self.lkv_src / patch_name,
+            dcfg.root / "zkb" / "modifications" / self._ucodename / self.lkv_src / patch_name,
             target_d
         )
         os.chdir(target_d)
@@ -461,7 +461,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
         goback = Path.cwd()
 
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self.lkv_src / patch_name,
+            dcfg.root / "zkb" / "modifications" / self._ucodename / self.lkv_src / patch_name,
             self.rmanager.paths[self.codename]
         )
         os.chdir(self.rmanager.paths[self.codename])
@@ -494,7 +494,7 @@ class KernelBuilder(BaseModel, IKernelBuilder):
 
         # apply .patch files
         fo.ucopy(
-            dcfg.root / "builder" / "modifications" / self._ucodename / self.lkv_src,
+            dcfg.root / "zkb" / "modifications" / self._ucodename / self.lkv_src,
             self.rmanager.paths[self.codename],
             ("kernelsu-compat.patch", "qcacld_pa.patch")
         )

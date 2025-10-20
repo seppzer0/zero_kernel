@@ -81,7 +81,7 @@ class GenericContainerEngine(BaseModel, IGenericContainerEngine):
     @property
     def builder_cmd(self) -> str:
         # prepare launch command
-        cmd = f"python3 {Path('builder', 'utils', 'bridge.py')}"
+        cmd = f"python3 {Path('zkb', 'utils', 'bridge.py')}"
         arguments = {
             "--command": self.command,
             "--codename": self.codename,

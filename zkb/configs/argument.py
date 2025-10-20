@@ -66,7 +66,7 @@ class ArgumentConfig(BaseModel):
 
         # check if specified device is supported
         with open(
-            Path(__file__).absolute().parents[2] / "builder" / "manifests" / "devices.json", encoding="utf-8"
+            Path(__file__).absolute().parents[2] / "zkb" / "manifests" / "devices.json", encoding="utf-8"
         ) as f:
             devices = json.load(f)
 

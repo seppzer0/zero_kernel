@@ -39,13 +39,13 @@ class ResourceManager(BaseModel, IResourceManager):
         device = ""
 
         # load JSON data
-        with open(dcfg.root / "builder" / "manifests" / "tools.json", encoding="utf-8") as f:
+        with open(dcfg.root / "zkb" / "manifests" / "tools.json", encoding="utf-8") as f:
             tools = json.load(f)
 
         # codename and ROM are undefined only when the Docker/Podman image is being prepared
         if self.codename and self.base:
 
-            with open(dcfg.root / "builder" / "manifests" / "devices.json", encoding="utf-8") as f:
+            with open(dcfg.root / "zkb" / "manifests" / "devices.json", encoding="utf-8") as f:
                 data = json.load(f)
                 # load data only for the required codename + linux kernel version combination
                 try:

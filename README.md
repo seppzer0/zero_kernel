@@ -78,7 +78,7 @@ The kernel has the following features:
 
 ## Usage
 
-The custom build wrapper (aka "builder") consists of 2 core components and 3 primary commands:
+The custom build wrapper (aka "zkb") consists of 2 core components and 3 primary commands:
 
 Components:
 
@@ -92,8 +92,8 @@ Commands:
 - `bundle`.
 
 ```help
-$ python3 builder --help
-usage: builder [-h] [--clean] {kernel,assets,bundle} ...
+$ python3 zkb --help
+usage: zkb [-h] [--clean] {kernel,assets,bundle} ...
 
 A custom builder for the zero_kernel.
 
@@ -124,7 +124,7 @@ To run this tool in a `local` environment, you will need:
 ```sh
 # install uv version from project file
 python3 -m pip install -r requirement-uv.txt
-# make builder/ internal imports visible to itself
+# make zkb/ internal imports visible to itself
 export PYTHONPATH=$(pwd)
 # prepare and activate dev environment
 uv sync --frozen --no-install-project
@@ -138,8 +138,8 @@ Once you are finished working with the project, don't forget to disable the virt
 Kernel build process can be launched using the `kernel` subcommand.
 
 ```help
-$ python3 builder kernel --help
-usage: builder kernel [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+$ python3 zkb kernel --help
+usage: zkb kernel [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --lkv LKV [-c] [--clean-image] [--ksu]
 
 options:
@@ -161,8 +161,8 @@ options:
 As mentioned, there is also an asset downloader, which can collect latest versions of ROM, TWRP, Magisk and it's modules, Kali Chroot etc.
 
 ```help
-$ python3 builder assets --help
-usage: builder assets [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+$ python3 zkb assets --help
+usage: zkb assets [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --chroot {full,minimal} [--rom-only]
                       [--clean-image] [--clean] [--ksu]
 
@@ -203,8 +203,8 @@ Options `full` and `conan` collect all of the assets required to successfuly fla
 Option named `slim` is a much lighter version of `full` packaging, as only the ROM is collected from the asset list. This is done to reduce package sizes while ensuring the kernel+ROM compatibility.
 
 ```help
-$ python3 builder bundle --help
-usage: builder bundle [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
+$ python3 zkb bundle --help
+usage: zkb bundle [-h] --build-env {local,docker,podman} --base {los,pa,x,aosp}
                       --codename CODENAME --lkv LKV --package-type
                       {conan,slim,full} [--conan-upload] [--clean-image] [--ksu]
 
@@ -231,19 +231,19 @@ Here are some examples of commands:
 **(Recommended)** Build kernel and collect ROM via Docker:
 
 ```sh
-python3 builder bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
+python3 zkb bundle --build-env=docker --base=los --codename=dumpling --lkv=4.4 --package-type=slim
 ```
 
 Build kernel locally:
 
 ```sh
-python3 builder kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
+python3 zkb kernel --build-env=local --base=los --codename=dumpling --lkv=4.4
 ```
 
 Collect all of the assets locally:
 
 ```sh
-python3 builder assets --build-env=local --base=los --codename=dumpling --package-type=full
+python3 zkb assets --build-env=local --base=los --codename=dumpling --package-type=full
 ```
 
 ## See also

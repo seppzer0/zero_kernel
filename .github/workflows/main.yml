@@ -47,7 +47,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          python3 -m pre_commit run --files builder/**/*.py
+          python3 -m pre_commit run --files zkb/**/*.py
 
       - name: Build
         run: |

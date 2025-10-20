@@ -23,8 +23,8 @@ class ZeroKernelConan(ConanFile):
             self.options.codename,
             self.options.chroot
         )
-        cmd = "python3 builder kernel {0} &&"\
-              "python3 builder assets {0} --clean"\
+        cmd = "python3 zkb kernel {0} &&"\
+              "python3 zkb assets {0} --clean"\
               .format(shared_args)
         print(f"[cmd] {cmd}")
         self.run(cmd)
