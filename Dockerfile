@@ -1,15 +1,12 @@
 FROM debian:bookworm-slim AS base
 
-# variable store
 ARG WDIR=/zero_build
 ENV CONAN_UPLOAD_CUSTOM 0
 
-# transfer sources from host to container
 COPY . ${WDIR}
 WORKDIR ${WDIR}
 ENV PYTHONPATH ${WDIR}
 
-# install system packages
 RUN \
     apt-get update \
     && \

@@ -26,17 +26,16 @@ main = [
     "conan ~=1.6",
     "requests ~=2.31",
     "pathlib ~=1.0",
-    "pydantic ~=2.6",
+    "pydantic ~=2.12",
 ]
 dev = [
     {include-group = "main"},
     "bandit ~=1.7",
-    "pytest ~=8.0",
-    "pytest-cov ~=4.1",
+    "pytest ~=8.4",
+    "pytest-cov ~=7.0",
     "pyright ~=1.1",
-    "pylint ~=3.1",
-    "ruff ~=0.7",
-    "pre-commit ~=4.2",
+    "ruff ~=0.14",
+    "pre-commit ~=4.3",
     "pip",
 ]
 

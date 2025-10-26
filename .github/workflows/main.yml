@@ -32,8 +32,8 @@ jobs:
 
       - name: Install UV
         run: |
-          uv_version=$(cat ./requirement-uv.txt | awk -F'==' '{print $2}' | tr -d ' \n')
-          curl -LsSf https://astral.sh/uv/${uv_version}/install.sh | sh
+          UV_VERSION=$(cat ./requirement-uv.txt | awk -F'==' '{print $2}' | tr -d ' \n')
+          curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
 
       - name: Record original PATH
         id: record_original_path
@@ -78,9 +78,14 @@ jobs:
           name: build-artifacts
           path: "multi-build"
 
+      - name: Install UV
+        run: |
+          UV_VERSION=$(cat ./requirement-uv.txt | awk -F'==' '{print $2}' | tr -d ' \n')
+          curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
+
       - name: Get Current Version
         id: version
-        run: echo "version=$(python3 scripts/common/py/get_version.py)" >> $GITHUB_OUTPUT
+        run: echo "version=$(uv run scripts/common/py/get_version.py)" >> $GITHUB_OUTPUT
 
       - name: Form Tag
         id: tagname
