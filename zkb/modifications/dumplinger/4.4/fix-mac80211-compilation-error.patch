@@ -1,0 +1,38 @@
+--- a/net/mac80211/tx.c	2020-06-15 20:03:27.234467031 +0100
++++ b/net/mac80211/tx.c	2020-06-16 00:21:15.171394185 +0100
+@@ -164,7 +164,7 @@
+ 			if (r->flags & IEEE80211_RATE_MANDATORY_A)
+ 				mrate = r->bitrate;
+ 			break;
+-		case IEEE80211_BAND_60GHZ:
++		case NL80211_BAND_60GHZ:
+ 			/* TODO, for now fall through */
+ 		case NUM_NL80211_BANDS:
+ 			WARN_ON(1);
+
+--- a/net/mac80211/mlme.c	2020-06-15 23:58:26.431440026 +0100
++++ b/net/mac80211/mlme.c	2020-06-15 23:59:31.611437843 +0100
+@@ -1340,7 +1340,7 @@
+ 		WARN_ON_ONCE(1);
+ 		/* fall through */
+ 	case NL80211_BAND_2GHZ:
+-	case IEEE80211_BAND_60GHZ:
++	case NL80211_BAND_60GHZ:
+ 		chan_increment = 1;
+ 		break;
+ 	case NL80211_BAND_5GHZ:
+
+--- a/drivers/net/wireless/ath/regd.c	2020-06-16 01:45:09.899225567 +0100
++++ b/drivers/net/wireless/ath/regd.c	2020-06-22 00:58:26.125250041 +0100
+@@ -667,9 +667,9 @@
+ 	 * Therefore, disable 2.4 Ghz channels that dont have 20 mhz bw
+ 	 */
+ 	for (chan_num = 0;
+-	     chan_num < wiphy->bands[IEEE80211_BAND_2GHZ]->n_channels;
++	     chan_num < wiphy->bands[NL80211_BAND_2GHZ]->n_channels;
+ 	     chan_num++) {
+-		chan = &wiphy->bands[IEEE80211_BAND_2GHZ]->channels[chan_num];
++		chan = &wiphy->bands[NL80211_BAND_2GHZ]->channels[chan_num];
+ 		if (chan->flags & IEEE80211_CHAN_NO_20MHZ)
+ 			chan->flags |= IEEE80211_CHAN_DISABLED;
+ 	}
