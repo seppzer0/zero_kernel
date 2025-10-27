@@ -1,6 +1,6 @@
 [project]
 name = "zero-kernel-builder"
-version = "0.6.3"
+version = "0.6.4"
 description = "Advanced Android kernel builder with Kali NetHunter support."
 authors = [{name = "seppzer0"}]
 readme = "README.md"

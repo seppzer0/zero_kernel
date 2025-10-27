@@ -754,7 +754,7 @@ wheels = [
 
 [[package]]
 name = "zero-kernel-builder"
-version = "0.6.3"
+version = "0.6.4"
 source = { editable = "." }
 dependencies = [
     { name = "argparse", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
